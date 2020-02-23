@@ -1,4 +1,4 @@
-package com.example.clarify;
+package es.clarify.clarify;
 
 import android.net.Uri;
 import android.nfc.NdefRecord;

@@ -3,5 +3,9 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="dark">#2C353A</color>
+    <color name="gray">#202020</color>
+    <color name="white">#FFFFFF</color>
+    <color name="cian">#14A3F0</color>
+    <color name="full_dark">#000000</color>
+    <color name="put_tag">#434A52</color>
 </resources>

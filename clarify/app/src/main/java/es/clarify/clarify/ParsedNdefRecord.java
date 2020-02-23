@@ -1,4 +1,4 @@
-package com.example.clarify;
+package es.clarify.clarify;
 
 public interface ParsedNdefRecord {
 

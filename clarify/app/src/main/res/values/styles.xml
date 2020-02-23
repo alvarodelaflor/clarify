@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/cian</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
 </resources>
