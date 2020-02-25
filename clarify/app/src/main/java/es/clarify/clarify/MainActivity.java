@@ -169,10 +169,7 @@ public class MainActivity extends AppCompatActivity {
             builder.append(str).append("\n");
         }
 
-        text = (TextView) frameLayout.findViewById(R.id.text);
-        GifImageView gif = (GifImageView) frameLayout.findViewById(R.id.gif);
-
+        text = (TextView) frameLayout.findViewById(R.id.tag_read);
         text.setText(builder.toString());
-        gif.setImageResource(0);
     }
 }
