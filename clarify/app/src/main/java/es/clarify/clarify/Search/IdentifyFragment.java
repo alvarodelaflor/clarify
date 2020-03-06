@@ -1,4 +1,4 @@
-package es.clarify.clarify;
+package es.clarify.clarify.Search;
 
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -7,25 +7,32 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import java.util.List;
+
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
-import es.clarify.clarify.Search.IdentifyFragment;
+import es.clarify.clarify.R;
 
-public class MainActivity extends AppCompatActivity {
+public class IdentifyFragment extends Fragment {
+
+    public IdentifyFragment() {
+        // Required empty public constructor
+    }
 
     private TextView text;
     private NfcAdapter nfcAdapter;
@@ -37,65 +44,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        text = (TextView) findViewById(R.id.text);
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-        identifyFragment = new IdentifyFragment();
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
 
         if (nfcAdapter == null) {
-            Toast.makeText(this, "Dispositivo incompatible", Toast.LENGTH_LONG).show();
-            finish();
-            return;
+            Toast.makeText(getContext(), "Dispositivo incompatible", Toast.LENGTH_LONG).show();
         }
 
-        pendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, this.getClass())
+        pendingIntent = PendingIntent.getActivity(getContext(), 0,
+                new Intent(getContext(), this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        /*
-        setFragment(identifyFragment);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_search:
-                        setFragment(identifyFragment);
-                        bottomNavigationView.setItemBackgroundResource(R.color.gray);
-                        return true;
-                    case R.id.nav_folder:
-                        bottomNavigationView.setItemBackgroundResource(R.color.colorPrimary);
-                        return true;
-                    case R.id.nav_explore:
-                        bottomNavigationView.setItemBackgroundResource(R.color.colorAccent);
-                        return true;
-                }
-                return false;
-            }
-        });
-
-         */
-
+        return inflater.inflate(R.layout.fragment_identify, container, false);
     }
-    /*
-    private void setFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.identifyFragment, fragment);
-        fragmentTransaction.commit();
-
-    }
-     */
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
         if (nfcAdapter != null) {
@@ -104,28 +69,22 @@ public class MainActivity extends AppCompatActivity {
                 showWirelessSettings();
 
             // Give the priority to our app
-            nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+            nfcAdapter.enableForegroundDispatch(getActivity(), pendingIntent, null, null);
         }
     }
 
     private void showWirelessSettings() {
-        Toast.makeText(this, "¡Activa el NFC aquí!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "¡Activa el NFC aquí!", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
         startActivity(intent);
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        resolveIntent(intent);
-    }
-
-    private void resolveIntent(Intent intent) {
+    public void resolveIntent(Intent intent) {
         String action = intent.getAction();
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
@@ -169,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
             builder.append(str).append("\n");
         }
 
+        text = (TextView) frameLayout.findViewById(R.id.tag_read);
         text.setText(builder.toString());
     }
+
 }

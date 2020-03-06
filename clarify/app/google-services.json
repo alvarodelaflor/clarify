@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "84395948427",
+    "firebase_url": "https://clarify-tfg.firebaseio.com",
+    "project_id": "clarify-tfg",
+    "storage_bucket": "clarify-tfg.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:84395948427:android:f5896ccc4b111dd6ec578e",
+        "android_client_info": {
+          "package_name": "es.clarify.clarify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "84395948427-42rgjtl32shfi9e7ji4qo571bqbrphk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "es.clarify.clarify",
+            "certificate_hash": "e3675f7d9356cf9f884b938036ff735dc2084d9e"
+          }
+        },
+        {
+          "client_id": "84395948427-b3tvirn3nljreo7qt4vdklsag49jhk02.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_xjLZiCYWmM_7zuq-5j0EN_beF6qFysI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "84395948427-b3tvirn3nljreo7qt4vdklsag49jhk02.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

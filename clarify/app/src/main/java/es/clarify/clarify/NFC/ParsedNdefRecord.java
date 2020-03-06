@@ -1,4 +1,4 @@
-package es.clarify.clarify;
+package es.clarify.clarify.NFC;
 
 public interface ParsedNdefRecord {
 

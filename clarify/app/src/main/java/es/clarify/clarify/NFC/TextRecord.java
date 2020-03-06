@@ -1,4 +1,4 @@
-package es.clarify.clarify;
+package es.clarify.clarify.NFC;
 
 import android.nfc.NdefRecord;
 
