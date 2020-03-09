@@ -11,6 +11,8 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +35,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView text_company;
     private TextView text_model;
     private TextView text_expiration_date;
+    private Button logout_button;
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private BottomNavigationView bottomNavigationView;
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         text_company = (TextView) findViewById(R.id.text_company);
         text_model = (TextView) findViewById(R.id.text_model);
         text_expiration_date = (TextView) findViewById(R.id.text_expiration_date);
+        logout_button = (Button) findViewById(R.id.logOut);
 
         identifyFragment = new IdentifyFragment();
 
@@ -78,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
 //        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-//        DatabaseReference databaseReference2 = database2.getReference("public");
-//        ScannedTag scannedTagPush = new ScannedTag("41521", "Hacendado", "Leche Entera", false, null, "2020-12-31", "aldkmfalkdmflakdml", "https://a0.soysuper.com/cfcf9443216df9227ed464e54b684edc.1500.0.0.0.wmark.cf933c27.jpg");
-//        databaseReference2.child("tags").push().setValue(scannedTagPush);
+//        DatabaseReference databaseReference2 = database2.getReference("private");
+//        ScannedTag scannedTagPush = new ScannedTag("41544", "Kappa", "Camiseta Real Betis XL", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "https://a0.soysuper.com/cfcf9443216df9227ed464e54b684edc.1500.0.0.0.wmark.cf933c27.jpg");
+//        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
         ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
 
         scannedTagList = new ArrayList<>();
@@ -118,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+        logout_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout(v);
+                startActivity(new Intent(getApplicationContext(),Login.class));
+            }
+        });
+
         /*
         setFragment(identifyFragment);
 
@@ -151,6 +167,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
      */
+
+    public void logout(View view) {
+        FirebaseAuth.getInstance().signOut();//logout
+        startActivity(new Intent(getApplicationContext(), Login.class));
+        finish();
+    }
 
     @Override
     protected void onResume() {

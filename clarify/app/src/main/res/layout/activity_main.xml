@@ -73,6 +73,15 @@
             layout="@layout/bottom_navigation"
             />
 
+        <Button
+            android:id="@+id/logOut"
+            android:layout_marginLeft="270dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="log off" />
+
     </RelativeLayout>
 
     <FrameLayout
