@@ -22,10 +22,49 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="200dp"
             android:layout_marginRight="20dp"
             android:gravity="center_horizontal"
             android:text="Hold a tag against the back of your device"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_company"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="450dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_horizontal"
+            android:text="Company"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="420dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_horizontal"
+            android:text="Model"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_expiration_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="480dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_horizontal"
+            android:text="Expiration Date"
             android:textSize="20sp"
             android:textStyle="bold" />
 

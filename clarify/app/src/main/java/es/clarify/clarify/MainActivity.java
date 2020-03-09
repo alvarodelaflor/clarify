@@ -9,6 +9,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -19,21 +20,39 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
+import es.clarify.clarify.Objects.FirebaseReferences;
+import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Search.IdentifyFragment;
+import es.clarify.clarify.Utilities.UtilitiesFirebase;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView text;
+    private TextView text_company;
+    private TextView text_model;
+    private TextView text_expiration_date;
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private BottomNavigationView bottomNavigationView;
     private FrameLayout frameLayout;
     private IdentifyFragment identifyFragment;
     private NfcUtility nfcUtility = new NfcUtility();
+    List<ScannedTag> scannedTagList;
 
 
     @Override
@@ -42,20 +61,59 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         text = (TextView) findViewById(R.id.text);
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        text_company = (TextView) findViewById(R.id.text_company);
+        text_model = (TextView) findViewById(R.id.text_model);
+        text_expiration_date = (TextView) findViewById(R.id.text_expiration_date);
+
         identifyFragment = new IdentifyFragment();
 
+        // Toolbar instances
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // NFC instances
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
+        // Firebase instances
 
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
+//        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
+//        DatabaseReference databaseReference2 = database2.getReference("public");
+//        ScannedTag scannedTagPush = new ScannedTag("41521", "Hacendado", "Leche Entera", false, null, "2020-12-31", "aldkmfalkdmflakdml", "https://a0.soysuper.com/cfcf9443216df9227ed464e54b684edc.1500.0.0.0.wmark.cf933c27.jpg");
+//        databaseReference2.child("tags").push().setValue(scannedTagPush);
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
+
+        scannedTagList = new ArrayList<>();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("public"));
+        Query query = databaseReference.child("tags").orderByChild("id").equalTo("41520");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // dataSnapshot is the "issue" node with all children with id 0
+                    for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
+                        Log.d("FIREBASE_ASYN_1", scannedTagFirebase.toString());
+                        ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
+                        Log.d("FIREBASE_ASYN_2", scannedTag.toString());
+                        scannedTagList.add(scannedTag);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         if (nfcAdapter == null) {
             Toast.makeText(this, "Dispositivo incompatible", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
+
 
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
@@ -150,25 +208,8 @@ public class MainActivity extends AppCompatActivity {
                 NdefMessage msg = new NdefMessage(new NdefRecord[] {record});
                 msgs = new NdefMessage[] {msg};
             }
-
-            displayMsgs(msgs);
+            UtilitiesFirebase utilitiesFirebase = new UtilitiesFirebase(msgs, Arrays.asList(text, text_company, text_model, text_expiration_date));
+            utilitiesFirebase.printInfo();
         }
-    }
-
-    private void displayMsgs(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0)
-            return;
-
-        StringBuilder builder = new StringBuilder();
-        List<ParsedNdefRecord> records = NdefMessageParser.parse(msgs[0]);
-        final int size = records.size();
-
-        for (int i = 0; i < size; i++) {
-            ParsedNdefRecord record = records.get(i);
-            String str = record.str();
-            builder.append(str).append("\n");
-        }
-
-        text.setText(builder.toString());
     }
 }
