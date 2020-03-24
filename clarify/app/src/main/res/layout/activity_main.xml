@@ -1,94 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <RelativeLayout
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.ssaurel.nfcreader.MainActivity">
+        android:layout_height="56dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="@color/dark_gray"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar"
-            />
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center_horizontal"
-            android:text="Hold a tag against the back of your device"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text_company"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="450dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center_horizontal"
-            android:text="Company"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text_model"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="420dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center_horizontal"
-            android:text="Model"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/text_expiration_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="480dp"
-            android:layout_marginRight="20dp"
-            android:gravity="center_horizontal"
-            android:text="Expiration Date"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <include
-            android:id="@+id/bottom_navigation"
-            layout="@layout/bottom_navigation"
-            />
-
-        <Button
-            android:id="@+id/logOut"
-            android:layout_marginLeft="270dp"
-            android:layout_marginTop="80dp"
-            android:layout_marginRight="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="log off" />
-
-    </RelativeLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="0dp"
+        android:background="@color/gray"
+        app:itemIconTint="@color/nav_buttom_color"
+        app:labelVisibilityMode="unlabeled"
+        app:menu="@menu/bottom_navigation_aux"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <FrameLayout
-        android:id="@+id/identifyFragment"
+        android:id="@+id/mainFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="542dp"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/bottomNavigation"
+        android:layout_below="@+id/toolbar">
+
     </FrameLayout>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

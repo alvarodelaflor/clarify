@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:layout_alignParentBottom="true"
-    android:background="@color/gray"
     app:menu="@menu/bottom_navigation_aux"
     app:itemIconTint="@color/nav_buttom_color"
+    android:background="@color/gray"
     app:labelVisibilityMode="unlabeled"
     />
     <!-- android:theme="@style/BottomNavigationTheme" -->
