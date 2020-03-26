@@ -1,6 +1,11 @@
 package es.clarify.clarify.Utilities;
 
+import android.content.Intent;
 import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
@@ -9,29 +14,51 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
 import java.util.List;
-
 import es.clarify.clarify.NFC.NdefMessageParser;
+import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
 import es.clarify.clarify.Objects.ScannedTag;
 
-public class UtilitiesFirebase {
+public class Utilities {
 
-    private NdefMessage[] msgs;
-    private TextView text;
-    private TextView text_company;
-    private TextView text_model;
-    private TextView text_expiration_date;
+    private NfcUtility nfcUtility = new NfcUtility();
 
-    public UtilitiesFirebase(NdefMessage[] msgs, List<TextView> textViews) {
-        this.msgs = msgs;
-        this.text = textViews.get(0);
-        this.text_company = textViews.get(1);
-        this.text_model = textViews.get(2);
-        this.text_expiration_date = textViews.get(3);
+    public Utilities() {
+
     }
 
-    public void printInfo() {
+    public NdefMessage[] getTagInfo(Intent intent) {
+
+        // Get raw from TAG
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+
+        NdefMessage[] msgs;
+
+        if (rawMsgs != null) {
+            msgs = new NdefMessage[rawMsgs.length];
+
+            for (int i = 0; i < rawMsgs.length; i++) {
+                msgs[i] = (NdefMessage) rawMsgs[i];
+            }
+
+        } else {
+            byte[] empty = new byte[0];
+            byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+            Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            byte[] payload = nfcUtility.dumpTagData(tag).getBytes();
+            NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
+            NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
+            msgs = new NdefMessage[]{msg};
+        }
+        return msgs;
+    }
+
+    public void printInfo(NdefMessage[] msgs, List<TextView> textViews) {
+
+        final List<TextView> params = new ArrayList<>(textViews);
+
         if (msgs == null || msgs.length == 0)
             return;
 
@@ -51,6 +78,12 @@ public class UtilitiesFirebase {
         Query query = databaseReference.child("tags").orderByChild("id").equalTo(toSearch);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
+            // Add here all TextView to modify in the NfcIdentifyFragment.java
+            TextView text = params.get(0);
+            TextView text_company = params.get(1);
+            TextView text_model = params.get(2);
+            TextView text_expiration_date = params.get(3);
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -59,10 +92,10 @@ public class UtilitiesFirebase {
                         Log.d("FIREBASE_ASYN_1", scannedTagFirebase.toString());
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
                         Log.d("FIREBASE_ASYN_2", scannedTag.toString());
-                        text.setText("");
-                        text_company.setText(scannedTag.getBrand());
-                        text_model.setText(scannedTag.getModel());
-                        text_expiration_date.setText(scannedTag.getExpiration_date());
+                        this.text.setText("");
+                        this.text_company.setText(scannedTag.getBrand());
+                        this.text_model.setText(scannedTag.getModel());
+                        this.text_expiration_date.setText(scannedTag.getExpiration_date());
                     }
                 } else {
                     text.setText("Etiqueta no encontrada");
@@ -75,5 +108,6 @@ public class UtilitiesFirebase {
             }
         });
     }
+
 
 }

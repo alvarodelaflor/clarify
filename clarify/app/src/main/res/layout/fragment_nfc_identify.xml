@@ -3,50 +3,115 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/dark_gray"
     tools:context=".Search.NfcIdentifyFragment">
 
-    <TextView
-        android:id="@+id/product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="162dp"
+        android:layout_height="76dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="184dp"
-        android:layout_marginTop="330dp"
-        android:text="TextView" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="215dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginEnd="31dp"
+        android:text="Button" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="162dp"
+        android:layout_height="76dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginEnd="214dp"
+        android:text="Button" />
 
     <TextView
-        android:id="@+id/text_model2"
-        android:layout_width="wrap_content"
+        android:id="@+id/infoIdentify"
+        android:layout_width="349dp"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="65dp"
-        android:layout_marginTop="422dp"
-        android:layout_marginEnd="287dp"
-        android:layout_marginBottom="217dp"
-        android:text="TextView" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="40dp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="@string/infoIdentiry"
+        android:textColor="@color/white"
+        android:textSize="25dp" />
 
-    <TextView
-        android:id="@+id/text_company2"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:layout_width="133dp"
+        android:layout_height="211dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:elevation="7dp"
+        android:src="@drawable/risketos" />
+
+    <GridLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="84dp"
-        android:layout_marginEnd="89dp"
-        android:text="TextView" />
+        android:layout_marginTop="195dp"
+        android:alignmentMode="alignMargins"
+        android:columnCount="1"
+        android:columnOrderPreserved="false"
+        android:rowCount="1">
 
-    <TextView
-        android:id="@+id/text_expiration_date2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="43dp"
-        android:layout_marginTop="100dp"
-        android:text="TextView" />
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|center_horizontal"
+                android:paddingTop="185dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/product"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Su producto es:" />
+
+                <TextView
+                    android:id="@+id/text_company2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Su producto es:" />
+
+                <TextView
+                    android:id="@+id/text_model2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Su producto es:" />
+
+                <TextView
+                    android:id="@+id/text_expiration_date2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Su producto es:" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
 </RelativeLayout>

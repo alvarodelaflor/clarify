@@ -1,23 +1,16 @@
 package es.clarify.clarify.Search;
 
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +18,7 @@ import java.util.Arrays;
 
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.R;
-import es.clarify.clarify.Utilities.UtilitiesFirebase;
+import es.clarify.clarify.Utilities.Utilities;
 
 
 public class NfcIdentifyFragment extends Fragment {
@@ -47,7 +40,6 @@ public class NfcIdentifyFragment extends Fragment {
         text_company = (TextView) v.findViewById(R.id.text_company2);
         text_model = (TextView) v.findViewById(R.id.text_model2);
         text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
-
 
         return v;
     }
@@ -73,27 +65,10 @@ public class NfcIdentifyFragment extends Fragment {
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
 
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-
-            } else {
-                byte[] empty = new byte[0];
-                byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                byte[] payload = nfcUtility.dumpTagData(tag).getBytes();
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-                NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
-                msgs = new NdefMessage[]{msg};
-            }
-            UtilitiesFirebase utilitiesFirebase = new UtilitiesFirebase(msgs, Arrays.asList(text, text_company, text_model, text_expiration_date));
-            utilitiesFirebase.printInfo();
+            Utilities utilities = new Utilities();
+            NdefMessage[] msgs = utilities.getTagInfo(intent);
+            utilities.printInfo(msgs, Arrays.asList(text, text_company, text_model, text_expiration_date));
         }
     }
 
