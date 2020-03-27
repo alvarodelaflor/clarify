@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class NfcIdentifyFragment extends Fragment {
     private TextView text_company;
     private TextView text_model;
     private TextView text_expiration_date;
+    private ImageView img;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,6 +42,7 @@ public class NfcIdentifyFragment extends Fragment {
         text_company = (TextView) v.findViewById(R.id.text_company2);
         text_model = (TextView) v.findViewById(R.id.text_model2);
         text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
+        img = (ImageView) v.findViewById(R.id.image_product);
 
         return v;
     }
@@ -68,7 +71,7 @@ public class NfcIdentifyFragment extends Fragment {
 
             Utilities utilities = new Utilities();
             NdefMessage[] msgs = utilities.getTagInfo(intent);
-            utilities.printInfo(msgs, Arrays.asList(text, text_company, text_model, text_expiration_date));
+            utilities.printInfo(msgs, img, Arrays.asList(text, text_company, text_model, text_expiration_date));
         }
     }
 

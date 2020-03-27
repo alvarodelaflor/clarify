@@ -1,6 +1,10 @@
 package es.clarify.clarify.Objects;
 
 
+import android.net.Uri;
+
+import java.net.URI;
+
 public class ScannedTag {
     String id;
     String brand;

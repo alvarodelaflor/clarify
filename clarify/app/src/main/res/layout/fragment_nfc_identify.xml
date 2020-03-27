@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="542dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/dark_gray"
     tools:context=".Search.NfcIdentifyFragment">
@@ -48,6 +48,7 @@
         android:textSize="25dp" />
 
     <ImageView
+        android:id="@+id/image_product"
         android:layout_width="133dp"
         android:layout_height="211dp"
         android:layout_alignParentTop="true"
@@ -58,7 +59,7 @@
 
     <GridLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="347dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="195dp"
         android:alignmentMode="alignMargins"
@@ -78,7 +79,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="347dp"
                 android:gravity="top|center_horizontal"
                 android:paddingTop="185dp"
                 android:orientation="vertical">

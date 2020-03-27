@@ -1,12 +1,14 @@
 package es.clarify.clarify.Utilities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -14,6 +16,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 import es.clarify.clarify.NFC.NdefMessageParser;
@@ -55,7 +59,7 @@ public class Utilities {
         return msgs;
     }
 
-    public void printInfo(NdefMessage[] msgs, List<TextView> textViews) {
+    public void printInfo(NdefMessage[] msgs, final ImageView img, List<TextView> textViews) {
 
         final List<TextView> params = new ArrayList<>(textViews);
 
@@ -83,6 +87,7 @@ public class Utilities {
             TextView text_company = params.get(1);
             TextView text_model = params.get(2);
             TextView text_expiration_date = params.get(3);
+            ImageView imgToChange = img;
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -92,10 +97,11 @@ public class Utilities {
                         Log.d("FIREBASE_ASYN_1", scannedTagFirebase.toString());
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
                         Log.d("FIREBASE_ASYN_2", scannedTag.toString());
-                        this.text.setText("");
+                        this.text.setText("¡Genial! Etiqueta encontrada");
                         this.text_company.setText(scannedTag.getBrand());
                         this.text_model.setText(scannedTag.getModel());
                         this.text_expiration_date.setText(scannedTag.getExpiration_date());
+                        Picasso.get().load(scannedTag.getImage()).into(imgToChange);
                     }
                 } else {
                     text.setText("Etiqueta no encontrada");

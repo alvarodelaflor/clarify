@@ -17,7 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import es.clarify.clarify.Login.Login;
+import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
 
@@ -36,6 +40,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Firebase instances
+
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
+//        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
+//        DatabaseReference databaseReference2 = database2.getReference("public");
+//        ScannedTag scannedTagPush = new ScannedTag("41521", "Hacendado", "Leche Entera 1L", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "https://img.huffingtonpost.com/asset/5e2190ed24000031006c4396.png?ops=scalefit_720_noupscale");
+////        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush);
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
 
         // NFC instances
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -72,17 +86,6 @@ public class MainActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-
-
-
-        // Firebase instances
-
-        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
-//        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-//        DatabaseReference databaseReference2 = database2.getReference("private");
-//        ScannedTag scannedTagPush = new ScannedTag("41544", "Kappa", "Camiseta Real Betis XL", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "https://a0.soysuper.com/cfcf9443216df9227ed464e54b684edc.1500.0.0.0.wmark.cf933c27.jpg");
-//        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
-        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
 
 
 //        logout_button = (Button) findViewById(R.id.logOut)
