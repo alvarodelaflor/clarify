@@ -1,35 +1,37 @@
 package es.clarify.clarify.Objects;
 
-public class ScannedTag {
-    String id;
-    String brand;
-    String model;
-    Boolean lote;
-    String color;
-    String expiration_date;
-    String reference;
-    String image;
+import java.util.Date;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-    public ScannedTag() {
-    }
+public class ScannedTagLocal extends RealmObject {
+    @PrimaryKey
+    private int id;
+    private Date storageDate;
 
-    public ScannedTag(String id, String brand, String model, Boolean lote, String color, String expiration_date, String reference, String image) {
-        this.id = id;
-        this.brand = brand;
-        this.model = model;
-        this.lote = lote;
-        this.color = color;
-        this.expiration_date = expiration_date;
-        this.reference = reference;
-        this.image = image;
-    }
+    private String idFirebase;
+    private String brand;
+    private String model;
+    private Boolean lote;
+    private String color;
+    private String expiration_date;
+    private String reference;
+    private String image;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getIdFirebase() {
+        return idFirebase;
+    }
+
+    public void setIdFirebase(String idFirebase) {
+        this.idFirebase = idFirebase;
     }
 
     public String getBrand() {
@@ -46,6 +48,14 @@ public class ScannedTag {
 
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public Boolean getLote() {
+        return lote;
+    }
+
+    public void setLote(Boolean lote) {
+        this.lote = lote;
     }
 
     public String getColor() {
@@ -80,11 +90,11 @@ public class ScannedTag {
         this.image = image;
     }
 
-    public Boolean getLote() {
-        return lote;
+    public Date getStorageDate() {
+        return storageDate;
     }
 
-    public void setLote(Boolean lote) {
-        this.lote = lote;
+    public void setStorageDate(Date storageDate) {
+        this.storageDate = storageDate;
     }
 }

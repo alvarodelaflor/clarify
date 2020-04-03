@@ -1,29 +1,43 @@
 package es.clarify.clarify;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import es.clarify.clarify.Objects.ScannedTag;
+
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import es.clarify.clarify.Login.Login;
-import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
+import es.clarify.clarify.Utilities.Database;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,11 +49,20 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mainFrame;
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
+    private Database database;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name(Realm.DEFAULT_REALM_NAME)
+                .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
 
         // Firebase instances
 
@@ -88,14 +111,13 @@ public class MainActivity extends AppCompatActivity {
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
 
-//        logout_button = (Button) findViewById(R.id.logOut)
-//        logout_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                logout(v);
-//                startActivity(new Intent(getApplicationContext(),Login.class));
-//            }
-//        });
+        logout_button = (Button) findViewById(R.id.logOut);
+        logout_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logOut();
+            }
+        });
 
 
     }
@@ -107,10 +129,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void logout(View view) {
-        FirebaseAuth.getInstance().signOut();//logout
-        startActivity(new Intent(getApplicationContext(), Login.class));
-        finish();
+    public void logOut() {
+        FirebaseAuth.getInstance().signOut();
+        // Google sign out
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(new Intent(getApplicationContext(), Login.class));
+                        finish();
+                    }
+                });
     }
 
     @Override

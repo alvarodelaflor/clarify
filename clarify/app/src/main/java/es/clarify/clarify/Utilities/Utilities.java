@@ -1,7 +1,6 @@
 package es.clarify.clarify.Utilities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -17,13 +16,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 import java.util.List;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
 import es.clarify.clarify.Objects.ScannedTag;
+import io.realm.Realm;
 
 public class Utilities {
 
@@ -102,6 +101,9 @@ public class Utilities {
                         this.text_model.setText(scannedTag.getModel());
                         this.text_expiration_date.setText(scannedTag.getExpiration_date());
                         Picasso.get().load(scannedTag.getImage()).into(imgToChange);
+                        Database database = new Database(Realm.getDefaultInstance());
+                        database.addScannedTagLocal(scannedTag);
+                        Log.d("REALM", "onDataChange: " + database.getAllScannedTag());
                     }
                 } else {
                     text.setText("Etiqueta no encontrada");
@@ -114,6 +116,5 @@ public class Utilities {
             }
         });
     }
-
 
 }

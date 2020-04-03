@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Clarify</string>
+    <string name="app_name">CLARIFY</string>
+    <string name="app_name_1">CLARIFY</string>
+    <string name="app_name_2">RIFY</string>
     <string name="hold_tag">¡Acerca tu etiqueta!</string>
     <string name="infoIdentiry">Panel de identificación</string>
 
