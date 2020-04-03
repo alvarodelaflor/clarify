@@ -22,6 +22,7 @@ import java.util.Arrays;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
+import es.clarify.clarify.Objects.ScannedTagRemote;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
@@ -59,8 +60,11 @@ public class NfcIdentifyFragment extends Fragment {
             public void onClick(View view) {
                 ScannedTagLocal scannedTagLocal = database.getLastScannedTag();
                 if (scannedTagLocal!=null) {
-                    ScannedTag scannedTag = database.getScannedTagFromLocal(scannedTagLocal);
-                    googleUtilities.addToStore("Nevera", scannedTag);
+                    ScannedTagRemote scannedTagRemote= new ScannedTagRemote(scannedTagLocal);
+                    Boolean saveResult = googleUtilities.addToStore("Nevera", scannedTagRemote, getActivity());
+                    if (!saveResult) {
+                        Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });

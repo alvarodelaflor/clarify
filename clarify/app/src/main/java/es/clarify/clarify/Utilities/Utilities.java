@@ -93,9 +93,7 @@ public class Utilities {
                 if (dataSnapshot.exists()) {
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
-                        Log.d("FIREBASE_ASYN_1", scannedTagFirebase.toString());
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
-                        Log.d("FIREBASE_ASYN_2", scannedTag.toString());
                         this.text.setText("¡Genial! Etiqueta encontrada");
                         this.text_company.setText(scannedTag.getBrand());
                         this.text_model.setText(scannedTag.getModel());
@@ -103,7 +101,6 @@ public class Utilities {
                         Picasso.get().load(scannedTag.getImage()).into(imgToChange);
                         Database database = new Database(Realm.getDefaultInstance());
                         database.addScannedTagLocal(scannedTag);
-                        Log.d("REALM", "onDataChange: " + database.getAllScannedTag());
                     }
                 } else {
                     text.setText("Etiqueta no encontrada");
