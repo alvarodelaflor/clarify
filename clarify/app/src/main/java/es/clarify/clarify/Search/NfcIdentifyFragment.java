@@ -39,6 +39,7 @@ public class NfcIdentifyFragment extends Fragment {
     private TextView text_expiration_date;
     private ImageView img;
     private Button buttonAdd;
+    private Button buttonStore;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
     Database database = new Database(Realm.getDefaultInstance());
@@ -54,6 +55,7 @@ public class NfcIdentifyFragment extends Fragment {
         text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
         img = (ImageView) v.findViewById(R.id.image_product);
         buttonAdd = (Button) v.findViewById(R.id.buttonAdd);
+        buttonStore = (Button) v.findViewById(R.id.buttonStore);
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +68,13 @@ public class NfcIdentifyFragment extends Fragment {
                         Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
                     }
                 }
+            }
+        });
+
+        buttonStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                googleUtilities.createStoreFirebase("Armario", getActivity());
             }
         });
 
