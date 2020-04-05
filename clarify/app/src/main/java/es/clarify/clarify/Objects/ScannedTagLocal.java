@@ -8,6 +8,7 @@ public class ScannedTagLocal extends RealmObject {
     @PrimaryKey
     private int id;
     private Date storageDate;
+    private String store;
 
     private String idFirebase;
     private String brand;
@@ -97,4 +98,8 @@ public class ScannedTagLocal extends RealmObject {
     public void setStorageDate(Date storageDate) {
         this.storageDate = storageDate;
     }
+
+    public String getStore() { return store; }
+
+    public void setStore(String store) { this.store = store; }
 }

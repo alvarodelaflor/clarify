@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -90,6 +91,7 @@ public class GoogleUtilities {
                     databaseReferenceFinal.push().setValue(value);
                     if (childs.size() > 2 && childs.get(childs.size()-2).equals("stores")) {
                         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", childs.get(childs.size() -1), "lastUpdate"), new Date());
+                        new Database().synchronizeScannedTagLocal(id, childs.get(childs.size()-1));
                     }
                     pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", "lastUpdate"), new Date());
                     Toast.makeText(activity, "¡Guardado!", Toast.LENGTH_LONG).show();
@@ -167,5 +169,11 @@ public class GoogleUtilities {
             Log.e(TAG, String.format("createStoreFirebase: couldn't create new store with name %s", storeName), e);
             return false;
         }
+    }
+
+    public List<String> updateAllStoresByUserUID(String UID) {
+        List<String> res = new ArrayList<>();
+
+        return res;
     }
 }

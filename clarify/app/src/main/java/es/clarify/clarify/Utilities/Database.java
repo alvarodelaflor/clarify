@@ -4,21 +4,28 @@ import android.content.Context;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
+import es.clarify.clarify.Objects.StoreLocal;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class Database {
 
-    private Realm realm;
+    private Realm realm = Realm.getDefaultInstance();
     private static final String TAG = "REALM_DATABASE";
 
     public Database(Realm realm) {
         this.realm = realm;
+    }
+
+    public Database() {
+
     }
 
     public int calculateIndex() {
@@ -45,6 +52,32 @@ public class Database {
     public ScannedTagLocal getLastScannedTag() {
         Integer id = Integer.parseInt(realm.where(ScannedTagLocal.class).max("id").toString());
         return realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();
+    }
+
+    public void synchronizeScannedTagLocal(String idFirebase, final String store) {
+        try {
+            ScannedTagLocal alreadyInDatabase = realm.where(ScannedTagLocal.class).equalTo("idFirebase", idFirebase).findFirst();
+            if (alreadyInDatabase != null) {
+                Log.i(TAG, "updateStoreLocal: updating store");
+                realm.beginTransaction();
+                alreadyInDatabase.setStore(store);
+                final StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
+                if (storeLocal == null){
+                    StoreLocal storeLocalToSave = realm.createObject(StoreLocal.class, store);
+                    storeLocalToSave.setLastUpdate(new Date());
+                    RealmList<ScannedTagLocal> res = new RealmList<>();
+                    res.add(alreadyInDatabase);
+                    storeLocalToSave.setScannedTagLocals(res);
+                } else {
+                    storeLocal.addNewScannedTagLocal(alreadyInDatabase);
+                }
+                realm.commitTransaction();
+            } else {
+                Log.i(TAG, "updateStoreLocal: no scannedtag found");
+            }
+        } catch (Error e) {
+            Log.e(TAG, "updateStoreLocal: an error appear", e);
+        }
     }
 
     public ScannedTagLocal getScannedTagByIdLocal(String id) {
@@ -86,6 +119,26 @@ public class Database {
             }
         } catch (Error e) {
             Log.e(TAG, String.format("addScannedTagLocal: %s could not be saved.", scannedTag.toString()), e);
+        }
+    }
+
+    public List<StoreLocal> getAllStoreLocal() {
+        List<StoreLocal> res = new ArrayList<>();
+        try {
+            return realm.where(StoreLocal.class).findAll();
+        } catch (Error e) {
+            Log.e(TAG, "getAllStoreLocal: can not get all stores", e);
+            return res;
+        }
+    }
+
+    public Boolean deleteAllStoreLocal() {
+        try {
+            realm.delete(StoreLocal.class);
+            return true;
+        } catch (Error e) {
+            Log.e(TAG, "deleteAllStoreLocal: can not delete all stores", e);
+            return false;
         }
     }
 

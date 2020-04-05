@@ -1,15 +1,23 @@
 package es.clarify.clarify.Objects;
 
+import android.util.Log;
+
 import java.util.Date;
-import java.util.List;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class StoreLocal {
+public class StoreLocal extends RealmObject {
 
+    @PrimaryKey
     private String name;
     private Date lastUpdate;
-    private List<ScannedTagLocal> scannedTagLocals;
+    private RealmList<ScannedTagLocal> scannedTagLocals;
 
-    public StoreLocal(String name, Date lastUpdate, List<ScannedTagLocal> scannedTagLocals) {
+    public StoreLocal() {
+    }
+
+    public StoreLocal(String name, Date lastUpdate, RealmList<ScannedTagLocal> scannedTagLocals) {
         this.name = name;
         this.lastUpdate = lastUpdate;
         this.scannedTagLocals = scannedTagLocals;
@@ -31,11 +39,23 @@ public class StoreLocal {
         this.lastUpdate = lastUpdate;
     }
 
-    public List<ScannedTagLocal> getScannedTagLocals() {
+    public RealmList<ScannedTagLocal> getScannedTagLocals() {
         return scannedTagLocals;
     }
 
-    public void setScannedTagLocals(List<ScannedTagLocal> scannedTagLocals) {
+    public void setScannedTagLocals(RealmList<ScannedTagLocal> scannedTagLocals) {
         this.scannedTagLocals = scannedTagLocals;
+    }
+
+    public void addNewScannedTagLocal(final ScannedTagLocal scannedTagLocal) {
+        RealmList<ScannedTagLocal> res = getScannedTagLocals();
+        if (res == null) {
+            setScannedTagLocals(new RealmList<>());
+        } else {
+            Boolean check = res.stream().filter(x -> x.getIdFirebase() == scannedTagLocal.getIdFirebase()).count() >= 0 ? false : res.add(scannedTagLocal);
+            if (!check) {
+                Log.i("StoreLocal", "addNewScannedTagLocal: already in database");
+            }
+        }
     }
 }
