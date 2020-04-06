@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout mainFrame;
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
+    private StoreFragment storeFragment;
     private Database database;
 
 
@@ -84,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
         // Set Fragment options
         nfcIdentifyFragment = new NfcIdentifyFragment();
         homeFragment = new HomeFragment();
+        storeFragment = new StoreFragment();
         mainFrame = (FrameLayout) findViewById(R.id.mainFrame);
+
         setContentView(R.layout.activity_main); // Init main frame for the first boot
 
         // Set navBar
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_home:
                         setFragment(homeFragment);
                     case R.id.nav_folder:
-//                        TODO
+                        setFragment(storeFragment);
                         return true;
                     case R.id.nav_explore:
                         setFragment(nfcIdentifyFragment);
@@ -111,13 +114,13 @@ public class MainActivity extends AppCompatActivity {
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
 
-        logout_button = (Button) findViewById(R.id.logOut);
-        logout_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logOut();
-            }
-        });
+//        logout_button = (Button) findViewById(R.id.logOut);
+//        logout_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                logOut();
+//            }
+//        });
 
 
     }
