@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view_list_stores"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="56dp">
+    app:cardElevation="8dp"
+    app:cardUseCompatPadding="true">
+
 
     <ImageView
         android:layout_width="56dp"
@@ -15,7 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp">
+        android:layout_marginTop="6dp"
+        android:layout_marginLeft="76dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -31,18 +35,4 @@
             android:id="@+id/phone_contact"/>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:gravity="end"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ImageView
-            android:layout_gravity="center_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/risketos" />
-
-    </LinearLayout>
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>

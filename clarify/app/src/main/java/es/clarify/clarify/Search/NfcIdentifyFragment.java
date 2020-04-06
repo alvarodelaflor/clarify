@@ -63,7 +63,7 @@ public class NfcIdentifyFragment extends Fragment {
                 ScannedTagLocal scannedTagLocal = database.getLastScannedTag();
                 if (scannedTagLocal!=null) {
                     ScannedTagRemote scannedTagRemote= new ScannedTagRemote(scannedTagLocal);
-                    Boolean saveResult = googleUtilities.addToStore("Nevera", scannedTagRemote, getActivity());
+                    Boolean saveResult = googleUtilities.addToStore("Almacen7", scannedTagRemote, getActivity());
                     if (!saveResult) {
                         Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
                     }

@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
 //        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
 //        DatabaseReference databaseReference2 = database2.getReference("public");
-//        ScannedTag scannedTagPush = new ScannedTag("41521", "Hacendado", "Leche Entera 1L", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "https://img.huffingtonpost.com/asset/5e2190ed24000031006c4396.png?ops=scalefit_720_noupscale");
+//        ScannedTag scannedTagPush = new ScannedTag("41531", "Hacendado", "Leche Entera 1L", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "https://img.huffingtonpost.com/asset/5e2190ed24000031006c4396.png?ops=scalefit_720_noupscale");
 ////        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
 //        databaseReference2.child("tags").push().setValue(scannedTagPush);
         ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
