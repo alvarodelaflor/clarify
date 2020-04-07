@@ -49,6 +49,16 @@ public class Database {
         return res;
     }
 
+    public RealmList<ScannedTagLocal> getScannedTagPagination(String store, int limit) {
+        RealmList<ScannedTagLocal> res = new RealmList<>();
+        RealmResults<ScannedTagLocal> aux = realm.where(ScannedTagLocal.class)
+                .equalTo("store", store)
+                .limit(limit)
+                .findAll();
+        res.addAll(aux);
+        return res;
+    }
+
     public ScannedTagLocal getLastScannedTag() {
         Integer id = Integer.parseInt(realm.where(ScannedTagLocal.class).max("id").toString());
         return realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();

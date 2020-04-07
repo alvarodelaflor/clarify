@@ -10,15 +10,23 @@ import android.os.Handler;
 
 import java.util.ArrayList;
 
+import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.RecyclerViewAdapter;
+import es.clarify.clarify.Utilities.Database;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class ShowStore extends AppCompatActivity {
 
 
     RecyclerView recyclerView;
     RecyclerViewAdapterShowStore recyclerViewAdapter;
-    ArrayList<String> rowsArrayList = new ArrayList<>();
+//    ArrayList<String> rowsArrayList = new ArrayList<>();
+    RealmList<ScannedTagLocal> realmResults = new RealmList<>();
+    Database database = new Database();
+    Boolean fullLoad = false;
 
     boolean isLoading = false;
 
@@ -36,16 +44,22 @@ public class ShowStore extends AppCompatActivity {
     }
 
     private void populateData() {
-        int i = 0;
-        while (i < 10) {
-            rowsArrayList.add("Item " + i);
-            i++;
-        }
+        int intLimit = 10;
+        String store = getIntent().getStringExtra("store_name");
+        RealmList<ScannedTagLocal> res = database.getScannedTagPagination(store, intLimit);
+        this.realmResults = res;
+        this.fullLoad = res.size() < 10 ? true : false;
+
+//        int i = 0;
+//        while (i < 10) {
+//            rowsArrayList.add("Item " + i);
+//            i++;
+//        }
     }
 
     private void initAdapter() {
 
-        recyclerViewAdapter = new RecyclerViewAdapterShowStore(rowsArrayList);
+        recyclerViewAdapter = new RecyclerViewAdapterShowStore(realmResults, ShowStore.this);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 
@@ -63,10 +77,12 @@ public class ShowStore extends AppCompatActivity {
                 LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
                 if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == rowsArrayList.size() - 1) {
+                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == realmResults.size() - 1) {
                         //bottom of list!
-                        loadMore();
-                        isLoading = true;
+                        if (!fullLoad) {
+                            loadMore();
+                            isLoading = true;
+                        }
                     }
                 }
             }
@@ -76,24 +92,30 @@ public class ShowStore extends AppCompatActivity {
     }
 
     private void loadMore() {
-        rowsArrayList.add(null);
-        recyclerViewAdapter.notifyItemInserted(rowsArrayList.size() - 1);
+        recyclerViewAdapter.notifyItemInserted(realmResults.size() - 1);
 
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                rowsArrayList.remove(rowsArrayList.size() - 1);
-                int scrollPosition = rowsArrayList.size();
+                realmResults.remove(realmResults.size() - 1);
+                int scrollPosition = realmResults.size();
                 recyclerViewAdapter.notifyItemRemoved(scrollPosition);
                 int currentSize = scrollPosition;
                 int nextLimit = currentSize + 10;
 
-                while (currentSize - 1 < nextLimit) {
-                    rowsArrayList.add("Item " + currentSize);
-                    currentSize++;
-                }
+                int initSize = realmResults.size();
+                String store = getIntent().getStringExtra("store_name");
+                RealmList<ScannedTagLocal> res = database.getScannedTagPagination(store, nextLimit);
+                realmResults = res;
+                int newResult = initSize - res.size();
+                fullLoad = newResult < 10 ? true : false;
+
+//                while (currentSize - 1 < nextLimit) {
+//                    rowsArrayList.add("Item " + currentSize);
+//                    currentSize++;
+//                }
 
                 recyclerViewAdapter.notifyDataSetChanged();
                 isLoading = false;
