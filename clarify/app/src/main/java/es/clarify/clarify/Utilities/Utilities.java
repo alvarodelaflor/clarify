@@ -114,4 +114,14 @@ public class Utilities {
         });
     }
 
+    public Boolean deleteItemFromPrivateStore(String store, String firebaseId) {
+        try {
+            Boolean aux1 = new GoogleUtilities().deleteItemFromPrivateStore(store, firebaseId);
+            Boolean aux2 = new Database().deleteItemFromPrivateStore(store, firebaseId);
+            return aux1 && aux2;
+        } catch (RuntimeException e) {
+            Log.e("Utilities", "deleteItemFromPrivateStore:", e);
+            return false;
+        }
+    }
 }

@@ -171,6 +171,38 @@ public class GoogleUtilities {
         }
     }
 
+    public Boolean deleteItemFromPrivateStore(String store, String firebaseId) {
+        try {
+            DatabaseReference databaseReference = database.getReference("private");
+            databaseReference.child(getCurrentUser()
+                    .getUid())
+                    .child("stores")
+                    .child(store)
+                    .orderByChild("idFirebase")
+                    .equalTo(firebaseId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                                appleSnapshot.getRef().removeValue();
+                            }
+                            pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", store, "lastUpdate"), new Date());
+                            pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", "lastUpdate"), new Date());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, "onCancelled", databaseError.toException());
+                        }
+                    });
+
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "deleteFromPrivateStore: could not delete", e);
+            return false;
+        }
+    }
+
     public List<String> updateAllStoresByUserUID(String UID) {
         List<String> res = new ArrayList<>();
 

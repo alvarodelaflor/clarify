@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import java.util.List;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.RecyclerViewAdapter;
+import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.Utilities;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
@@ -68,6 +71,20 @@ public class RecyclerViewAdapterShowStore extends RecyclerView.Adapter<RecyclerV
                     dialog_name.setText(mItemList.get(vHolder.getAdapterPosition()).getModel());
                     dialog_brand.setText(mItemList.get(vHolder.getAdapterPosition()).getBrand());
                     mydialog.show();
+
+                    dialog_btn_delete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ScannedTagLocal scannedTagLocal = mItemList.get(vHolder.getAdapterPosition());
+                            Boolean result = new Utilities().deleteItemFromPrivateStore(scannedTagLocal.getStore(), scannedTagLocal.getIdFirebase());
+                            if (result) {
+                                Toast.makeText(myContext, "¡Se ha borrado el producto!", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(myContext, "¡Error!", Toast.LENGTH_LONG).show();
+                                Log.i("RecyclerViewAdaptarShowStore", "Product couldn't be deleted");
+                            }
+                        }
+                    });
                 }
             });
 

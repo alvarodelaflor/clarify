@@ -90,6 +90,19 @@ public class Database {
         }
     }
 
+    public Boolean deleteItemFromPrivateStore(String store, String firebaseId) {
+        try {
+            realm.beginTransaction();
+            realm.where(ScannedTagLocal.class).equalTo("idFirebase", firebaseId).findFirst().deleteFromRealm();
+            realm.where(StoreLocal.class).equalTo("name", store).findFirst().setLastUpdate(new Date());
+            realm.commitTransaction();
+            return true;
+        } catch (Error e) {
+            Log.e(TAG, "deleteItemFromPrivateStore:", e);
+            return false;
+        }
+    }
+
     public ScannedTagLocal getScannedTagByIdLocal(String id) {
         return realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();
     }
