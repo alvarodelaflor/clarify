@@ -9,11 +9,12 @@ public class ScannedTag {
     String expiration_date;
     String reference;
     String image;
+    String store;
 
     public ScannedTag() {
     }
 
-    public ScannedTag(String id, String brand, String model, Boolean lote, String color, String expiration_date, String reference, String image) {
+    public ScannedTag(String id, String brand, String model, Boolean lote, String color, String expiration_date, String reference, String image, String store) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -22,6 +23,7 @@ public class ScannedTag {
         this.expiration_date = expiration_date;
         this.reference = reference;
         this.image = image;
+        this.store = store;
     }
 
     public String getId() {
@@ -87,4 +89,8 @@ public class ScannedTag {
     public void setLote(Boolean lote) {
         this.lote = lote;
     }
+
+    public String getStore() { return store; }
+
+    public void setStore(String store) { this.store = store; }
 }

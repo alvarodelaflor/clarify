@@ -91,7 +91,6 @@ public class GoogleUtilities {
                     databaseReferenceFinal.push().setValue(value);
                     if (childs.size() > 2 && childs.get(childs.size()-2).equals("stores")) {
                         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", childs.get(childs.size() -1), "lastUpdate"), new Date());
-                        new Database().synchronizeScannedTagLocal(id, childs.get(childs.size()-1));
                     }
                     pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", "lastUpdate"), new Date());
                     Toast.makeText(activity, "¡Guardado!", Toast.LENGTH_LONG).show();

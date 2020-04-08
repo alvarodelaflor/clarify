@@ -30,6 +30,8 @@ import es.clarify.clarify.Utilities.Utilities;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+
 public class RecyclerViewAdapterShowStore extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_TYPE_ITEM = 0;

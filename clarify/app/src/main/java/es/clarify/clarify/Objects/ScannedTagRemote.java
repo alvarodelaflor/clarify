@@ -18,6 +18,7 @@ public class ScannedTagRemote {
     private String expiration_date;
     private String reference;
     private String image;
+    private String store;
 
     public ScannedTagRemote(ScannedTagLocal scannedTagLocal) {
         this.id = scannedTagLocal.getId();
@@ -30,6 +31,7 @@ public class ScannedTagRemote {
         this.expiration_date = scannedTagLocal.getExpiration_date();
         this.reference = scannedTagLocal.getReference();
         this.image = scannedTagLocal.getImage();
+        this.store = scannedTagLocal.getStore();
     }
 
     public int getId() {
@@ -111,4 +113,8 @@ public class ScannedTagRemote {
     public void setStorageDate(Date storageDate) {
         this.storageDate = storageDate;
     }
+
+    public String getStore() { return store; }
+
+    public void setStore(String store) { this.store = store; }
 }

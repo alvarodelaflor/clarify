@@ -1,6 +1,9 @@
 package es.clarify.clarify.Search;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -33,13 +36,14 @@ import io.realm.Realm;
 public class NfcIdentifyFragment extends Fragment {
 
     private NfcAdapter nfcAdapter;
-    private TextView text;
+    //    private TextView text;
     private TextView text_company;
     private TextView text_model;
-    private TextView text_expiration_date;
+    //    private TextView text_expiration_date;
     private ImageView img;
     private Button buttonAdd;
-    private Button buttonStore;
+    //    private Button buttonStore;
+    private Dialog mydialog;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
     Database database = new Database(Realm.getDefaultInstance());
@@ -49,34 +53,36 @@ public class NfcIdentifyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_nfc_identify, container, false);
-        text = (TextView) v.findViewById(R.id.product);
-        text_company = (TextView) v.findViewById(R.id.text_company2);
-        text_model = (TextView) v.findViewById(R.id.text_model2);
-        text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
-        img = (ImageView) v.findViewById(R.id.image_product);
-        buttonAdd = (Button) v.findViewById(R.id.buttonAdd);
-        buttonStore = (Button) v.findViewById(R.id.buttonStore);
+        mydialog = new Dialog(getContext());
+        mydialog.setContentView(R.layout.dialog_identify_product);
+        mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        text = (TextView) v.findViewById(R.id.product);
+        text_company = (TextView) mydialog.findViewById(R.id.text_company);
+        text_model = (TextView) mydialog.findViewById(R.id.text_model);
+//        text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
+        img = (ImageView) mydialog.findViewById(R.id.image_product);
+        buttonAdd = (Button) mydialog.findViewById(R.id.buttonAdd);
+//        buttonStore = (Button) v.findViewById(R.id.buttonStore);
 
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ScannedTagLocal scannedTagLocal = database.getLastScannedTag();
-                if (scannedTagLocal!=null) {
-                    ScannedTagRemote scannedTagRemote= new ScannedTagRemote(scannedTagLocal);
-                    Boolean saveResult = googleUtilities.addToStore("Almacen7", scannedTagRemote, getActivity());
-                    if (!saveResult) {
-                        Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
+//        buttonAdd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ScannedTagLocal scannedTagLocal = database.getLastScannedTag();
+//                if (scannedTagLocal!=null) {
+//                    Boolean result = utilities.addItemToPrivateStrore(scannedTagLocal, getActivity());
+//                    if (!result) {
+//                        Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
 
-        buttonStore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                googleUtilities.createStoreFirebase("Armario", getActivity());
-            }
-        });
+//        buttonStore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                googleUtilities.createStoreFirebase("Armario", getActivity());
+//            }
+//        });
 
         return v;
     }
@@ -104,7 +110,7 @@ public class NfcIdentifyFragment extends Fragment {
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
             NdefMessage[] msgs = utilities.getTagInfo(intent);
-            utilities.printInfo(msgs, img, Arrays.asList(text, text_company, text_model, text_expiration_date));
+            utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, buttonAdd);
         }
     }
 

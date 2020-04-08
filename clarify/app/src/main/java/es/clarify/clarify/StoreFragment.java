@@ -28,7 +28,6 @@ public class StoreFragment extends Fragment {
 
     View v;
     private RecyclerView myRecyclerView;
-    private List<Contact> listContact;
     private List<StoreLocal> listStoreLocal;
 
 
@@ -52,22 +51,6 @@ public class StoreFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        listContact = new ArrayList<>();
-//        listContact.add(new Contact("Alvaro de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro1 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro2 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro3 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro4 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro5 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro6 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro7 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro8 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro9 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro10 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro11 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro12 de la Flor", "665381121", R.drawable.risketos));
-//        listContact.add(new Contact("Alvaro13 de la Flor", "665381121", R.drawable.risketos));
 
         listStoreLocal = new Database().getAllStoreLocal();
 

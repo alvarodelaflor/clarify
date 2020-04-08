@@ -1,14 +1,23 @@
 package es.clarify.clarify.Utilities;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,12 +25,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
 import es.clarify.clarify.Objects.ScannedTag;
+import es.clarify.clarify.Objects.ScannedTagLocal;
+import es.clarify.clarify.Objects.ScannedTagRemote;
+import es.clarify.clarify.R;
 import io.realm.Realm;
 
 public class Utilities {
@@ -58,7 +74,7 @@ public class Utilities {
         return msgs;
     }
 
-    public void printInfo(NdefMessage[] msgs, final ImageView img, List<TextView> textViews) {
+    public void printInfo(Activity activity, NdefMessage[] msgs, final ImageView img, List<TextView> textViews, Dialog myDialog, Button buttonAdd) {
 
         final List<TextView> params = new ArrayList<>(textViews);
 
@@ -82,11 +98,12 @@ public class Utilities {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             // Add here all TextView to modify in the NfcIdentifyFragment.java
-            TextView text = params.get(0);
-            TextView text_company = params.get(1);
-            TextView text_model = params.get(2);
-            TextView text_expiration_date = params.get(3);
+            TextView text_company = params.get(0);
+            TextView text_model = params.get(1);
             ImageView imgToChange = img;
+            Dialog myDialogAux = myDialog;
+            Button buttonAddAux = buttonAdd;
+            Activity activityAux = activity;
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -94,17 +111,28 @@ public class Utilities {
                     // dataSnapshot is the "issue" node with all children with id 0
                     for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
-                        this.text.setText("¡Genial! Etiqueta encontrada");
                         this.text_company.setText(scannedTag.getBrand());
                         this.text_model.setText(scannedTag.getModel());
-                        this.text_expiration_date.setText(scannedTag.getExpiration_date());
                         Picasso.get().load(scannedTag.getImage()).into(imgToChange);
-                        Database database = new Database(Realm.getDefaultInstance());
-                        database.addScannedTagLocal(scannedTag);
+                        new Database(Realm.getDefaultInstance()).addLastScannedTagLocalToChache(scannedTag);
                     }
                 } else {
-                    text.setText("Etiqueta no encontrada");
+                    text_company.setText("Etiqueta no encontrada");
+                    text_model.setText("Intentalo de nuevo");
                 }
+                myDialogAux.show();
+                buttonAddAux.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ScannedTagLocal scannedTagLocal = new Database().getLastScannedTag();
+                        if (scannedTagLocal!=null) {
+                            Boolean result = addItemToPrivateStrore(scannedTagLocal, activityAux);
+                            if (!result) {
+                                Toast.makeText(activityAux, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+                });
             }
 
             @Override
@@ -121,6 +149,18 @@ public class Utilities {
             return aux1 && aux2;
         } catch (RuntimeException e) {
             Log.e("Utilities", "deleteItemFromPrivateStore:", e);
+            return false;
+        }
+    }
+
+    public Boolean addItemToPrivateStrore(ScannedTagLocal scannedTagLocal, Activity activity) {
+        try {
+            ScannedTagRemote scannedTagRemote = new ScannedTagRemote(scannedTagLocal);
+            Boolean aux1 = new GoogleUtilities().addToStore(scannedTagRemote.getStore(), scannedTagRemote, activity);
+            Boolean aux2 = new Database().synchronizeScannedTagLocal(scannedTagLocal);
+            return aux1 && aux2;
+        } catch (Exception e) {
+            Log.e("Utilities", "addItemToPrivateStroe: ", e);
             return false;
         }
     }

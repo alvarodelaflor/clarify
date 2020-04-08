@@ -1,13 +1,29 @@
 package es.clarify.clarify.Utilities;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.StoreLocal;
@@ -61,32 +77,31 @@ public class Database {
 
     public ScannedTagLocal getLastScannedTag() {
         Integer id = Integer.parseInt(realm.where(ScannedTagLocal.class).max("id").toString());
-        return realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();
+        Date date = null;
+        return realm.where(ScannedTagLocal.class).equalTo("id", id).equalTo("storageDate", date).findFirst();
     }
 
-    public void synchronizeScannedTagLocal(String idFirebase, final String store) {
+    public Boolean synchronizeScannedTagLocal(ScannedTagLocal scannedTagLocal) {
         try {
-            ScannedTagLocal alreadyInDatabase = realm.where(ScannedTagLocal.class).equalTo("idFirebase", idFirebase).findFirst();
-            if (alreadyInDatabase != null) {
-                Log.i(TAG, "updateStoreLocal: updating store");
+            if (scannedTagLocal.getStorageDate() == null) {
+                final StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", scannedTagLocal.getStore()).findFirst();
                 realm.beginTransaction();
-                alreadyInDatabase.setStore(store);
-                final StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
-                if (storeLocal == null){
-                    StoreLocal storeLocalToSave = realm.createObject(StoreLocal.class, store);
+                scannedTagLocal.setStorageDate(new Date());
+                if (storeLocal == null) {
+                    StoreLocal storeLocalToSave = realm.createObject(StoreLocal.class, scannedTagLocal.getStore());
                     storeLocalToSave.setLastUpdate(new Date());
                     RealmList<ScannedTagLocal> res = new RealmList<>();
-                    res.add(alreadyInDatabase);
+                    res.add(scannedTagLocal);
                     storeLocalToSave.setScannedTagLocals(res);
                 } else {
-                    storeLocal.addNewScannedTagLocal(alreadyInDatabase);
+                    storeLocal.addNewScannedTagLocal(scannedTagLocal);
                 }
                 realm.commitTransaction();
-            } else {
-                Log.i(TAG, "updateStoreLocal: no scannedtag found");
             }
+            return true;
         } catch (Error e) {
             Log.e(TAG, "updateStoreLocal: an error appear", e);
+            return false;
         }
     }
 
@@ -112,34 +127,27 @@ public class Database {
     }
 
 
-    public void addScannedTagLocal(final ScannedTag scannedTag) {
+    public void addLastScannedTagLocalToChache(final ScannedTag scannedTag) {
         try {
-            ScannedTagLocal alreadyInDatabase = realm.where(ScannedTagLocal.class).equalTo("idFirebase", scannedTag.getId()).findFirst();
-            if (alreadyInDatabase != null) {
-                Log.i(TAG, "addScannedTagLocal: ScannedTagLocal already existed in the database.");
-                realm.beginTransaction();
-                alreadyInDatabase.setStorageDate(new Date());
-                realm.commitTransaction();
-            } else {
-                Log.i(TAG, String.format("addScannedTagLocal: creating a new object in database with idFirebase %s", scannedTag.getId()));
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        int index = calculateIndex();
-                        ScannedTagLocal realmScannedTagLocal = realm.createObject(ScannedTagLocal.class, index);
-                        realmScannedTagLocal.setStorageDate(new Date());
+            realm.beginTransaction();
+            Date date = null;
+            realm.where(ScannedTagLocal.class).equalTo("storageDate", date).findAll().deleteAllFromRealm();
+            realm.commitTransaction();
+            realm.beginTransaction();
+            int index = calculateIndex();
+            ScannedTagLocal realmScannedTagLocal = realm.createObject(ScannedTagLocal.class, index);
 
-                        realmScannedTagLocal.setIdFirebase(scannedTag.getId());
-                        realmScannedTagLocal.setBrand(scannedTag.getBrand());
-                        realmScannedTagLocal.setModel(scannedTag.getModel());
-                        realmScannedTagLocal.setLote(scannedTag.getLote());
-                        realmScannedTagLocal.setColor(scannedTag.getColor());
-                        realmScannedTagLocal.setExpiration_date(scannedTag.getExpiration_date());
-                        realmScannedTagLocal.setReference(scannedTag.getReference());
-                        realmScannedTagLocal.setImage(scannedTag.getImage());
-                    }
-                });
-            }
+            realmScannedTagLocal.setStorageDate(null);
+            realmScannedTagLocal.setIdFirebase(scannedTag.getId());
+            realmScannedTagLocal.setBrand(scannedTag.getBrand());
+            realmScannedTagLocal.setModel(scannedTag.getModel());
+            realmScannedTagLocal.setLote(scannedTag.getLote());
+            realmScannedTagLocal.setColor(scannedTag.getColor());
+            realmScannedTagLocal.setExpiration_date(scannedTag.getExpiration_date());
+            realmScannedTagLocal.setReference(scannedTag.getReference());
+            realmScannedTagLocal.setImage(scannedTag.getImage());
+            realmScannedTagLocal.setStore(scannedTag.getStore());
+            realm.commitTransaction();
         } catch (Error e) {
             Log.e(TAG, String.format("addScannedTagLocal: %s could not be saved.", scannedTag.toString()), e);
         }
@@ -166,6 +174,6 @@ public class Database {
     }
 
     public ScannedTag getScannedTagFromLocal(ScannedTagLocal scannedTagLocal) {
-        return new ScannedTag(scannedTagLocal.getIdFirebase(), scannedTagLocal.getBrand(), scannedTagLocal.getModel(), scannedTagLocal.getLote(), scannedTagLocal.getColor(), scannedTagLocal.getExpiration_date(), scannedTagLocal.getReference(), scannedTagLocal.getImage());
+        return new ScannedTag(scannedTagLocal.getIdFirebase(), scannedTagLocal.getBrand(), scannedTagLocal.getModel(), scannedTagLocal.getLote(), scannedTagLocal.getColor(), scannedTagLocal.getExpiration_date(), scannedTagLocal.getReference(), scannedTagLocal.getImage(), scannedTagLocal.getStore());
     }
 }
