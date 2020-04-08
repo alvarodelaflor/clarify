@@ -145,13 +145,13 @@ public class MainActivity extends AppCompatActivity {
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
 
-        logout_button = (Button) findViewById(R.id.logOut);
-        logout_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logOut();
-            }
-        });
+//        logout_button = (Button) findViewById(R.id.logOut);
+//        logout_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                logOut();
+//            }
+//        });
 
 
     }

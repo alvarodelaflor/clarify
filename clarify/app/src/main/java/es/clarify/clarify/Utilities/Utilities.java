@@ -25,19 +25,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.ScannedTagRemote;
-import es.clarify.clarify.R;
 import io.realm.Realm;
 
 public class Utilities {

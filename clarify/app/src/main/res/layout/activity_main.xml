@@ -41,16 +41,16 @@
     <FrameLayout
         android:id="@+id/mainFrame"
         android:layout_width="match_parent"
-        android:layout_height="542dp"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_above="@+id/bottomNavigation"
         android:layout_below="@+id/toolbar">
 
-        <Button
-            android:id="@+id/logOut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+<!--        <Button-->
+<!--            android:id="@+id/logOut"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Button" />-->
     </FrameLayout>
 
 </RelativeLayout>
