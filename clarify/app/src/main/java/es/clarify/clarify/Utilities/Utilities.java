@@ -69,7 +69,7 @@ public class Utilities {
         return msgs;
     }
 
-    public void printInfo(Activity activity, NdefMessage[] msgs, final ImageView img, List<TextView> textViews, Dialog myDialog, Button buttonAdd) {
+    public void printInfo(Activity activity, NdefMessage[] msgs, final ImageView img, List<TextView> textViews, Dialog myDialog, Dialog myDialog_info, Button buttonAdd) {
 
         final List<TextView> params = new ArrayList<>(textViews);
 
@@ -97,6 +97,7 @@ public class Utilities {
             TextView text_model = params.get(1);
             ImageView imgToChange = img;
             Dialog myDialogAux = myDialog;
+            Dialog myDialogInfoAux = myDialog_info;
             Button buttonAddAux = buttonAdd;
             Activity activityAux = activity;
 
@@ -115,6 +116,7 @@ public class Utilities {
                     text_company.setText("Etiqueta no encontrada");
                     text_model.setText("Intentalo de nuevo");
                 }
+                myDialogInfoAux.dismiss();
                 myDialogAux.show();
                 buttonAddAux.setOnClickListener(new View.OnClickListener() {
                     @Override

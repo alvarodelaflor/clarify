@@ -12,9 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,6 +45,7 @@ public class NfcIdentifyFragment extends Fragment {
     private ImageView img;
     private Button buttonAdd;
     //    private Button buttonStore;
+    private Dialog myDialog_info;
     private Dialog mydialog;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
@@ -54,6 +57,13 @@ public class NfcIdentifyFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_nfc_identify, container, false);
         mydialog = new Dialog(getContext());
+        myDialog_info = new Dialog(getContext());
+        myDialog_info.setContentView(R.layout.dialog_product_identify_nfc);
+        myDialog_info.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = myDialog_info.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        window.setGravity(Gravity.BOTTOM);
+        myDialog_info.show();
         mydialog.setContentView(R.layout.dialog_identify_product);
         mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 //        text = (TextView) v.findViewById(R.id.product);
@@ -110,7 +120,7 @@ public class NfcIdentifyFragment extends Fragment {
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
             NdefMessage[] msgs = utilities.getTagInfo(intent);
-            utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, buttonAdd);
+            utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, myDialog_info, buttonAdd);
         }
     }
 
