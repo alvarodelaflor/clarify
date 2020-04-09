@@ -44,6 +44,7 @@ public class NfcIdentifyFragment extends Fragment {
     //    private TextView text_expiration_date;
     private ImageView img;
     private Button buttonAdd;
+    private Button buttonCancel;
     //    private Button buttonStore;
     private Dialog myDialog_info;
     private Dialog mydialog;
@@ -72,27 +73,14 @@ public class NfcIdentifyFragment extends Fragment {
 //        text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
         img = (ImageView) mydialog.findViewById(R.id.image_product);
         buttonAdd = (Button) mydialog.findViewById(R.id.buttonAdd);
-//        buttonStore = (Button) v.findViewById(R.id.buttonStore);
+        buttonCancel = (Button) myDialog_info.findViewById(R.id.button_cancel_identify);
 
-//        buttonAdd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ScannedTagLocal scannedTagLocal = database.getLastScannedTag();
-//                if (scannedTagLocal!=null) {
-//                    Boolean result = utilities.addItemToPrivateStrore(scannedTagLocal, getActivity());
-//                    if (!result) {
-//                        Toast.makeText(getActivity(), "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            }
-//        });
-
-//        buttonStore.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                googleUtilities.createStoreFirebase("Armario", getActivity());
-//            }
-//        });
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog_info.dismiss();
+            }
+        });
 
         return v;
     }

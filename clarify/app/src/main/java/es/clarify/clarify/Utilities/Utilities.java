@@ -3,6 +3,7 @@ package es.clarify.clarify.Utilities;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -128,6 +129,12 @@ public class Utilities {
                                 Toast.makeText(activityAux, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
                             }
                         }
+                    }
+                });
+                myDialogAux.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface arg0) {
+                        myDialog_info.show();
                     }
                 });
             }
