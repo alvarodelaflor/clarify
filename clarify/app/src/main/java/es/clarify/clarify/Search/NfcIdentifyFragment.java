@@ -62,7 +62,9 @@ public class NfcIdentifyFragment extends Fragment {
         Window window = myDialog_info.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.BOTTOM);
-        myDialog_info.show();
+        if (NfcIdentifyFragment.this.isVisible()) {
+            myDialog_info.show();
+        }
         mydialog.setContentView(R.layout.dialog_identify_product);
         mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         text_company = (TextView) mydialog.findViewById(R.id.text_company);
@@ -89,6 +91,13 @@ public class NfcIdentifyFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            myDialog_info.show();
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

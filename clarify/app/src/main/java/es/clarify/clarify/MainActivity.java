@@ -5,48 +5,32 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import es.clarify.clarify.Objects.ScannedTag;
-
+import com.google.android.material.tabs.TabLayout;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.nfc.NfcAdapter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
+import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.io.InputStream;
-import java.net.URL;
-
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Utilities.Database;
-import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private PendingIntent pendingIntent;
     private NfcUtility nfcUtility = new NfcUtility();
     private BottomNavigationView bottomNavigationView;
-    private FrameLayout mainFrame;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPageAdapter viewPageAdapter;
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
     private StoreFragment storeFragment;
@@ -65,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
 
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
@@ -110,35 +98,63 @@ public class MainActivity extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         // Toolbar instances
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Set Fragment options
-        nfcIdentifyFragment = new NfcIdentifyFragment();
+        // Set navBar
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) findViewById(R.id.mainFrame);
+        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+
+        // Add fragment
         homeFragment = new HomeFragment();
         storeFragment = new StoreFragment();
-        mainFrame = (FrameLayout) findViewById(R.id.mainFrame);
+        nfcIdentifyFragment = new NfcIdentifyFragment();
 
-        setContentView(R.layout.activity_main); // Init main frame for the first boot
+        viewPageAdapter.addFragment(homeFragment, "");
+        viewPageAdapter.addFragment(storeFragment, "");
+        viewPageAdapter.addFragment(nfcIdentifyFragment, "");
 
-        // Set navBar
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.nav_home:
-                        setFragment(homeFragment);
-                    case R.id.nav_folder:
-                        setFragment(storeFragment);
-                        return true;
-                    case R.id.nav_explore:
-                        setFragment(nfcIdentifyFragment);
-                        return true;
+        viewPager.setAdapter(viewPageAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_home_black_24dp);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_folder_black_24dp);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_explore_black_24dp);
+
+        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.white);
+        int tabIconColor2 = ContextCompat.getColor(getApplicationContext(), R.color.colorAccent);
+        tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColor2, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+        tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+
+        tabLayout.setOnTabSelectedListener(
+                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
+
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        super.onTabSelected(tab);
+                        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccent);
+                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+                        super.onTabUnselected(tab);
+                        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.white);
+                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+                        super.onTabReselected(tab);
+                    }
                 }
-                return false;
-            }
-        });
+        );
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(0);
+
 
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
@@ -153,13 +169,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-
-    }
-
-    private void setFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.mainFrame, fragment);
-        fragmentTransaction.commit();
 
     }
 
