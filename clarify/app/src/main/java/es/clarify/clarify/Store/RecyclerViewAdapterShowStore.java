@@ -1,6 +1,5 @@
 package es.clarify.clarify.Store;
 
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -11,26 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.List;
-
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
-import es.clarify.clarify.RecyclerViewAdapter;
-import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.Utilities;
 import io.realm.RealmList;
-import io.realm.RealmResults;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class RecyclerViewAdapterShowStore extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

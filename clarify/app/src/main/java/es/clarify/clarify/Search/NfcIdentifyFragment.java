@@ -38,14 +38,12 @@ import io.realm.Realm;
 public class NfcIdentifyFragment extends Fragment {
 
     private NfcAdapter nfcAdapter;
-    //    private TextView text;
     private TextView text_company;
     private TextView text_model;
-    //    private TextView text_expiration_date;
     private ImageView img;
     private Button buttonAdd;
     private Button buttonCancel;
-    //    private Button buttonStore;
+    private Button buttonScan;
     private Dialog myDialog_info;
     private Dialog mydialog;
     private Utilities utilities = new Utilities();
@@ -67,18 +65,24 @@ public class NfcIdentifyFragment extends Fragment {
         myDialog_info.show();
         mydialog.setContentView(R.layout.dialog_identify_product);
         mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        text = (TextView) v.findViewById(R.id.product);
         text_company = (TextView) mydialog.findViewById(R.id.text_company);
         text_model = (TextView) mydialog.findViewById(R.id.text_model);
-//        text_expiration_date = (TextView) v.findViewById(R.id.text_expiration_date2);
         img = (ImageView) mydialog.findViewById(R.id.image_product);
         buttonAdd = (Button) mydialog.findViewById(R.id.buttonAdd);
         buttonCancel = (Button) myDialog_info.findViewById(R.id.button_cancel_identify);
+        buttonScan = (Button) v.findViewById(R.id.button_scan);
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 myDialog_info.dismiss();
+            }
+        });
+
+        buttonScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog_info.show();
             }
         });
 

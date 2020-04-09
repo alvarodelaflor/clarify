@@ -7,64 +7,52 @@
     android:background="@color/dark_gray"
     tools:context=".Search.NfcIdentifyFragment">
 
-<!--    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--        xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--        android:id="@+id/card_view_list_stores"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:cardElevation="8dp"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        app:cardCornerRadius="25dp"-->
-<!--        app:cardUseCompatPadding="true">-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:background="@color/white"-->
-<!--            android:gravity="center_horizontal"-->
-<!--            android:orientation="vertical">-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="NFC"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:textStyle="bold" />
 
-<!--            <TextView-->
-<!--                android:id="@+id/dialog_name_fragment"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="35dp"-->
-<!--                android:text="Ya puede escanear"-->
-<!--                android:textColor="@android:color/darker_gray"-->
-<!--                android:textSize="24sp"-->
-<!--                android:textAlignment="center" />-->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="25dp"
+            android:text="Pega tu teléfono a un producto con NFC incrustado para identificarlo."
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
-<!--            <ImageView-->
-<!--                android:layout_width="80dp"-->
-<!--                android:layout_height="80dp"-->
-<!--                android:layout_marginTop="25dp"-->
-<!--                android:layout_marginBottom="25dp"-->
-<!--                android:src="@drawable/mobile" />-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="50dp"
+            android:src="@drawable/nfc"
+            android:layout_gravity="center"/>
 
-<!--            <TextView-->
-<!--                android:id="@+id/dialog_brand_fragment"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="5dp"-->
-<!--                android:layout_marginBottom="10dp"-->
-<!--                android:text="Acerca tu disposito al producto"-->
-<!--                android:textColor="@android:color/darker_gray"-->
-<!--                android:textSize="18sp" />-->
+        <Button
+            android:id="@+id/button_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/btn_uno"
+            android:text="Escanear"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
 
-<!--            <Button-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/btn_uno"-->
-<!--                android:text="Cancelar"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textSize="18sp"-->
-<!--                android:layout_marginBottom="40dp"-->
-<!--                android:layout_marginTop="20dp"-->
-<!--                android:layout_marginLeft="20dp"-->
-<!--                android:layout_marginRight="20dp"/>-->
-<!--        </LinearLayout>-->
-
-<!--    </androidx.cardview.widget.CardView>-->
+    </LinearLayout>
 
 </RelativeLayout>
