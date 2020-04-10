@@ -6,7 +6,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -14,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,10 +30,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -43,7 +49,7 @@ import es.clarify.clarify.Utilities.GoogleUtilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
@@ -56,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private StoreFragment storeFragment;
     private Database database;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private MenuItem menuItemLogOut;
 
 
     @Override
@@ -111,6 +120,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        drawerLayout = findViewById(R.id.main_layout2);
+        navigationView = findViewById(R.id.navigation_view);
+
         // Set navBar
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         viewPager = (ViewPager) findViewById(R.id.mainFrame);
@@ -165,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setElevation(0);
 
+        setNavigationViewListener();
 
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
@@ -186,21 +199,29 @@ public class MainActivity extends AppCompatActivity {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
         return super.onCreateOptionsMenu(menu);
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_menu1:
-//                logOut();
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+
+            case R.id.logout: {
+                logOut();
+                break;
+            }
+        }
+        return true;
+    }
+
+    private void setNavigationViewListener() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
 
     public void logOut() {
         FirebaseAuth.getInstance().signOut();
