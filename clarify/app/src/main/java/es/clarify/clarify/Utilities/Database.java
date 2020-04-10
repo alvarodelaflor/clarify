@@ -8,6 +8,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +28,7 @@ import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.StoreLocal;
+import es.clarify.clarify.Objects.UserDataLocal;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -63,6 +65,25 @@ public class Database {
             res = results.stream().collect(Collectors.<ScannedTagLocal>toList());
         }
         return res;
+    }
+
+
+    public Boolean updateLastUserLogin() {
+        try {
+            realm.where(UserDataLocal.class).findAll().deleteAllFromRealm();
+            realm.beginTransaction();
+            UserDataLocal user = realm.createObject(UserDataLocal.class, calculateIndex());
+            FirebaseUser firebaseUser = new GoogleUtilities().getCurrentUser();
+            user.setEmail(firebaseUser.getEmail());
+            user.setName(firebaseUser.getDisplayName());
+            user.setPhoto(firebaseUser.getPhotoUrl().getHost());
+            user.setUid(firebaseUser.getUid());
+            realm.commitTransaction();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "updateLastUserLogin: ", e);
+            return false;
+        }
     }
 
     public RealmList<ScannedTagLocal> getScannedTagPagination(String store, int limit) {

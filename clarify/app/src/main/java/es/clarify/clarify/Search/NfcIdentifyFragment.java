@@ -30,6 +30,7 @@ import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.ScannedTagRemote;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.GifImageView;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
@@ -55,6 +56,10 @@ public class NfcIdentifyFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_nfc_identify, container, false);
+
+        GifImageView gifImageView = (GifImageView) v.findViewById(R.id.GifImageView);
+        gifImageView.setGifImageResource(R.drawable.nfc_8);
+
         mydialog = new Dialog(getContext());
         myDialog_info = new Dialog(getContext());
         myDialog_info.setContentView(R.layout.dialog_product_identify_nfc);

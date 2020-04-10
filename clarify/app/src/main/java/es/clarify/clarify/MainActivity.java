@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -54,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name(Realm.DEFAULT_REALM_NAME)
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(config);
+//        Realm.init(this);
+//        RealmConfiguration config = new RealmConfiguration.Builder()
+//                .name(Realm.DEFAULT_REALM_NAME)
+//                .schemaVersion(0)
+//                .deleteRealmIfMigrationNeeded()
+//                .build();
+//        Realm.setDefaultConfiguration(config);
 
         // Firebase instances
 
@@ -161,13 +162,13 @@ public class MainActivity extends AppCompatActivity {
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
 
-//        logout_button = (Button) findViewById(R.id.logOut);
-//        logout_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                logOut();
-//            }
-//        });
+        logout_button = (Button) findViewById(R.id.logout);
+        logout_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logOut();
+            }
+        });
 
 
     }

@@ -37,4 +37,12 @@
         android:layout_alignParentBottom="true"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cerrar sesión"
+        android:elevation="6dp"
+        android:layout_marginTop="60dp"
+        android:id="@+id/logout"/>
+
 </RelativeLayout>
