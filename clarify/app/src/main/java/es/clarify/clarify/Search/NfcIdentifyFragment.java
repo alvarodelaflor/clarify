@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -99,9 +100,20 @@ public class NfcIdentifyFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            myDialog_info.show();
-        }
+        new CountDownTimer(800, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (isVisibleToUser) {
+                    myDialog_info.show();
+                }
+            }
+        }.start();
+
     }
 
     @Override

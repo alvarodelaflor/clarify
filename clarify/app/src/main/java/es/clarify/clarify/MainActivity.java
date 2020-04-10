@@ -1,5 +1,6 @@
 package es.clarify.clarify;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -9,33 +10,41 @@ import com.google.android.material.tabs.TabLayout;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.GoogleUtilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button logout_button;
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private NfcUtility nfcUtility = new NfcUtility();
@@ -161,17 +170,37 @@ public class MainActivity extends AppCompatActivity {
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
+    }
 
-        logout_button = (Button) findViewById(R.id.logout);
-        logout_button.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.menu_one);
+        View view = MenuItemCompat.getActionView(menuItem);
+
+        CircleImageView profileImage = view.findViewById(R.id.toolbar_profile_image);
+
+        Glide.with(this).load(new GoogleUtilities().getCurrentUser().getPhotoUrl()).into(profileImage);
+
+        profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                logOut();
+            public void onClick(View view) {
+
             }
         });
 
-
+        return super.onCreateOptionsMenu(menu);
     }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_menu1:
+//                logOut();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     public void logOut() {
         FirebaseAuth.getInstance().signOut();
