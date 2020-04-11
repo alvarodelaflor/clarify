@@ -59,7 +59,7 @@ public class NfcIdentifyFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_nfc_identify, container, false);
 
         GifImageView gifImageView = (GifImageView) v.findViewById(R.id.GifImageView);
-        gifImageView.setGifImageResource(R.drawable.nfc_8);
+        gifImageView.setGifImageResource(R.drawable.nfc_3);
 
         mydialog = new Dialog(getContext());
         myDialog_info = new Dialog(getContext());

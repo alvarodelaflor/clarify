@@ -37,7 +37,7 @@
             android:id="@+id/GifImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="70dp"
+            android:layout_margin="40dp"
             android:layout_gravity="center"
             android:layout_centerInParent="true" />
 
