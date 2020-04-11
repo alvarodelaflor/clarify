@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
@@ -22,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -39,6 +42,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Login.Login;
@@ -65,6 +70,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private MenuItem menuItemLogOut;
+    private CircleImageView imgHeader;
+    private TextView nameUser;
+    private TextView emailUser;
+    private FirebaseUser firebaseUser;
 
 
     @Override
@@ -72,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        firebaseUser = new GoogleUtilities().getCurrentUser();
 
 //        Realm.init(this);
 //        RealmConfiguration config = new RealmConfiguration.Builder()
@@ -122,6 +132,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawerLayout = findViewById(R.id.main_layout2);
         navigationView = findViewById(R.id.navigation_view);
+
+        View headerView = navigationView.getHeaderView(0);
+        headerView.getBackground().setAlpha(70);
+        nameUser = (TextView) headerView.findViewById(R.id.name_user);
+        nameUser.setText(firebaseUser.getDisplayName());
+        emailUser = (TextView) headerView.findViewById(R.id.email_user);
+        emailUser.setText(firebaseUser.getEmail());
+        imgHeader = (CircleImageView) headerView.findViewById(R.id.img_profile);
+        Glide.with(this).load(firebaseUser.getPhotoUrl()).into(imgHeader);
 
         // Set navBar
         tabLayout = (TabLayout) findViewById(R.id.tab_layout);
