@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private MenuItem menuItemLogOut;
     private CircleImageView imgHeader;
+    private CircleImageView profileImg;
     private TextView nameUser;
     private TextView emailUser;
     private FirebaseUser firebaseUser;
@@ -128,7 +129,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Toolbar instances
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        profileImg = (CircleImageView) toolbar.findViewById(R.id.toolbar_profile_image);
+        Glide.with(this).load(firebaseUser.getPhotoUrl()).into(profileImg);
         setSupportActionBar(toolbar);
+
+        profileImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
         drawerLayout = findViewById(R.id.main_layout2);
         navigationView = findViewById(R.id.navigation_view);
@@ -202,27 +213,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-
-        MenuItem menuItem = menu.findItem(R.id.menu_one);
-        View view = MenuItemCompat.getActionView(menuItem);
-
-        CircleImageView profileImage = view.findViewById(R.id.toolbar_profile_image);
-
-        Glide.with(this).load(new GoogleUtilities().getCurrentUser().getPhotoUrl()).into(profileImage);
-
-        profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
