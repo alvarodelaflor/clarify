@@ -107,6 +107,10 @@ public class NfcIdentifyFragment extends Fragment {
                     }
                 }
             }, 1000);
+        } else {
+            if (!getUserVisibleHint() && myDialog_info != null) {
+                myDialog_info.dismiss();
+            }
         }
     }
 
