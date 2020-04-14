@@ -131,8 +131,10 @@ public class NfcIdentifyFragment extends Fragment {
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
-            NdefMessage[] msgs = utilities.getTagInfo(intent);
-            utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, myDialog_info, buttonAdd);
+            if (myDialog_info != null && myDialog_info.isShowing()) {
+                NdefMessage[] msgs = utilities.getTagInfo(intent);
+                utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, myDialog_info, buttonAdd);
+            }
         }
     }
 

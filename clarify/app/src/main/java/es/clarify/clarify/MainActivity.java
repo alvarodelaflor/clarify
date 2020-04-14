@@ -8,7 +8,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
-
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,12 +25,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
@@ -40,7 +37,6 @@ import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
-import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -63,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView nameUser;
     private TextView emailUser;
     private FirebaseUser firebaseUser;
+    private Boolean identify = false;
 
 
     @Override
@@ -176,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         super.onTabSelected(tab);
                         int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccent);
                         tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                        if (tab.getPosition() == 2) {
+                            identify = true;
+                        } else {
+                            identify = false;
+                        }
                     }
 
                     @Override
@@ -262,7 +264,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
-        nfcIdentifyFragment.resolveIntent(intent);
+        if(identify) {
+            nfcIdentifyFragment.resolveIntent(intent);
+        }
+
     }
 
     @Override
