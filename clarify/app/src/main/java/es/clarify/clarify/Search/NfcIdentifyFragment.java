@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -68,9 +69,6 @@ public class NfcIdentifyFragment extends Fragment {
         Window window = myDialog_info.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.BOTTOM);
-        if (NfcIdentifyFragment.this.isVisible()) {
-            myDialog_info.show();
-        }
         mydialog.setContentView(R.layout.dialog_identify_product);
         mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         text_company = (TextView) mydialog.findViewById(R.id.text_company);
@@ -100,20 +98,16 @@ public class NfcIdentifyFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        new CountDownTimer(800, 100) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                if (isVisibleToUser) {
-                    myDialog_info.show();
+        if (isVisibleToUser) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    if (getUserVisibleHint()) {
+                        myDialog_info.show();
+                    }
                 }
-            }
-        }.start();
-
+            }, 1000);
+        }
     }
 
     @Override
