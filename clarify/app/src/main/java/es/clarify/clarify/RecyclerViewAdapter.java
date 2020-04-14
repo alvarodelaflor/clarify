@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,6 +23,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     Context mContext;
     List<StoreLocal> mData;
+    TextView textViewPrincipal;
 
     public RecyclerViewAdapter(Context mContext, List<StoreLocal> mData) {
         this.mContext = mContext;
@@ -32,9 +35,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View v;
-        v = LayoutInflater.from(mContext).inflate(R.layout.item_contact, parent, false);
+        v = LayoutInflater.from(mContext).inflate(R.layout.item_store, parent, false);
+        GridLayout gridLayout = (GridLayout) v.findViewById(R.id.grid_layout_stores);
         MyViewHolder vHolder = new MyViewHolder(v);
-
         vHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,9 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        holder.tv_name.setText(mData.get(position).getName());
-        holder.tv_phone.setText(mData.get(position).getLastUpdate().toString());
-
+        holder.box_name.setText(mData.get(position).getName());
     }
 
     @Override
@@ -63,18 +64,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tv_name;
-        private TextView tv_phone;
-        private ImageView img;
-        private CardView cardView;
+        private GridLayout box_grid_layout;
+        private TextView box_name;
+        private ImageView box_img;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tv_name = (TextView) itemView.findViewById(R.id.name_contact);
-            tv_phone = (TextView) itemView.findViewById(R.id.phone_contact);
-            img = (ImageView) itemView.findViewById(R.id.img_contact);
-            cardView = (CardView) itemView.findViewById(R.id.card_view_list_stores);
+            box_img = (ImageView) itemView.findViewById(R.id.image_view_store);
+            box_name = (TextView) itemView.findViewById(R.id.text_view_stores);
+            box_grid_layout = (GridLayout) itemView.findViewById(R.id.grid_layout_stores);
         }
     }
 

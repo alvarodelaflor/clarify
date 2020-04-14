@@ -4,7 +4,6 @@
     android:id="@+id/id1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
     tools:context=".Search.NfcIdentifyFragment">
 
     <LinearLayout
@@ -15,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:text="NFC"
             android:textAlignment="center"
             android:textColor="@color/white"
@@ -25,7 +24,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="25dp"
             android:layout_marginLeft="25dp"
             android:text="Pega tu teléfono a un producto con NFC incrustado para identificarlo."
@@ -37,7 +36,8 @@
             android:id="@+id/GifImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="40dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="10dp"
             android:layout_gravity="center"
             android:layout_centerInParent="true" />
 

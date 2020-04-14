@@ -63,6 +63,7 @@
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.viewpager.widget.ViewPager
+            android:background="@drawable/bgapps_opt"
             android:id="@+id/mainFrame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
