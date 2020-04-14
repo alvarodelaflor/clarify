@@ -1,30 +1,14 @@
 package es.clarify.clarify.Utilities;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.StoreLocal;
@@ -38,12 +22,20 @@ public class Database {
     private Realm realm = Realm.getDefaultInstance();
     private static final String TAG = "REALM_DATABASE";
 
-    public Database(Realm realm) {
-        this.realm = realm;
-    }
-
     public Database() {
 
+    }
+
+    public Boolean deleteAllDataFromDevice() {
+        try {
+            realm.beginTransaction();
+            realm.deleteAll();
+            realm.commitTransaction();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "deleteAllDataFromDevice: ", e);
+            return false;
+        }
     }
 
     public int calculateIndex() {

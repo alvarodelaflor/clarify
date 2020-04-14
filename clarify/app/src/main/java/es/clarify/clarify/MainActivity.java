@@ -11,48 +11,36 @@ import com.google.android.material.tabs.TabLayout;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
+import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -66,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
     private StoreFragment storeFragment;
-    private Database database;
+    private Database database = new Database();
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private MenuItem menuItemLogOut;
@@ -244,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        database.deleteAllDataFromDevice();
                         startActivity(new Intent(getApplicationContext(), Login.class));
                         finish();
                     }

@@ -2,11 +2,8 @@ package es.clarify.clarify.Utilities;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -111,7 +108,7 @@ public class Utilities {
                         this.text_company.setText(scannedTag.getBrand());
                         this.text_model.setText(scannedTag.getModel());
                         Picasso.get().load(scannedTag.getImage()).into(imgToChange);
-                        new Database(Realm.getDefaultInstance()).addLastScannedTagLocalToChache(scannedTag);
+                        new Database().addLastScannedTagLocalToChache(scannedTag);
                     }
                 } else {
                     text_company.setText("Etiqueta no encontrada");
@@ -162,6 +159,7 @@ public class Utilities {
             ScannedTagRemote scannedTagRemote = new ScannedTagRemote(scannedTagLocal);
             Boolean aux1 = new GoogleUtilities().addToStore(scannedTagRemote.getStore(), scannedTagRemote, activity);
             Boolean aux2 = new Database().synchronizeScannedTagLocal(scannedTagLocal);
+
             return aux1 && aux2;
         } catch (Exception e) {
             Log.e("Utilities", "addItemToPrivateStroe: ", e);

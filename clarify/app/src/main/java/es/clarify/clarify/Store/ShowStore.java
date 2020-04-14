@@ -4,31 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Handler;
-
-import java.util.ArrayList;
-
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
-import es.clarify.clarify.RecyclerViewAdapter;
 import es.clarify.clarify.Utilities.Database;
-import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 
 public class ShowStore extends AppCompatActivity {
 
 
     RecyclerView recyclerView;
     RecyclerViewAdapterShowStore recyclerViewAdapter;
-//    ArrayList<String> rowsArrayList = new ArrayList<>();
     RealmList<ScannedTagLocal> realmResults = new RealmList<>();
     Database database = new Database();
     Boolean fullLoad = false;
 
     boolean isLoading = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +32,6 @@ public class ShowStore extends AppCompatActivity {
         populateData();
         initAdapter();
         initScrollListener();
-
 
     }
 

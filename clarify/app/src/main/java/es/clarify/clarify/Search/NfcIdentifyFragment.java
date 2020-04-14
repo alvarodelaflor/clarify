@@ -50,7 +50,7 @@ public class NfcIdentifyFragment extends Fragment {
     private Dialog mydialog;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
-    Database database = new Database(Realm.getDefaultInstance());
+    private Database database = new Database();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

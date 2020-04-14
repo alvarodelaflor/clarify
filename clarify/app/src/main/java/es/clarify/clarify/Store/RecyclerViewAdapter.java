@@ -1,4 +1,4 @@
-package es.clarify.clarify;
+package es.clarify.clarify.Store;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,23 +7,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
-
 import es.clarify.clarify.Objects.StoreLocal;
-import es.clarify.clarify.Store.ShowStore;
+import es.clarify.clarify.R;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
     Context mContext;
     List<StoreLocal> mData;
-    TextView textViewPrincipal;
 
     public RecyclerViewAdapter(Context mContext, List<StoreLocal> mData) {
         this.mContext = mContext;
@@ -53,7 +47,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-
         holder.box_name.setText(mData.get(position).getName());
     }
 
@@ -76,5 +69,4 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             box_grid_layout = (GridLayout) itemView.findViewById(R.id.grid_layout_stores);
         }
     }
-
 }
