@@ -27,7 +27,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="25dp"
             android:layout_marginLeft="25dp"
-            android:text="Pega tu teléfono a un producto con NFC incrustado para identificarlo."
+            android:text="Pega tu teléfono a un producto con una etiqueta NCF compatible para identificarlo."
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="16sp" />
@@ -51,6 +51,7 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/btn_dos"
             android:text="Escanear"
+            android:textColor="@color/white"
             android:textAllCaps="false"
             android:textSize="18sp" />
 
