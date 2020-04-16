@@ -50,7 +50,7 @@ public class Database {
         return nextId;
     }
 
-    public List<ScannedTagLocal> getAllScannedTag() {
+    public List<ScannedTagLocal> getAllScannedTagLocal() {
         List<ScannedTagLocal> res = new ArrayList<>();
         RealmResults<ScannedTagLocal> results = realm.where(ScannedTagLocal.class).findAll();
         if (results.size() > 0) {
@@ -78,7 +78,18 @@ public class Database {
         }
     }
 
-    public RealmList<ScannedTagLocal> getScannedTagPagination(String store, int limit) {
+
+    /**
+     *
+     * This method return all the {@link ScannedTagLocal} using a filter by {@link StoreLocal} name and limiting the number of result
+     *
+     * @author alvarodelaflor.com
+     * @since 16/04/2020
+     * @param store
+     * @param limit
+     */
+
+    public RealmList<ScannedTagLocal> getScannedTagLocalPagination(String store, int limit) {
         RealmList<ScannedTagLocal> res = new RealmList<>();
         RealmResults<ScannedTagLocal> aux = realm.where(ScannedTagLocal.class)
                 .equalTo("store", store)
@@ -86,6 +97,10 @@ public class Database {
                 .findAll();
         res.addAll(aux);
         return res;
+    }
+
+    public Long getNumberScannedTagLocalByStore(String store) {
+        return realm.where(ScannedTagLocal.class).equalTo("store", store).count();
     }
 
     public ScannedTagLocal getLastScannedTag() {

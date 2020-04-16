@@ -1,119 +1,83 @@
 package es.clarify.clarify.Store;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
-import io.realm.RealmList;
 
 public class ShowStore extends AppCompatActivity {
 
 
-    RecyclerView recyclerView;
-    RecyclerViewAdapterShowStore recyclerViewAdapter;
-    RealmList<ScannedTagLocal> realmResults = new RealmList<>();
+    //    RecyclerView recyclerView;
+    List<ScannedTagLocal> items = new ArrayList<>();
+    MyAdapter adapter;
     Database database = new Database();
-    Boolean fullLoad = false;
-
-    boolean isLoading = false;
-
+    String store;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_store);
+        store = getIntent().getStringExtra("store_name");
 
-        recyclerView = findViewById(R.id.show_store_recyclerView);
-        populateData();
-        initAdapter();
-        initScrollListener();
+        populate();
 
-    }
+        RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
+        adapter = new MyAdapter(recycler, this, items);
+        recycler.setAdapter(adapter);
 
-    private void populateData() {
-        int intLimit = 10;
-        String store = getIntent().getStringExtra("store_name");
-        RealmList<ScannedTagLocal> res = database.getScannedTagPagination(store, intLimit);
-        this.realmResults = res;
-        this.fullLoad = res.size() < 10 ? true : false;
-
-//        int i = 0;
-//        while (i < 10) {
-//            rowsArrayList.add("Item " + i);
-//            i++;
-//        }
-    }
-
-    private void initAdapter() {
-
-        recyclerViewAdapter = new RecyclerViewAdapterShowStore(realmResults, ShowStore.this);
-        recyclerView.setAdapter(recyclerViewAdapter);
-    }
-
-    private void initScrollListener() {
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        adapter.setLoadMore(new ILoadMore() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
+            public void onLoadMore() {
+                if (items.size() < database.getNumberScannedTagLocalByStore(store)) {
+                    items.add(null);
+                    adapter.notifyItemInserted(items.size() - 1);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            items.remove(items.size() - 1);
+                            adapter.notifyItemRemoved(items.size());
 
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+                            int index = items.size();
+                            int end = index + 10;
 
-                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                            List<ScannedTagLocal> aux = database.getAllScannedTagLocal().stream().filter(x -> !items.contains(x)).collect(Collectors.toList());
 
-                if (!isLoading) {
-                    if (linearLayoutManager != null && linearLayoutManager.findLastCompletelyVisibleItemPosition() == realmResults.size() - 1) {
-                        //bottom of list!
-                        if (!fullLoad) {
-                            loadMore();
-                            isLoading = true;
+                            List<ScannedTagLocal> aux = database.getScannedTagLocalPagination(store, end)
+                                    .stream()
+                                    .filter(x -> !items.contains(x))
+                                    .collect(Collectors.toList());
+
+//                            for (ScannedTagLocal s: aux) {
+//                                items.add(s);
+//                            }
+
+                            items.addAll(aux);
+
+                            adapter.notifyDataSetChanged();
+                            adapter.setLoaded();
                         }
-                    }
+                    }, 2000);
+                } else {
+                    Toast.makeText(ShowStore.this, "Load data completed !", Toast.LENGTH_LONG).show();
                 }
             }
         });
-
-
     }
 
-    private void loadMore() {
-        recyclerViewAdapter.notifyItemInserted(realmResults.size() - 1);
-
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                realmResults.remove(realmResults.size() - 1);
-                int scrollPosition = realmResults.size();
-                recyclerViewAdapter.notifyItemRemoved(scrollPosition);
-                int currentSize = scrollPosition;
-                int nextLimit = currentSize + 10;
-
-                int initSize = realmResults.size();
-                String store = getIntent().getStringExtra("store_name");
-                RealmList<ScannedTagLocal> res = database.getScannedTagPagination(store, nextLimit);
-                realmResults = res;
-                int newResult = initSize - res.size();
-                fullLoad = newResult < 10 ? true : false;
-
-//                while (currentSize - 1 < nextLimit) {
-//                    rowsArrayList.add("Item " + currentSize);
-//                    currentSize++;
-//                }
-
-                recyclerViewAdapter.notifyDataSetChanged();
-                isLoading = false;
-            }
-        }, 2000);
-
-
+    public void populate() {
+        this.items = database.getScannedTagLocalPagination(store, 10);
     }
+
+
 }
