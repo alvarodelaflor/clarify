@@ -2,15 +2,12 @@ package es.clarify.clarify.Store;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -69,7 +66,7 @@ public class ShowStore extends AppCompatActivity {
                         }
                     }, 2000);
                 } else {
-                    Toast.makeText(ShowStore.this, "Load data completed !", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(ShowStore.this, "Load data completed !", Toast.LENGTH_LONG).show();
                 }
             }
         });
