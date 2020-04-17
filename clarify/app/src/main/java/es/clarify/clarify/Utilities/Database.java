@@ -99,6 +99,15 @@ public class Database {
         return res;
     }
 
+    public Date getLastUpadateByStore(String store) {
+        Date res = null;
+        StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
+        if (store != null) {
+            res = storeLocal.getLastUpdate();
+        }
+        return res;
+    }
+
     public Long getNumberScannedTagLocalByStore(String store) {
         return realm.where(ScannedTagLocal.class).equalTo("store", store).count();
     }

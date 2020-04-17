@@ -3,17 +3,20 @@ package es.clarify.clarify.Store;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.google.android.material.appbar.AppBarLayout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -22,19 +25,26 @@ public class ShowStore extends AppCompatActivity {
 
 
     //    RecyclerView recyclerView;
-    List<ScannedTagLocal> items = new ArrayList<>();
-    MyAdapter adapter;
-    Database database = new Database();
-    String store;
-    Toolbar toolbar;
-    ImageView img;
+    private List<ScannedTagLocal> items = new ArrayList<>();
+    private MyAdapter adapter;
+    private Database database = new Database();
+    private String store;
+    private Toolbar toolbar;
+    private ImageView storeImg;
+    private ImageView img_to_rotate;
+    private AppBarLayout appBarLayout;
+    private Long numberProducts;
+    private TextView totalCountProducts;
+    private TextView lastUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_store);
         store = getIntent().getStringExtra("store_name");
+        numberProducts = database.getNumberScannedTagLocalByStore(store);
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_show_store);
         toolbar = (Toolbar) findViewById(R.id.toolbar_level_2);
         toolbar.setTitle(store);
         setSupportActionBar(toolbar);
@@ -46,15 +56,37 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-//        img = (ImageView) findViewById(R.id.background_cab);
-//        if (store.equals("Frigorífico")) {
-//            img.setImageResource(R.drawable.fridge_opt);
-//        }
-//        else if () {
-//
-//        }
+        img_to_rotate = (ImageView) findViewById(R.id.img_to_rotate);
+        img_to_rotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appBarLayout.setExpanded(false, true);
+            }
+        });
+
+        storeImg = (ImageView) findViewById(R.id.store_img);
+        if (store.equals("Frigorífico")) {
+            storeImg.setImageResource(R.drawable.fridge_opt);
+        } else if (store.equals("Despensa")) {
+            storeImg.setImageResource(R.drawable.despensa_opt);
+        }
 
         populate();
+
+        totalCountProducts = (TextView)findViewById(R.id.number_products);
+        totalCountProducts.setText(numberProducts.toString());
+
+        lastUpdate = (TextView)findViewById(R.id.last_update);
+        Date lastUpdateAux = database.getLastUpadateByStore(store);
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        String dateString = "";
+        try {
+            dateString = format.format(lastUpdateAux);
+        } catch (Exception e) {
+            Log.e("ShowStore", "onCreate: ", e);
+            dateString = "Indeterminda";
+        }
+        lastUpdate.setText(dateString);
 
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
         adapter = new MyAdapter(recycler, this, items);
@@ -63,7 +95,7 @@ public class ShowStore extends AppCompatActivity {
         adapter.setLoadMore(new ILoadMore() {
             @Override
             public void onLoadMore() {
-                if (items.size() < database.getNumberScannedTagLocalByStore(store)) {
+                if (items.size() < numberProducts) {
                     items.add(null);
                     adapter.notifyItemInserted(items.size() - 1);
                     new Handler().postDelayed(new Runnable() {
