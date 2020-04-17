@@ -22,91 +22,120 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/carview_gradient_purple"
-                android:gravity="center"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/carview_gradient_purple"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/carview_gradient_white"
+                            android:gravity="center">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="170dp"
+                                android:layout_height="170dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginBottom="20dp"
+                                android:src="@drawable/fridge_opt" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/carview_gradient_white"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginBottom="40dp"
                         android:gravity="center">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="170dp"
-                            android:layout_height="170dp"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginBottom="20dp"
-                            android:src="@drawable/fridge_opt" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="XX"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/roboto_bold"
+                                android:textSize="24sp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nº PRODUCTOS"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/roboto_condensed_bold_italic"
+                                android:textSize="16sp"/>
+
+                        </LinearLayout>
+                        <View
+                            android:layout_width="1px"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:background="@color/full_dark"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="dd/mm/yyyy"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/roboto_bold"
+                                android:textSize="24sp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="ÚLTIMO CAMBIO"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/roboto_condensed_bold_italic"
+                                android:textSize="16sp"/>
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="60dp"
                     android:gravity="center">
 
-                    <LinearLayout
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="XX"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/roboto_bold"
-                            android:textSize="24sp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Nº PRODUCTOS"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/roboto_condensed_bold_italic"
-                            android:textSize="16sp"/>
-
-                    </LinearLayout>
-                    <View
-                        android:layout_width="1px"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:background="@color/full_dark"/>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="dd/mm/yyyy"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/roboto_bold"
-                            android:textSize="24sp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="ÚLTIMO CAMBIO"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/roboto_condensed_bold_italic"
-                            android:textSize="16sp"/>
-
-                    </LinearLayout>
+                        android:text="DESLIZA PARA VER MÁS"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/roboto_condensed_bold_italic"
+                        android:textSize="19sp"/>
 
                 </LinearLayout>
 
