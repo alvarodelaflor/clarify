@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class ShowStore extends AppCompatActivity {
     Database database = new Database();
     String store;
     Toolbar toolbar;
+    ImageView img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +39,20 @@ public class ShowStore extends AppCompatActivity {
         toolbar.setTitle(store);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
             }
         });
+
+        img = (ImageView) findViewById(R.id.background_cab);
+        if (store.equals("Frigorífico")) {
+            img.setImageResource(R.drawable.fridge_opt);
+        }
+//        else if () {
+//
+//        }
 
         populate();
 

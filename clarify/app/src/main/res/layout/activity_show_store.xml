@@ -21,6 +21,7 @@
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
             <ImageView
+                android:id="@+id/background_cab"
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
                 android:src="@drawable/background_store_opt"
