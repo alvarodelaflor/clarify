@@ -4,36 +4,122 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Store.ShowStore">
 
     <com.google.android.material.appbar.AppBarLayout
 
         android:id="@+id/toolbar_show_store"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="190dp"
-            android:background="@drawable/carview_gradient2"
-            app:contentScrim="@color/colorPrimary"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
 
-            <ImageView
-                android:id="@+id/background_cab"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:src="@drawable/background_store_opt"
-                android:scaleType="centerCrop"/>
+                android:layout_height="wrap_content"
+                android:background="@drawable/carview_gradient_purple"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/carview_gradient_white"
+                        android:gravity="center">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="170dp"
+                            android:layout_height="170dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:src="@drawable/fridge_opt" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="40dp"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="XX"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textSize="24sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nº PRODUCTOS"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:textSize="16sp"/>
+
+                    </LinearLayout>
+                    <View
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/full_dark"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="dd/mm/yyyy"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textSize="24sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ÚLTIMO CAMBIO"
+                            android:textColor="@color/white"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:textSize="16sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar_level_2"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
                 app:layout_collapseMode="pin"
-                app:title="Box Name">
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                app:title="Box Name"
+                android:elevation="20dp">
 
             </androidx.appcompat.widget.Toolbar>
 

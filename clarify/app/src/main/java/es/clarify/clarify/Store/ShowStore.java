@@ -46,10 +46,10 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-        img = (ImageView) findViewById(R.id.background_cab);
-        if (store.equals("Frigorífico")) {
-            img.setImageResource(R.drawable.fridge_opt);
-        }
+//        img = (ImageView) findViewById(R.id.background_cab);
+//        if (store.equals("Frigorífico")) {
+//            img.setImageResource(R.drawable.fridge_opt);
+//        }
 //        else if () {
 //
 //        }
