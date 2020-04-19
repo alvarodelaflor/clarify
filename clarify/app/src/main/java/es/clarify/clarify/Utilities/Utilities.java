@@ -124,6 +124,8 @@ public class Utilities {
                             Boolean result = addItemToPrivateStrore(scannedTagLocal, activityAux);
                             if (!result) {
                                 Toast.makeText(activityAux, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
+                            } else {
+                                myDialogAux.dismiss();
                             }
                         }
                     }

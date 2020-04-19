@@ -14,13 +14,13 @@ import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Objects.UserDataLocal;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class Database {
 
-    private Realm realm = Realm.getDefaultInstance();
-    private static final String TAG = "REALM_DATABASE";
+    private String TAG = "REALM_DATABASE";
 
     public Database() {
 
@@ -28,9 +28,11 @@ public class Database {
 
     public Boolean deleteAllDataFromDevice() {
         try {
+            Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
             realm.deleteAll();
             realm.commitTransaction();
+            realm.close();
             return true;
         } catch (Exception e) {
             Log.e(TAG, "deleteAllDataFromDevice: ", e);
@@ -39,8 +41,8 @@ public class Database {
     }
 
     public int calculateIndex() {
-        Realm real = Realm.getDefaultInstance();
-        Number currentIdNum = real.where(ScannedTagLocal.class).max("id");
+        Realm realm = Realm.getDefaultInstance();
+        Number currentIdNum = realm.where(ScannedTagLocal.class).max("id");
         int nextId;
         if (currentIdNum == null) {
             nextId = 0;
@@ -51,6 +53,7 @@ public class Database {
     }
 
     public List<ScannedTagLocal> getAllScannedTagLocal() {
+        Realm realm = Realm.getDefaultInstance();
         List<ScannedTagLocal> res = new ArrayList<>();
         RealmResults<ScannedTagLocal> results = realm.where(ScannedTagLocal.class).findAll();
         if (results.size() > 0) {
@@ -62,6 +65,7 @@ public class Database {
 
     public Boolean updateLastUserLogin() {
         try {
+            Realm realm = Realm.getDefaultInstance();
             realm.where(UserDataLocal.class).findAll().deleteAllFromRealm();
             realm.beginTransaction();
             UserDataLocal user = realm.createObject(UserDataLocal.class, calculateIndex());
@@ -71,6 +75,7 @@ public class Database {
             user.setPhoto(firebaseUser.getPhotoUrl().getHost());
             user.setUid(firebaseUser.getUid());
             realm.commitTransaction();
+            realm.close();
             return true;
         } catch (Exception e) {
             Log.e(TAG, "updateLastUserLogin: ", e);
@@ -90,6 +95,7 @@ public class Database {
      */
 
     public RealmList<ScannedTagLocal> getScannedTagLocalPagination(String store, int limit) {
+        Realm realm = Realm.getDefaultInstance();
         RealmList<ScannedTagLocal> res = new RealmList<>();
         RealmResults<ScannedTagLocal> aux = realm.where(ScannedTagLocal.class)
                 .equalTo("store", store)
@@ -101,6 +107,7 @@ public class Database {
 
     public Date getLastUpadateByStore(String store) {
         Date res = null;
+        Realm realm = Realm.getDefaultInstance();
         StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
         if (store != null) {
             res = storeLocal.getLastUpdate();
@@ -109,18 +116,23 @@ public class Database {
     }
 
     public Long getNumberScannedTagLocalByStore(String store) {
-        return realm.where(ScannedTagLocal.class).equalTo("store", store).count();
+        Realm realm = Realm.getDefaultInstance();
+        Long res = realm.where(ScannedTagLocal.class).equalTo("store", store).count();
+        return res;
     }
 
     public ScannedTagLocal getLastScannedTag() {
+        Realm realm = Realm.getDefaultInstance();
         Integer id = Integer.parseInt(realm.where(ScannedTagLocal.class).max("id").toString());
         Date date = null;
-        return realm.where(ScannedTagLocal.class).equalTo("id", id).equalTo("storageDate", date).findFirst();
+        ScannedTagLocal res = realm.where(ScannedTagLocal.class).equalTo("id", id).equalTo("storageDate", date).findFirst();
+        return res;
     }
 
     public Boolean synchronizeScannedTagLocal(ScannedTagLocal scannedTagLocal) {
         try {
             if (scannedTagLocal.getStorageDate() == null) {
+                Realm realm = Realm.getDefaultInstance();
                 final StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", scannedTagLocal.getStore()).findFirst();
                 realm.beginTransaction();
                 scannedTagLocal.setStorageDate(new Date());
@@ -134,6 +146,7 @@ public class Database {
                     storeLocal.addNewScannedTagLocal(scannedTagLocal);
                 }
                 realm.commitTransaction();
+                realm.close();
             }
             return true;
         } catch (Error e) {
@@ -144,10 +157,12 @@ public class Database {
 
     public Boolean deleteItemFromPrivateStore(String store, String firebaseId) {
         try {
+            Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
             realm.where(ScannedTagLocal.class).equalTo("idFirebase", firebaseId).findFirst().deleteFromRealm();
             realm.where(StoreLocal.class).equalTo("name", store).findFirst().setLastUpdate(new Date());
             realm.commitTransaction();
+            realm.close();
             return true;
         } catch (Error e) {
             Log.e(TAG, "deleteItemFromPrivateStore:", e);
@@ -156,21 +171,24 @@ public class Database {
     }
 
     public ScannedTagLocal getScannedTagByIdLocal(String id) {
-        return realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();
+        Realm realm = Realm.getDefaultInstance();
+        ScannedTagLocal res = realm.where(ScannedTagLocal.class).equalTo("id", id).findFirst();
+        return res;
     }
 
     public ScannedTagLocal getScannedTagByIdFirebase(String id) {
-        return realm.where(ScannedTagLocal.class).equalTo("idFirebase", id).findFirst();
+        Realm realm = Realm.getDefaultInstance();
+        ScannedTagLocal res = realm.where(ScannedTagLocal.class).equalTo("idFirebase", id).findFirst();
+        return res;
     }
 
 
-    public void addLastScannedTagLocalToChache(final ScannedTag scannedTag) {
+    public void addLastScannedTagLocalToChache(ScannedTag scannedTag) {
         try {
+            Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
             Date date = null;
             realm.where(ScannedTagLocal.class).equalTo("storageDate", date).findAll().deleteAllFromRealm();
-            realm.commitTransaction();
-            realm.beginTransaction();
             int index = calculateIndex();
             ScannedTagLocal realmScannedTagLocal = realm.createObject(ScannedTagLocal.class, index);
 
@@ -185,24 +203,28 @@ public class Database {
             realmScannedTagLocal.setImage(scannedTag.getImage());
             realmScannedTagLocal.setStore(scannedTag.getStore());
             realm.commitTransaction();
+            realm.close();
         } catch (Error e) {
             Log.e(TAG, String.format("addScannedTagLocal: %s could not be saved.", scannedTag.toString()), e);
         }
     }
 
     public List<StoreLocal> getAllStoreLocal() {
-        List<StoreLocal> res = new ArrayList<>();
         try {
-            return realm.where(StoreLocal.class).findAll();
+            Realm realm = Realm.getDefaultInstance();
+            List<StoreLocal> res = realm.where(StoreLocal.class).findAll();
+            return res;
         } catch (Error e) {
             Log.e(TAG, "getAllStoreLocal: can not get all stores", e);
-            return res;
+            return new ArrayList<>();
         }
     }
 
     public Boolean deleteAllStoreLocal() {
         try {
+            Realm realm = Realm.getDefaultInstance();
             realm.delete(StoreLocal.class);
+            realm.close();
             return true;
         } catch (Error e) {
             Log.e(TAG, "deleteAllStoreLocal: can not delete all stores", e);

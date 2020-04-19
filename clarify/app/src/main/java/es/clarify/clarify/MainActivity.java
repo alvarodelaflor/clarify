@@ -37,6 +37,8 @@ import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
     private StoreFragment storeFragment;
-    private Database database = new Database();
+    private Database database;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private MenuItem menuItemLogOut;
@@ -68,14 +70,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setContentView(R.layout.activity_main);
         firebaseUser = new GoogleUtilities().getCurrentUser();
+        database = new Database();
 
-//        Realm.init(this);
-//        RealmConfiguration config = new RealmConfiguration.Builder()
-//                .name(Realm.DEFAULT_REALM_NAME)
-//                .schemaVersion(0)
-//                .deleteRealmIfMigrationNeeded()
-//                .build();
-//        Realm.setDefaultConfiguration(config);
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name(Realm.DEFAULT_REALM_NAME)
+                .schemaVersion(0)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
 
         // Firebase instances
 

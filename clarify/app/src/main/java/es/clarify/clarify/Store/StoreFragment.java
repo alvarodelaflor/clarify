@@ -30,11 +30,12 @@ public class StoreFragment extends Fragment {
     private RecyclerView myRecyclerView;
     private List<StoreLocal> listStoreLocal;
     private TextView textViewPrincipal;
-    private Database database = new Database();
+    private Database database;
     RecyclerViewAdapter recyclerViewAdapter;
 
 
     public StoreFragment() {
+        database = new Database();
         // Required empty public constructor
     }
 

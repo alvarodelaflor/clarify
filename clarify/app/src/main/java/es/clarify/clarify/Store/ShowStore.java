@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -89,7 +88,7 @@ public class ShowStore extends AppCompatActivity {
         lastUpdate.setText(dateString);
 
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
-        adapter = new MyAdapter(recycler, this, items);
+        adapter = new MyAdapter(recycler, this, items, ShowStore.this);
         recycler.setAdapter(adapter);
 
         adapter.setLoadMore(new ILoadMore() {

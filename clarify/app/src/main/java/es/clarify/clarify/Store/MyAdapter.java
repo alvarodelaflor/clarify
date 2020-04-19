@@ -1,28 +1,27 @@
 package es.clarify.clarify.Store;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
 import java.util.List;
-
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
-import io.realm.RealmList;
+import es.clarify.clarify.Utilities.Utilities;
 
 class LoadingViewHoler extends RecyclerView.ViewHolder {
 
@@ -39,28 +38,44 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
     public TextView name;
     public TextView brand;
     public ImageView img;
+    public Dialog mydialog;
+    TextView dialog_name;
+    TextView dialog_brand;
+    Button dialog_btn_delete;
+    Button dialog_btn_info;
+    ImageView dialog_img;
 
-    public ItemViewHoder(View itemView) {
+    public ItemViewHoder(View itemView, Context context) {
         super(itemView);
         name = (TextView) itemView.findViewById(R.id.model_product_item_rom);
         brand = (TextView) itemView.findViewById(R.id.brand_product_item_rom);
         img = (ImageView) itemView.findViewById(R.id.img_profile_product_show);
+        mydialog = new Dialog(context);
+        mydialog.setContentView(R.layout.dialog_product);
+        mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog_name = (TextView) mydialog.findViewById(R.id.dialog_name);
+        dialog_brand = (TextView) mydialog.findViewById(R.id.dialog_brand);
+        dialog_btn_delete = (Button) mydialog.findViewById(R.id.dialog_btn_delete);
+        dialog_btn_info = (Button) mydialog.findViewById(R.id.dialog_bnt_info);
+        dialog_img = (ImageView) mydialog.findViewById(R.id.dialog_img);
     }
 }
 
 public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final int VIEW_TYPE_ITEM=0,VIEW_TYPE_LOADING=1;
+    private final int VIEW_TYPE_ITEM = 0, VIEW_TYPE_LOADING = 1;
     ILoadMore loadMore;
     boolean isLoading;
     Activity activity;
     List<ScannedTagLocal> items;
-    int visibleThreshold=5;
+    int visibleThreshold = 5;
     int lastVisibibleItem, totalItemCount;
+    Context myContext;
 
-    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items) {
+    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context) {
         this.activity = activity;
         this.items = items;
+        this.myContext = context;
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -69,7 +84,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 super.onScrolled(recyclerView, dx, dy);
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibibleItem = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-                if (!isLoading && totalItemCount <= (lastVisibibleItem+visibleThreshold)) {
+                if (!isLoading && totalItemCount <= (lastVisibibleItem + visibleThreshold)) {
                     if (loadMore != null) {
                         loadMore.onLoadMore();
                         isLoading = true;
@@ -81,7 +96,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        return items.get(position) == null ? VIEW_TYPE_LOADING:VIEW_TYPE_ITEM;
+        return items.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
     public void setLoadMore(ILoadMore loadMore) {
@@ -92,12 +107,23 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_ITEM) {
             View view = LayoutInflater.from(activity).inflate(R.layout.item_row_showstore, parent, false);
-            return new ItemViewHoder(view);
+
+            ItemViewHoder vHolder = new ItemViewHoder(view, myContext);
+
+            return vHolder;
         } else if (viewType == VIEW_TYPE_LOADING) {
             View view = LayoutInflater.from(activity).inflate(R.layout.item_loading, parent, false);
             return new LoadingViewHoler(view);
         }
         return null;
+
+    }
+
+    public void removeItem(int position) {
+        items.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, items.size());
+        notifyDataSetChanged();
     }
 
     @Override
@@ -108,6 +134,37 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             viewHoder.name.setText(res.getModel());
             viewHoder.brand.setText(res.getBrand());
             Picasso.get().load(res.getImage()).into(viewHoder.img);
+
+            viewHoder.itemView.setOnClickListener(new View.OnClickListener() {
+
+
+                @Override
+                public void onClick(View view) {
+                    viewHoder.dialog_name.setText(res.getModel());
+                    viewHoder.dialog_brand.setText(res.getBrand());
+                    viewHoder.mydialog.show();
+
+                    viewHoder.dialog_btn_delete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ScannedTagLocal scannedTagLocal = res;
+                            Boolean result = new Utilities().deleteItemFromPrivateStore(scannedTagLocal.getStore(), scannedTagLocal.getIdFirebase());
+                            if (result) {
+                                viewHoder.mydialog.dismiss();
+                                try {
+                                    Toast.makeText(myContext, "¡Se ha borrado el producto!", Toast.LENGTH_LONG).show();
+                                    removeItem(position);
+                                } catch (Exception e) {
+                                    Toast.makeText(myContext, "¡No se ha podido guardar!", Toast.LENGTH_LONG).show();
+                                }
+                            } else {
+                                Toast.makeText(myContext, "¡Error!", Toast.LENGTH_LONG).show();
+                                Log.i("RecyclerViewAdaptarShowStore", "Product couldn't be deleted");
+                            }
+                        }
+                    });
+                }
+            });
 
         } else if (holder instanceof LoadingViewHoler) {
             LoadingViewHoler loadingViewHoler = (LoadingViewHoler) holder;

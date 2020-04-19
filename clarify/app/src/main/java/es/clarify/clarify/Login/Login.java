@@ -22,8 +22,6 @@ import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class Login extends AppCompatActivity {
 
@@ -37,14 +35,6 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name(Realm.DEFAULT_REALM_NAME)
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(config);
 
         mAuth = googleUtilities.getFirebaseAuth();
         mGoogleSignInClient = googleUtilities.getmGoogleSignInClient(this);
