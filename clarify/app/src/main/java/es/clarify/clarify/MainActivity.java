@@ -11,7 +11,9 @@ import com.google.android.material.tabs.TabLayout;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.MenuItem;
@@ -120,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Glide.with(this).load(firebaseUser.getPhotoUrl()).into(profileImg);
         setSupportActionBar(toolbar);
 
+        changeColor(R.color.colorPrimary);
+
         profileImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
+    }
+
+    public void changeColor(int resourseColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), resourseColor));
+        }
     }
 
     @Override

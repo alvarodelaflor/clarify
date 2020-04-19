@@ -1,11 +1,13 @@
 package es.clarify.clarify.Login;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -53,6 +55,14 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        changeColor(R.color.gray);
+
+    }
+
+    public void changeColor(int resourseColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), resourseColor));
+        }
     }
 
     @Override

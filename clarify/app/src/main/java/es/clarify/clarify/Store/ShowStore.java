@@ -1,9 +1,14 @@
 package es.clarify.clarify.Store;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -56,6 +61,8 @@ public class ShowStore extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        changeColor(R.color.colorPrimary);
 
         img_to_rotate = (ImageView) findViewById(R.id.img_to_rotate);
         img_to_rotate.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +130,12 @@ public class ShowStore extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void changeColor(int resourseColor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), resourseColor));
+        }
     }
 
     public void populate() {
