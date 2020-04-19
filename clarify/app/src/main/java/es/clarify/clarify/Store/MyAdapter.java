@@ -18,6 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
@@ -71,11 +74,15 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     int visibleThreshold = 5;
     int lastVisibibleItem, totalItemCount;
     Context myContext;
+    TextView lastUpdate;
+    TextView totalCount;
 
-    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context) {
+    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context, List<TextView> textViews) {
         this.activity = activity;
         this.items = items;
         this.myContext = context;
+        this.totalCount = textViews.get(0);
+        this.lastUpdate = textViews.get(1);
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -121,6 +128,18 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void removeItem(int position) {
         items.remove(position);
+        String auxTotalCount = String.valueOf(items.size());
+        totalCount.setText(auxTotalCount);
+        Date lastUpdateAux = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        String dateString = "";
+        try {
+            dateString = format.format(lastUpdateAux);
+        } catch (Exception e) {
+            Log.e("ShowStore", "onCreate: ", e);
+            dateString = "Indeterminda";
+        }
+        lastUpdate.setText(dateString);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, items.size());
         notifyDataSetChanged();

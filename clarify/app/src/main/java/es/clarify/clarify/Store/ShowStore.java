@@ -13,6 +13,7 @@ import com.google.android.material.appbar.AppBarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,7 +89,8 @@ public class ShowStore extends AppCompatActivity {
         lastUpdate.setText(dateString);
 
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
-        adapter = new MyAdapter(recycler, this, items, ShowStore.this);
+        List<TextView> textViews = Arrays.asList(totalCountProducts, lastUpdate);
+        adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews);
         recycler.setAdapter(adapter);
 
         adapter.setLoadMore(new ILoadMore() {
@@ -106,19 +108,11 @@ public class ShowStore extends AppCompatActivity {
                             int index = items.size();
                             int end = index + 10;
 
-//                            List<ScannedTagLocal> aux = database.getAllScannedTagLocal().stream().filter(x -> !items.contains(x)).collect(Collectors.toList());
-
                             List<ScannedTagLocal> aux = database.getScannedTagLocalPagination(store, end)
                                     .stream()
                                     .filter(x -> !items.contains(x))
                                     .collect(Collectors.toList());
-
-//                            for (ScannedTagLocal s: aux) {
-//                                items.add(s);
-//                            }
-
                             items.addAll(aux);
-
                             adapter.notifyDataSetChanged();
                             adapter.setLoaded();
                         }

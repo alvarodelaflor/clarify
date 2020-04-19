@@ -25,7 +25,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Database database;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private MenuItem menuItemLogOut;
     private CircleImageView imgHeader;
     private CircleImageView profileImg;
     private TextView nameUser;
