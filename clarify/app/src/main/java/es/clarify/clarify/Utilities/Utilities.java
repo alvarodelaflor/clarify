@@ -219,12 +219,12 @@ public class Utilities {
                                         scannedTagLocal.setStore(scannedTag.getStore());
                                         scannedTagLocals.add(scannedTagLocal);
 
+                                    } else {
+                                        lastUpdateStore = scannedTagLocalFirebaseAux.getValue(Date.class);
                                     }
                                 }
                                 storeLocal.setScannedTagLocals(scannedTagLocals);
                                 aux.add(storeLocal);
-                            } else {
-                                lastUpdateStore = storeFirebase.getValue(Date.class);
                             }
                         }
                         for (StoreLocal storeLocalToSave: aux) {
