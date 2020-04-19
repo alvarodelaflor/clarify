@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,9 +26,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
@@ -126,7 +132,7 @@ public class Utilities {
                     @Override
                     public void onClick(View view) {
                         ScannedTagLocal scannedTagLocal = new Database().getLastScannedTag();
-                        if (scannedTagLocal!=null) {
+                        if (scannedTagLocal != null) {
                             Boolean result = addItemToPrivateStrore(scannedTagLocal, activityAux);
                             if (!result) {
                                 Toast.makeText(activityAux, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
@@ -227,7 +233,7 @@ public class Utilities {
                                 aux.add(storeLocal);
                             }
                         }
-                        for (StoreLocal storeLocalToSave: aux) {
+                        for (StoreLocal storeLocalToSave : aux) {
                             storeLocalToSave.setLastUpdate(lastUpdateStore);
                         }
                         realm.commitTransaction();
@@ -250,5 +256,46 @@ public class Utilities {
             Log.e("Ulities", "synchronizationWithFirebaseFirstLogin: ", e);
             return false;
         }
+    }
+
+    /**
+     * This method return de last update date of a store local. That is, the date of the last local change in this store.
+     *
+     * @author alvarodelaflor.com
+     * @since 19/04/2020
+     * @param storeName
+     */
+
+    public Date getLastUpdateByStore(@NonNull String storeName) {
+        Date res = null;
+        Realm realm = Realm.getDefaultInstance();
+        StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", storeName).findFirst();
+        if (storeLocal != null) {
+            res = storeLocal.getLastUpdate();
+        }
+        realm.close();
+        return res;
+    }
+
+    /**
+     * This method returns a map of the last change date of all stores.
+     *
+     * @author alvarodelaflor.com
+     * @since 10/04/2020
+     */
+
+    public Map<String, Date> getLastUpdateAllStores() {
+        Map<String, Date> res = new HashMap<>();
+        try {
+            List<StoreLocal> stores = realmDatabase.getAllStoreLocal();
+            for (StoreLocal store :
+                    stores) {
+                Date lastUpdate = getLastUpdateByStore(store.getName());
+                res.put(store.getName(), lastUpdate);
+            }
+        } catch (Exception e) {
+            Log.e("Utilities", "getLastUpdateAllStores: ", e);
+        }
+        return res;
     }
 }
