@@ -20,6 +20,9 @@ public class ScannedTagRemote {
     private String image;
     private String store;
 
+    public ScannedTagRemote() {
+    }
+
     public ScannedTagRemote(ScannedTagLocal scannedTagLocal) {
         this.id = scannedTagLocal.getId();
         this.storageDate = new Date();

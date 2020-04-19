@@ -22,11 +22,14 @@ import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class Login extends AppCompatActivity {
 
     private static final String TAG_AUTH = "AUTH_GOOGLE";
     private GoogleUtilities googleUtilities = new GoogleUtilities();
+    private Database realmDatabase = new Database();
+    private Utilities utilities = new Utilities();
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private Integer RC_SIGN_IN = 1;
@@ -94,7 +97,8 @@ public class Login extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
                             signIn();
                             googleUtilities.updateFirebaseAccount();
-                            new Database().updateLastUserLogin();
+                            realmDatabase.updateLastUserLogin();
+                            utilities.synchronizationWithFirebaseFirstLogin();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.

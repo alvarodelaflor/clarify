@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
@@ -31,11 +33,15 @@ import es.clarify.clarify.NFC.ParsedNdefRecord;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.ScannedTagRemote;
+import es.clarify.clarify.Objects.StoreLocal;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 public class Utilities {
 
     private NfcUtility nfcUtility = new NfcUtility();
+    private GoogleUtilities googleUtilities = new GoogleUtilities();
+    private Database realmDatabase = new Database();
 
     public Utilities() {
 
@@ -165,6 +171,83 @@ public class Utilities {
             return aux1 && aux2;
         } catch (Exception e) {
             Log.e("Utilities", "addItemToPrivateStroe: ", e);
+            return false;
+        }
+    }
+
+    /**
+     * Sincronización de los elementos de firebase tras inicio (usuario no tiene nada a nivel local)
+     *
+     * @author alvarodelaflor.com
+     * @since 19/04/2020
+     */
+
+    public Boolean synchronizationWithFirebaseFirstLogin() {
+        try {
+            String userId = googleUtilities.getCurrentUser().getUid();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference().child(("private")).child(userId);
+            Query query = databaseReference.child("stores");
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        List<StoreLocal> aux = new ArrayList<>();
+                        Date lastUpdateStore = new Date();
+                        for (DataSnapshot storeFirebase : dataSnapshot.getChildren()) {
+                            if (!storeFirebase.getKey().equals("lastUpdate")) {
+                                StoreLocal storeLocal = realm.createObject(StoreLocal.class, storeFirebase.getKey());
+                                storeLocal.setLastUpdate(storeFirebase.getValue(Date.class));
+                                Iterable<DataSnapshot> scannedTagLocalFirebase = storeFirebase.getChildren();
+                                RealmList<ScannedTagLocal> scannedTagLocals = new RealmList<>();
+                                for (DataSnapshot scannedTagLocalFirebaseAux : scannedTagLocalFirebase) {
+                                    if (!storeFirebase.getKey().equals("lastUpdate")) {
+                                        ScannedTagRemote scannedTag = scannedTagLocalFirebaseAux.getValue(ScannedTagRemote.class);
+                                        ScannedTagLocal scannedTagLocal = realm.createObject(ScannedTagLocal.class, realmDatabase.calculateIndex());
+                                        scannedTagLocal.setStorageDate(null);
+                                        scannedTagLocal.setIdFirebase(scannedTag.getIdFirebase());
+                                        scannedTagLocal.setBrand(scannedTag.getBrand());
+                                        scannedTagLocal.setModel(scannedTag.getModel());
+                                        scannedTagLocal.setLote(scannedTag.getLote());
+                                        scannedTagLocal.setColor(scannedTag.getColor());
+                                        scannedTagLocal.setExpiration_date(scannedTag.getExpiration_date());
+                                        scannedTagLocal.setReference(scannedTag.getReference());
+                                        scannedTagLocal.setImage(scannedTag.getImage());
+                                        scannedTagLocal.setStore(scannedTag.getStore());
+                                        scannedTagLocals.add(scannedTagLocal);
+
+                                    }
+                                }
+                                storeLocal.setScannedTagLocals(scannedTagLocals);
+                                aux.add(storeLocal);
+                            } else {
+                                lastUpdateStore = storeFirebase.getValue(Date.class);
+                            }
+                        }
+                        for (StoreLocal storeLocalToSave: aux) {
+                            storeLocalToSave.setLastUpdate(lastUpdateStore);
+                        }
+                        realm.commitTransaction();
+                        realm.close();
+                    } else {
+                          /*
+                        TODO
+                        No data was found in Firebase
+                         */
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+            return true;
+        } catch (Exception e) {
+            Log.e("Ulities", "synchronizationWithFirebaseFirstLogin: ", e);
             return false;
         }
     }

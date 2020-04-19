@@ -2,14 +2,17 @@ package es.clarify.clarify.Store;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,8 +26,6 @@ import es.clarify.clarify.Utilities.Database;
 
 public class ShowStore extends AppCompatActivity {
 
-
-    //    RecyclerView recyclerView;
     private List<ScannedTagLocal> items = new ArrayList<>();
     private MyAdapter adapter;
     private Database database = new Database();
