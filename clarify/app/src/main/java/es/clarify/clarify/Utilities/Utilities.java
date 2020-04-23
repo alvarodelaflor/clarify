@@ -203,7 +203,6 @@ public class Utilities {
                     if (dataSnapshot.exists()) {
                         Realm realm = Realm.getDefaultInstance();
                         realm.beginTransaction();
-                        List<StoreLocal> aux = new ArrayList<>();
                         Date lastUpdateStore = new Date();
                         for (DataSnapshot storeFirebase : dataSnapshot.getChildren()) {
                             if (!storeFirebase.getKey().equals("lastUpdate")) {
@@ -232,11 +231,8 @@ public class Utilities {
                                     }
                                 }
                                 storeLocal.setScannedTagLocals(scannedTagLocals);
-                                aux.add(storeLocal);
+                                storeLocal.setLastUpdate(lastUpdateStore);
                             }
-                        }
-                        for (StoreLocal storeLocalToSave : aux) {
-                            storeLocalToSave.setLastUpdate(lastUpdateStore);
                         }
                         realm.commitTransaction();
                         realm.close();
@@ -275,7 +271,6 @@ public class Utilities {
         if (storeLocal != null) {
             res = storeLocal.getLastUpdate();
         }
-        realm.close();
         return res;
     }
 
@@ -340,8 +335,8 @@ public class Utilities {
                                 realmDatabase.deleteStoresLocal(deleteStore);
                             } else {
                                 // Finally, we synchronize the changes that have occurred within the stores
-                                storesToSyncronize.addAll(storesFirebase);
-                                storesToSyncronize.removeAll(newStores);
+                                storesToSyncronize.addAll(newStores);
+                                storesToSyncronize.removeAll(deleteStore);
                                 for (String toDelete : storesToSyncronize) {
                                     lastUpadateAllStoresLocal.remove(toDelete);
                                 }
