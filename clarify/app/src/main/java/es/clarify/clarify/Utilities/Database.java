@@ -146,7 +146,6 @@ public class Database {
                     storeLocal.addNewScannedTagLocal(scannedTagLocal);
                 }
                 realm.commitTransaction();
-                realm.close();
             }
             return true;
         } catch (Error e) {

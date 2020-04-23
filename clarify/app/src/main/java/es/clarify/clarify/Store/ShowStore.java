@@ -135,7 +135,7 @@ public class ShowStore extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new Utilities().storeListenerFirebase(adapter);
+                new Utilities().showStoreListenerFirebase(adapter, store);
             }
         }).run();
     }

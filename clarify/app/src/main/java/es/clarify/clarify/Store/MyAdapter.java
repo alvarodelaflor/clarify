@@ -101,6 +101,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
+    public List<ScannedTagLocal> getItems() {
+        return items;
+    }
+
     @Override
     public int getItemViewType(int position) {
         return items.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
@@ -141,7 +145,11 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lastUpdate.setText(dateString);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position, items.size());
+        if (items.size()==1) {
+            notifyItemRangeChanged(position, items.size());
+        } else {
+            notifyItemRangeChanged(0, items.size());
+        }
         notifyDataSetChanged();
     }
 

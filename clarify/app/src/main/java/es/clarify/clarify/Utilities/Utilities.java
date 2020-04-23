@@ -44,6 +44,7 @@ import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Store.MyAdapter;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 public class Utilities {
 
@@ -175,7 +176,6 @@ public class Utilities {
             ScannedTagRemote scannedTagRemote = new ScannedTagRemote(scannedTagLocal);
             Boolean aux1 = new GoogleUtilities().addToStore(scannedTagRemote.getStore(), scannedTagRemote, activity);
             Boolean aux2 = new Database().synchronizeScannedTagLocal(scannedTagLocal);
-
             return aux1 && aux2;
         } catch (Exception e) {
             Log.e("Utilities", "addItemToPrivateStroe: ", e);
@@ -206,8 +206,11 @@ public class Utilities {
                         Date lastUpdateStore = new Date();
                         for (DataSnapshot storeFirebase : dataSnapshot.getChildren()) {
                             if (!storeFirebase.getKey().equals("lastUpdate")) {
-                                StoreLocal storeLocal = realm.createObject(StoreLocal.class, storeFirebase.getKey());
-                                storeLocal.setLastUpdate(storeFirebase.getValue(Date.class));
+                                StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", storeFirebase.getKey()).findFirst();
+                                if (storeLocal == null) {
+                                    storeLocal = realm.createObject(StoreLocal.class, storeFirebase.getKey());
+                                    storeLocal.setLastUpdate(storeFirebase.getValue(Date.class));
+                                }
                                 Iterable<DataSnapshot> scannedTagLocalFirebase = storeFirebase.getChildren();
                                 RealmList<ScannedTagLocal> scannedTagLocals = new RealmList<>();
                                 for (DataSnapshot scannedTagLocalFirebaseAux : scannedTagLocalFirebase) {
@@ -230,8 +233,10 @@ public class Utilities {
                                         lastUpdateStore = scannedTagLocalFirebaseAux.getValue(Date.class);
                                     }
                                 }
-                                storeLocal.setScannedTagLocals(scannedTagLocals);
-                                storeLocal.setLastUpdate(lastUpdateStore);
+                                if (storeLocal != null) {
+                                    storeLocal.addNewScannedTagsLocal(scannedTagLocals);
+                                    storeLocal.setLastUpdate(lastUpdateStore);
+                                }
                             }
                         }
                         realm.commitTransaction();
@@ -296,7 +301,89 @@ public class Utilities {
         return res;
     }
 
-    public void storeListenerFirebase(MyAdapter adapter) {
+    public void showStoreListenerFirebase(MyAdapter adapter, String store) {
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            String userId = googleUtilities.getCurrentUser().getUid();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("stores").child(store);
+            databaseReference
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Date lastUpdateFirebase = null;
+                            RealmResults<ScannedTagLocal> res = realm.where(ScannedTagLocal.class).equalTo("store", store).findAll();
+                            List<ScannedTagRemote> scannedTagsFirebase = new ArrayList<>();
+
+                            Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                            for (DataSnapshot child : children) {
+                                if (child.getKey().equals("lastUpdate")) {
+                                    lastUpdateFirebase = child.getValue(Date.class);
+                                } else {
+                                    ScannedTagRemote scannedTagFirebase = child.getValue(ScannedTagRemote.class);
+                                    scannedTagsFirebase.add(scannedTagFirebase);
+                                }
+                            }
+
+                            // First we delete locally the tags that have been removed remotely
+                            List<ScannedTagLocal> toDelete = new ArrayList<>();
+                            toDelete.addAll(res);
+                            for (ScannedTagRemote aux1 : scannedTagsFirebase) {
+                                List<ScannedTagLocal> exitsTag = toDelete.stream().filter(x -> x.getIdFirebase().equals(aux1.getIdFirebase())).collect(Collectors.toList());
+                                toDelete.removeAll(exitsTag);
+                            }
+                            for (ScannedTagLocal aux2 : toDelete) {
+                                ScannedTagLocal insideItems = adapter.getItems().stream().filter(x -> x.getIdFirebase().equals(aux2.getIdFirebase())).findFirst().orElse(null);
+                                if (insideItems != null) {
+                                    int position = adapter.getItems().indexOf(insideItems);
+                                    deleteItemFromPrivateStore(store, aux2.getIdFirebase());
+                                    adapter.removeItem(position);
+                                }
+                            }
+
+                            // Now save the new tags
+                            RealmList<ScannedTagLocal> toSaveInStore = new RealmList<>();
+                            for (ScannedTagRemote elem : scannedTagsFirebase) {
+                                List<ScannedTagLocal> exitsTag2 = realm.where(ScannedTagLocal.class).equalTo("idFirebase", elem.getIdFirebase()).findAll();
+                                if (exitsTag2.size() <= 0) {
+                                    realm.beginTransaction();
+                                    ScannedTagLocal scannedTagLocal = realm.createObject(ScannedTagLocal.class, realmDatabase.calculateIndex());
+                                    scannedTagLocal.setStorageDate(null);
+                                    scannedTagLocal.setIdFirebase(elem.getIdFirebase());
+                                    scannedTagLocal.setBrand(elem.getBrand());
+                                    scannedTagLocal.setModel(elem.getModel());
+                                    scannedTagLocal.setLote(elem.getLote());
+                                    scannedTagLocal.setColor(elem.getColor());
+                                    scannedTagLocal.setExpiration_date(elem.getExpiration_date());
+                                    scannedTagLocal.setReference(elem.getReference());
+                                    scannedTagLocal.setImage(elem.getImage());
+                                    scannedTagLocal.setStore(elem.getStore());
+                                    realm.commitTransaction();
+                                    toSaveInStore.add(scannedTagLocal);
+                                }
+                            }
+                            StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
+                            realm.beginTransaction();
+                            if (store == null) {
+                                storeLocal = realm.createObject(StoreLocal.class, store);
+                            }
+                            storeLocal.setLastUpdate(lastUpdateFirebase);
+                            storeLocal.addNewScannedTagsLocal(toSaveInStore);
+                            realm.commitTransaction();
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("Utilities", "updateDataFromFirebaseToLocal: ", e);
+        }
+    }
+
+    public void storeListenerFirebase() {
         try {
             String userId = googleUtilities.getCurrentUser().getUid();
             FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -324,24 +411,15 @@ public class Utilities {
                                 }
                             }
 
-                            if (adapter == null) {
-                                // First of all, if there is a new store, we add it together with all its labels
-                                newStores.addAll(storesFirebase.stream().filter(x -> !lastUpadateAllStoresLocal.keySet().contains(x)).collect(Collectors.toList()));
-                                updateStore(newStores, dataSnapshot, adapter);
+                            // First of all, if there is a new store, we add it together with all its labels
+                            newStores.addAll(storesFirebase.stream().filter(x -> !lastUpadateAllStoresLocal.keySet().contains(x)).collect(Collectors.toList()));
+                            updateStore(newStores, dataSnapshot);
 
-                                // Second, we delete the stores that no longer exist remotely
-                                deleteStore.addAll(lastUpadateAllStoresLocal.keySet());
-                                deleteStore.removeAll(storesFirebase);
-                                realmDatabase.deleteStoresLocal(deleteStore);
-                            } else {
-                                // Finally, we synchronize the changes that have occurred within the stores
-                                storesToSyncronize.addAll(newStores);
-                                storesToSyncronize.removeAll(deleteStore);
-                                for (String toDelete : storesToSyncronize) {
-                                    lastUpadateAllStoresLocal.remove(toDelete);
-                                }
-                                updateStoreChange(lastUpadateAllStoresLocal, dataSnapshot, adapter);
-                            }
+                            // Second, we delete the stores that no longer exist remotely
+                            deleteStore.addAll(lastUpadateAllStoresLocal.keySet());
+                            deleteStore.removeAll(storesFirebase);
+                            realmDatabase.deleteStoresLocal(deleteStore);
+
                         }
 
                         @Override
@@ -354,7 +432,7 @@ public class Utilities {
         }
     }
 
-    public Boolean updateStore(List<String> stores, DataSnapshot dataSnapshot, MyAdapter adapter) {
+    public Boolean updateStore(List<String> stores, DataSnapshot dataSnapshot) {
         try {
             Realm realm = Realm.getDefaultInstance();
             for (String store : stores) {
@@ -366,7 +444,7 @@ public class Utilities {
                     if (!scannedTagLocalFirebaseAux.getKey().equals("lastUpdate")) {
                         ScannedTagRemote scannedTag = scannedTagLocalFirebaseAux.getValue(ScannedTagRemote.class);
                         ScannedTagLocal check = realm.where(ScannedTagLocal.class).equalTo("idFirebase", scannedTag.getIdFirebase()).findFirst();
-                        if (check== null) {
+                        if (check == null) {
                             ScannedTagLocal scannedTagLocal = realm.createObject(ScannedTagLocal.class, realmDatabase.calculateIndex());
                             scannedTagLocal.setStorageDate(null);
                             scannedTagLocal.setIdFirebase(scannedTag.getIdFirebase());
@@ -393,34 +471,6 @@ public class Utilities {
                     storeLocal.setLastUpdate(lastUpdateStore);
                     realm.commitTransaction();
                 }
-                if (adapter != null) {
-                    adapter.notifyDataSetChanged();
-                }
-            }
-            realm.close();
-            return true;
-        } catch (Exception e) {
-            Log.e("Utilities", "updateStore: ", e);
-            return false;
-        }
-    }
-
-    public Boolean updateStoreChange(Map<String, Date> lastUpadateAllStoresLocal, DataSnapshot dataSnapshot, MyAdapter adapter) {
-        try {
-            List<String> storesToUpdate = new ArrayList<>();
-            for (String store : lastUpadateAllStoresLocal.keySet()) {
-                Iterable<DataSnapshot> data = dataSnapshot.child(store).getChildren();
-                for (DataSnapshot scannedTagLocalFirebaseAux : data) {
-                    if (scannedTagLocalFirebaseAux.getKey().equals("lastUpdate")) {
-                        Date lastUpdateStore = scannedTagLocalFirebaseAux.getValue(Date.class);
-                        if (lastUpdateStore!=null && lastUpdateStore.after(lastUpadateAllStoresLocal.get(store))) {
-                            storesToUpdate.add(store);
-                        }
-                    }
-                }
-            }
-            if (storesToUpdate.size() > 0) {
-                updateStore(storesToUpdate, dataSnapshot, adapter);
             }
             return true;
         } catch (Exception e) {

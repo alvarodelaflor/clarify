@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new Utilities().storeListenerFirebase(null);
+                new Utilities().storeListenerFirebase();
             }
         }).run();
         // Firebase instances
