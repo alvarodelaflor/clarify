@@ -153,6 +153,23 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void addItem(ScannedTagLocal scannedTagLocal) {
+        items.add(scannedTagLocal);
+        String auxTotalCount = String.valueOf(items.size());
+        totalCount.setText(auxTotalCount);
+        Date lastUpdateAux = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        String dateString = "";
+        try {
+            dateString = format.format(lastUpdateAux);
+        } catch (Exception e) {
+            Log.e("ShowStore", "onCreate: ", e);
+            dateString = "Indeterminda";
+        }
+        lastUpdate.setText(dateString);
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHoder) {

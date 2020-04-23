@@ -360,6 +360,7 @@ public class Utilities {
                                     scannedTagLocal.setStore(elem.getStore());
                                     realm.commitTransaction();
                                     toSaveInStore.add(scannedTagLocal);
+                                    adapter.addItem(scannedTagLocal);
                                 }
                             }
                             StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
