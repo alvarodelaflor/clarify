@@ -223,12 +223,36 @@ public class Database {
     public Boolean deleteAllStoreLocal() {
         try {
             Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
             realm.delete(StoreLocal.class);
+            realm.commitTransaction();
             realm.close();
             return true;
         } catch (Error e) {
             Log.e(TAG, "deleteAllStoreLocal: can not delete all stores", e);
             return false;
+        }
+    }
+
+    public Boolean deleteStoreLocal(String store) {
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            realm.where(ScannedTagLocal.class).equalTo("store", store).findAll().deleteAllFromRealm();
+            realm.where(StoreLocal.class).equalTo("name", store).findAll().deleteAllFromRealm();
+            realm.commitTransaction();
+            realm.close();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "deleteStoreLocal: ", e);
+            return false;
+        }
+    }
+
+    public void deleteStoresLocal(List<String> stores) {
+        for (String store :
+                stores) {
+            deleteStoreLocal(store);
         }
     }
 

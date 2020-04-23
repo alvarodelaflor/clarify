@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +39,7 @@ import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -80,6 +82,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
         Realm.setDefaultConfiguration(config);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new Utilities().storeListenerFirebase();
+            }
+        }).run();
         // Firebase instances
 
         ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////

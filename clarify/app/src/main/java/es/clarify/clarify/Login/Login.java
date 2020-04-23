@@ -1,13 +1,18 @@
 package es.clarify.clarify.Login;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,6 +25,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
 import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -35,6 +41,7 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private Integer RC_SIGN_IN = 1;
+    private TextView link;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,16 @@ public class Login extends AppCompatActivity {
 
         mAuth = googleUtilities.getFirebaseAuth();
         mGoogleSignInClient = googleUtilities.getmGoogleSignInClient(this);
+        link = findViewById(R.id.link);
+        link.setText("clarify.es");
+        final String url = "http//clarify.es";
+        link.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+                browserIntent.setData(Uri.parse("http://clarify.es"));
+                startActivity(browserIntent);
+            }
+        });
 
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,7 +125,12 @@ public class Login extends AppCompatActivity {
                             signIn();
                             googleUtilities.updateFirebaseAccount();
                             realmDatabase.updateLastUserLogin();
-                            utilities.synchronizationWithFirebaseFirstLogin();
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    utilities.synchronizationWithFirebaseFirstLogin();
+                                }
+                            }).run();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.

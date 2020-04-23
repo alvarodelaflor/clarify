@@ -22,27 +22,29 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="94dp"
             android:fontFamily="@font/carter_one"
             android:text="Clarify"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
             android:textColor="@color/white"
-            android:textSize="44sp" />
+            android:textSize="64sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:alpha="0.7"
             android:fontFamily="@font/roboto_bold"
             android:text="Encantados de que vuelvas"
             android:textColor="@color/white"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="45dp"
             android:textSize="19sp" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
             android:layout_marginTop="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -79,6 +81,7 @@
             android:textSize="16sp" />
 
         <TextView
+            android:id="@+id/link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_bold"

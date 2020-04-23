@@ -4,7 +4,7 @@
     <gradient
         android:angle="0"
         android:centerX="0%"
-        android:centerColor="#BFFFFFFF"
+        android:centerColor="@color/statusbarstore"
         android:endColor="@color/white"
         android:type="linear"
         />

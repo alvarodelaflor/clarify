@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
@@ -210,7 +211,7 @@ public class Utilities {
                                 Iterable<DataSnapshot> scannedTagLocalFirebase = storeFirebase.getChildren();
                                 RealmList<ScannedTagLocal> scannedTagLocals = new RealmList<>();
                                 for (DataSnapshot scannedTagLocalFirebaseAux : scannedTagLocalFirebase) {
-                                    if (!storeFirebase.getKey().equals("lastUpdate")) {
+                                    if (!scannedTagLocalFirebaseAux.getKey().equals("lastUpdate")) {
                                         ScannedTagRemote scannedTag = scannedTagLocalFirebaseAux.getValue(ScannedTagRemote.class);
                                         ScannedTagLocal scannedTagLocal = realm.createObject(ScannedTagLocal.class, realmDatabase.calculateIndex());
                                         scannedTagLocal.setStorageDate(null);
@@ -261,9 +262,9 @@ public class Utilities {
     /**
      * This method return de last update date of a store local. That is, the date of the last local change in this store.
      *
+     * @param storeName
      * @author alvarodelaflor.com
      * @since 19/04/2020
-     * @param storeName
      */
 
     public Date getLastUpdateByStore(@NonNull String storeName) {
@@ -297,5 +298,130 @@ public class Utilities {
             Log.e("Utilities", "getLastUpdateAllStores: ", e);
         }
         return res;
+    }
+
+    public void storeListenerFirebase() {
+        try {
+            String userId = googleUtilities.getCurrentUser().getUid();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("stores");
+            databaseReference
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Date lastUpdateFirebase = null;
+                            Map<String, Date> lastUpadateAllStoresLocal = getLastUpdateAllStores();
+                            List<String> storesFirebase = new ArrayList<>();
+
+                            List<String> storesToSyncronize = new ArrayList<String>();
+                            List<String> newStores = new ArrayList<>();
+                            List<String> deleteStore = new ArrayList<>();
+
+                            Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                            for (DataSnapshot child : children) {
+
+                                if (child.getKey().equals("lastUpdate")) {
+                                    lastUpdateFirebase = child.getValue(Date.class);
+                                } else {
+                                    storesFirebase.add(child.getKey());
+                                }
+                            }
+
+                            // First of all, if there is a new store, we add it together with all its labels
+                            newStores.addAll(storesFirebase.stream().filter(x -> !lastUpadateAllStoresLocal.keySet().contains(x)).collect(Collectors.toList()));
+                            updateStore(newStores, dataSnapshot);
+
+                            // Second, we delete the stores that no longer exist remotely
+                            deleteStore.addAll(lastUpadateAllStoresLocal.keySet());
+                            deleteStore.removeAll(storesFirebase);
+                            realmDatabase.deleteStoresLocal(deleteStore);
+
+                            // Finally, we synchronize the changes that have occurred within the stores
+                            updateStoreChange(lastUpadateAllStoresLocal, dataSnapshot);
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e("Utilities", "updateDataFromFirebaseToLocal: ", e);
+        }
+    }
+
+    public Boolean updateStore(List<String> stores, DataSnapshot dataSnapshot) {
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            for (String store : stores) {
+                realm.beginTransaction();
+                realm.where(ScannedTagLocal.class).equalTo("store", store).findAll().deleteAllFromRealm();
+                realm.commitTransaction();
+                realm.beginTransaction();
+                Iterable<DataSnapshot> scannedTagLocalFirebase = dataSnapshot.child(store).getChildren();
+                RealmList<ScannedTagLocal> scannedTagLocals = new RealmList<>();
+                Date lastUpdateStore = null;
+                for (DataSnapshot scannedTagLocalFirebaseAux : scannedTagLocalFirebase) {
+                    if (!scannedTagLocalFirebaseAux.getKey().equals("lastUpdate")) {
+                        ScannedTagRemote scannedTag = scannedTagLocalFirebaseAux.getValue(ScannedTagRemote.class);
+                        ScannedTagLocal scannedTagLocal = realm.createObject(ScannedTagLocal.class, realmDatabase.calculateIndex());
+                        scannedTagLocal.setStorageDate(null);
+                        scannedTagLocal.setIdFirebase(scannedTag.getIdFirebase());
+                        scannedTagLocal.setBrand(scannedTag.getBrand());
+                        scannedTagLocal.setModel(scannedTag.getModel());
+                        scannedTagLocal.setLote(scannedTag.getLote());
+                        scannedTagLocal.setColor(scannedTag.getColor());
+                        scannedTagLocal.setExpiration_date(scannedTag.getExpiration_date());
+                        scannedTagLocal.setReference(scannedTag.getReference());
+                        scannedTagLocal.setImage(scannedTag.getImage());
+                        scannedTagLocal.setStore(scannedTag.getStore());
+                        scannedTagLocals.add(scannedTagLocal);
+
+
+                    } else {
+                        lastUpdateStore = scannedTagLocalFirebaseAux.getValue(Date.class);
+                    }
+                }
+                realm.commitTransaction();
+                if (realm.where(StoreLocal.class).equalTo("name", store).findAll().size() <= 0) {
+                    realm.beginTransaction();
+                    StoreLocal storeLocal = realm.createObject(StoreLocal.class, store);
+                    storeLocal.setScannedTagLocals(scannedTagLocals);
+                    storeLocal.setLastUpdate(lastUpdateStore);
+                    realm.commitTransaction();
+                }
+            }
+            realm.close();
+            return true;
+        } catch (Exception e) {
+            Log.e("Utilities", "updateStore: ", e);
+            return false;
+        }
+    }
+
+    public Boolean updateStoreChange(Map<String, Date> lastUpadateAllStoresLocal, DataSnapshot dataSnapshot) {
+        try {
+            List<String> storesToUpdate = new ArrayList<>();
+            for (String store : lastUpadateAllStoresLocal.keySet()) {
+                Iterable<DataSnapshot> data = dataSnapshot.child(store).getChildren();
+                for (DataSnapshot scannedTagLocalFirebaseAux : data) {
+                    if (scannedTagLocalFirebaseAux.getKey().equals("lastUpdate")) {
+                        Date lastUpdateStore = scannedTagLocalFirebaseAux.getValue(Date.class);
+                        if (lastUpdateStore.after(lastUpadateAllStoresLocal.get(store))) {
+                            storesToUpdate.add(store);
+                        }
+                    }
+                }
+            }
+            if (storesToUpdate.size() > 0) {
+                updateStore(storesToUpdate, dataSnapshot);
+            }
+            return true;
+        } catch (Exception e) {
+            Log.e("Utilities", "updateStore: ", e);
+            return false;
+        }
     }
 }
