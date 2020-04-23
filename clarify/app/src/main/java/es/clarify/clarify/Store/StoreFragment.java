@@ -28,8 +28,6 @@ public class StoreFragment extends Fragment {
     private TextView textViewPrincipal;
     private Database database;
     RecyclerViewAdapter recyclerViewAdapter;
-    int count = 0;
-
 
     public StoreFragment() {
         database = new Database();

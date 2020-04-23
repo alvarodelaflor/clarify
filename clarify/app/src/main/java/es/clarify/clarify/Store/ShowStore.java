@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class ShowStore extends AppCompatActivity {
 
@@ -130,6 +131,13 @@ public class ShowStore extends AppCompatActivity {
                 }
             }
         });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new Utilities().storeListenerFirebase(adapter);
+            }
+        }).run();
     }
 
     public void changeColor(int resourseColor) {

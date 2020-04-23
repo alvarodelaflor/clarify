@@ -47,6 +47,12 @@ public class StoreLocal extends RealmObject {
         this.scannedTagLocals = scannedTagLocals;
     }
 
+    public void addNewScannedTagsLocal(RealmList<ScannedTagLocal> scannedTagsLocal) {
+        for (ScannedTagLocal elem: scannedTagsLocal) {
+            addNewScannedTagLocal(elem);
+        }
+    }
+
     public void addNewScannedTagLocal(final ScannedTagLocal scannedTagLocal) {
         RealmList<ScannedTagLocal> res = getScannedTagLocals();
         if (res == null) {
