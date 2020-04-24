@@ -448,6 +448,7 @@ public class Utilities {
                                 deleteItemFromPrivateStore(store, aux2.getIdFirebase());
                                 adapter.removeItem(position);
                             } else {
+                                realmDatabase.deleteItemFromPrivateStore(store, aux2.getIdFirebase());
                                 adapter.removeItem(-1);
                             }
                         }
