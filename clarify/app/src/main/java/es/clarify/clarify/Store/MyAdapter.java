@@ -159,7 +159,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lastUpdate.setText(dateString);
 
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);
@@ -193,7 +193,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lastUpdate.setText(dateString);
 
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);

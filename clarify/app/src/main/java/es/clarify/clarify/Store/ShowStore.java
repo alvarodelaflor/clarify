@@ -99,7 +99,7 @@ public class ShowStore extends AppCompatActivity {
         lastUpdate.setText(dateString);
 
         lastUpdate_time = (TextView)findViewById(R.id.last_update_time);
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);
@@ -144,12 +144,14 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new Utilities().showStoreListenerFirebase(adapter, store);
-            }
-        }).run();
+        new Utilities().showStoreListenerFirebase(adapter, store);
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                new Utilities().showStoreListenerFirebase(adapter, store);
+//            }
+//        }).run();
     }
 
     public void changeColor(int resourseColor) {
