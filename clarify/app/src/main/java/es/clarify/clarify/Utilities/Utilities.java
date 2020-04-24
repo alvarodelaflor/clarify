@@ -241,8 +241,10 @@ public class Utilities {
                         }
                         realm.commitTransaction();
                         realm.close();
+                        Thread.interrupted();
                     } else {
-                          /*
+                        Thread.interrupted();
+                        /*
                         TODO
                         No data was found in Firebase
                          */
@@ -251,7 +253,7 @@ public class Utilities {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Thread.interrupted();
                 }
             });
             return true;

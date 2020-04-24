@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView emailUser;
     private FirebaseUser firebaseUser;
     private Boolean identify = false;
+    private Utilities utilities;
 
 
     @Override
@@ -82,10 +83,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
         Realm.setDefaultConfiguration(config);
 
+        utilities = new Utilities();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new Utilities().storeListenerFirebase();
+                utilities.synchronizationWithFirebaseFirstLogin();
+            }
+        }).run();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                utilities.storeListenerFirebase();
             }
         }).run();
         // Firebase instances

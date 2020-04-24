@@ -125,12 +125,6 @@ public class Login extends AppCompatActivity {
                             signIn();
                             googleUtilities.updateFirebaseAccount();
                             realmDatabase.updateLastUserLogin();
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    utilities.synchronizationWithFirebaseFirstLogin();
-                                }
-                            }).run();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.

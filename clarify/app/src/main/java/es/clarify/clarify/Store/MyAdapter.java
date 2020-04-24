@@ -173,7 +173,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //        if (items.size()==1) {
 //            notifyItemRangeChanged(position, items.size());
 //        } else {
-        notifyItemRangeChanged(0, items.size());
+        notifyItemRangeChanged(0, items.size()-1);
 //        }
         notifyDataSetChanged();
     }
