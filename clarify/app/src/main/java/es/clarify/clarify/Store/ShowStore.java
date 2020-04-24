@@ -43,6 +43,7 @@ public class ShowStore extends AppCompatActivity {
     private Long numberProducts;
     private TextView totalCountProducts;
     private TextView lastUpdate;
+    private TextView lastUpdate_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,8 +98,19 @@ public class ShowStore extends AppCompatActivity {
         }
         lastUpdate.setText(dateString);
 
+        lastUpdate_time = (TextView)findViewById(R.id.last_update_time);
+        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm");
+        String dateString2 = "";
+        try {
+            dateString2 = format2.format(lastUpdateAux);
+        } catch (Exception e) {
+            Log.e("ShowStore", "onCreate: ", e);
+            dateString = "Indeterminda";
+        }
+        lastUpdate_time.setText(dateString2);
+
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
-        List<TextView> textViews = Arrays.asList(totalCountProducts, lastUpdate);
+        List<TextView> textViews = Arrays.asList(totalCountProducts, lastUpdate, lastUpdate_time);
         adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews, store);
         recycler.setAdapter(adapter);
 

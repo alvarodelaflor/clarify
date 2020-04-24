@@ -67,6 +67,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
+                            android:layout_gravity="bottom"
                             android:gravity="center">
 
                             <TextView
@@ -74,6 +75,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="XX"
+                                android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/roboto_bold"
                                 android:textSize="24sp"/>
@@ -83,6 +85,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Nº DE PRODUCTOS"
                                 android:textColor="@color/white"
+                                android:layout_marginTop="9dp"
                                 android:fontFamily="@font/roboto_condensed_bold_italic"
                                 android:textSize="16sp"/>
 
@@ -97,6 +100,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
+                            android:layout_gravity="bottom"
                             android:gravity="center">
 
                             <TextView
@@ -104,6 +108,17 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="dd/mm/yyyy"
+                                android:textAlignment="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/roboto_bold"
+                                android:textSize="24sp"/>
+
+                            <TextView
+                                android:id="@+id/last_update_time"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="hh:mm"
+                                android:textAlignment="center"
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/roboto_bold"
                                 android:textSize="24sp"/>
