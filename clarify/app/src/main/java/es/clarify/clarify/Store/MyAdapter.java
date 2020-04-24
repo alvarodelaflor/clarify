@@ -189,6 +189,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 public void onClick(View view) {
                     viewHoder.dialog_name.setText(res.getModel());
                     viewHoder.dialog_brand.setText(res.getBrand());
+                    Picasso.get().load(res.getImage()).into(viewHoder.dialog_img);
                     viewHoder.mydialog.show();
 
                     viewHoder.dialog_btn_delete.setOnClickListener(new View.OnClickListener() {
