@@ -99,7 +99,7 @@ public class ShowStore extends AppCompatActivity {
 
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
         List<TextView> textViews = Arrays.asList(totalCountProducts, lastUpdate);
-        adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews);
+        adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews, store);
         recycler.setAdapter(adapter);
 
         adapter.setLoadMore(new ILoadMore() {

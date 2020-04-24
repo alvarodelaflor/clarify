@@ -85,13 +85,12 @@ public class Database {
 
 
     /**
-     *
      * This method return all the {@link ScannedTagLocal} using a filter by {@link StoreLocal} name and limiting the number of result
      *
-     * @author alvarodelaflor.com
-     * @since 16/04/2020
      * @param store
      * @param limit
+     * @author alvarodelaflor.com
+     * @since 16/04/2020
      */
 
     public RealmList<ScannedTagLocal> getScannedTagLocalPagination(String store, int limit) {
@@ -157,11 +156,14 @@ public class Database {
     public Boolean deleteItemFromPrivateStore(String store, String firebaseId) {
         try {
             Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.where(ScannedTagLocal.class).equalTo("idFirebase", firebaseId).findFirst().deleteFromRealm();
-            realm.where(StoreLocal.class).equalTo("name", store).findFirst().setLastUpdate(new Date());
-            realm.commitTransaction();
-            realm.close();
+            ScannedTagLocal toDelete = realm.where(ScannedTagLocal.class).equalTo("idFirebase", firebaseId).findFirst();
+            if (toDelete != null) {
+                realm.beginTransaction();
+                toDelete.deleteFromRealm();
+                realm.where(StoreLocal.class).equalTo("name", store).findFirst().setLastUpdate(new Date());
+                realm.commitTransaction();
+                realm.close();
+            }
             return true;
         } catch (Error e) {
             Log.e(TAG, "deleteItemFromPrivateStore:", e);

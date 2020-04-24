@@ -28,6 +28,7 @@ import java.util.List;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Utilities;
+import io.realm.Realm;
 
 class LoadingViewHoler extends RecyclerView.ViewHolder {
 
@@ -79,13 +80,15 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context myContext;
     TextView lastUpdate;
     TextView totalCount;
+    String store;
 
-    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context, List<TextView> textViews) {
+    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context, List<TextView> textViews, String store) {
         this.activity = activity;
         this.items = items;
         this.myContext = context;
         this.totalCount = textViews.get(0);
         this.lastUpdate = textViews.get(1);
+        this.store = store;
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -96,8 +99,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 lastVisibibleItem = linearLayoutManager.findLastCompletelyVisibleItemPosition();
                 if (!isLoading && totalItemCount <= (lastVisibibleItem + visibleThreshold)) {
                     if (loadMore != null) {
-                        loadMore.onLoadMore();
-                        isLoading = true;
+                        Realm realm = Realm.getDefaultInstance();
+                        if (items.size() == realm.where(ScannedTagLocal.class).equalTo("store", store).findAll().size()) {
+                            isLoading = false;
+                        } else {
+                            loadMore.onLoadMore();
+                            isLoading = true;
+                        }
                     }
                 }
             }
@@ -196,6 +204,9 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public void onClick(View view) {
                             ScannedTagLocal scannedTagLocal = res;
+                            if (scannedTagLocal == null) {
+                                viewHoder.mydialog.dismiss();
+                            }
                             Boolean result = new Utilities().deleteItemFromPrivateStore(scannedTagLocal.getStore(), scannedTagLocal.getIdFirebase());
                             if (result) {
                                 viewHoder.mydialog.dismiss();
