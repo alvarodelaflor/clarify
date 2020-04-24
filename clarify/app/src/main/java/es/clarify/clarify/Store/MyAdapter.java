@@ -145,8 +145,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void removeItem(int position) {
-        items.remove(position);
-        String auxTotalCount = String.valueOf(items.size());
+        if (position>-1) {
+            items.remove(position);
+        }
+        String auxTotalCount = new Database().getNumberScannedTagLocalByStore(store).toString();
         totalCount.setText(auxTotalCount);
         Date lastUpdateAux = new Database().getLastUpadateByStore(store);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
@@ -170,12 +172,14 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         lastUpdate_time.setText(dateString2);
 
         notifyItemRemoved(position);
-        if (items.size() == 1) {
-            notifyItemRangeChanged(position, items.size()-1);
-        } else {
-            notifyItemRangeChanged(0, items.size() - 1);
+        if (position > -1) {
+            if (items.size() == 1) {
+                notifyItemRangeChanged(position, items.size()-1);
+            } else {
+                notifyItemRangeChanged(0, items.size() - 1);
+            }
+            notifyDataSetChanged();
         }
-        notifyDataSetChanged();
     }
 
     public void addItem(ScannedTagLocal scannedTagLocal) {

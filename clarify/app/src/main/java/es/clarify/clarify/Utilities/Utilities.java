@@ -447,6 +447,8 @@ public class Utilities {
                                 int position = adapter.getItems().indexOf(insideItems);
                                 deleteItemFromPrivateStore(store, aux2.getIdFirebase());
                                 adapter.removeItem(position);
+                            } else {
+                                adapter.removeItem(-1);
                             }
                         }
                     }
