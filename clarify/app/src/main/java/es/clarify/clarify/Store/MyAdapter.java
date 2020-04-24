@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,8 +84,9 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     TextView lastUpdate_time;
     TextView totalCount;
     String store;
+    LinearLayout msg_empty_1;
 
-    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context, List<TextView> textViews, String store) {
+    public MyAdapter(RecyclerView recyclerView, Activity activity, List<ScannedTagLocal> items, Context context, List<TextView> textViews, String store, LinearLayout msg_empty_1) {
         this.activity = activity;
         this.items = items;
         this.myContext = context;
@@ -92,6 +94,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.lastUpdate = textViews.get(1);
         this.lastUpdate_time = textViews.get(2);
         this.store = store;
+        this.msg_empty_1 = msg_empty_1;
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -108,6 +111,11 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         } else {
                             loadMore.onLoadMore();
                             isLoading = true;
+                        }
+                        if (items.size() > 0) {
+                            msg_empty_1.setVisibility(View.GONE);
+                        } else {
+                            msg_empty_1.setVisibility(View.VISIBLE);
                         }
                     }
                 }

@@ -2,6 +2,7 @@ package es.clarify.clarify.Store;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,10 +36,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         vHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Context context = v.getContext();
-                Intent intent = new Intent(context, ShowStore.class);
-                intent.putExtra("store_name", mData.get(vHolder.getAdapterPosition()).getName());
-                context.startActivity(intent);
+                try {
+                    Context context = v.getContext();
+                    Intent intent = new Intent(context, ShowStore.class);
+                    intent.putExtra("store_name", mData.get(vHolder.getAdapterPosition()).getName());
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("Opening a Store", "onClick: ", e);
+                }
             }
         });
 

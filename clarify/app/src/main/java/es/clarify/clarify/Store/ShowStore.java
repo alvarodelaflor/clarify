@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class ShowStore extends AppCompatActivity {
     private TextView lastUpdate_time;
     private Utilities utilities;
     private ValueEventListener valueEventListener;
+    private LinearLayout msg_empty_1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +124,8 @@ public class ShowStore extends AppCompatActivity {
 
         RecyclerView recycler = (RecyclerView) findViewById(R.id.show_store_recyclerView);
         List<TextView> textViews = Arrays.asList(totalCountProducts, lastUpdate, lastUpdate_time);
-        adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews, store);
+        msg_empty_1 = (LinearLayout)findViewById(R.id.msg_empty_1);
+        adapter = new MyAdapter(recycler, this, items, ShowStore.this, textViews, store, msg_empty_1);
         recycler.setAdapter(adapter);
 
         adapter.setLoadMore(new ILoadMore() {
