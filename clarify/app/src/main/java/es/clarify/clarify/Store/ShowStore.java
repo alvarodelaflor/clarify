@@ -16,8 +16,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
 
 public class ShowStore extends AppCompatActivity {
@@ -44,6 +50,8 @@ public class ShowStore extends AppCompatActivity {
     private TextView totalCountProducts;
     private TextView lastUpdate;
     private TextView lastUpdate_time;
+    private Utilities utilities;
+    private ValueEventListener valueEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +96,9 @@ public class ShowStore extends AppCompatActivity {
 
         lastUpdate = (TextView)findViewById(R.id.last_update);
         Date lastUpdateAux = database.getLastUpadateByStore(store);
+        if (lastUpdateAux == null && items.size() > 0) {
+            lastUpdateAux = items.get(items.size()-1).getStorageDate();
+        }
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String dateString = "";
         try {
@@ -144,14 +155,9 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-        new Utilities().showStoreListenerFirebase(adapter, store);
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                new Utilities().showStoreListenerFirebase(adapter, store);
-//            }
-//        }).run();
+        utilities = new Utilities();
+        valueEventListener = utilities.createValueEventListenerShowStore(adapter, store);
+        utilities.showStoreListenerFirebase(adapter, store, valueEventListener);
     }
 
     public void changeColor(int resourseColor) {
@@ -164,5 +170,13 @@ public class ShowStore extends AppCompatActivity {
         this.items = database.getScannedTagLocalPagination(store, 10);
     }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        String userId = new GoogleUtilities().getCurrentUser().getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("stores").child(store);
+        databaseReference.removeEventListener(valueEventListener);
+        finish();
+    }
 }

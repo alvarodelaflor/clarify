@@ -170,11 +170,11 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         lastUpdate_time.setText(dateString2);
 
         notifyItemRemoved(position);
-//        if (items.size()==1) {
-//            notifyItemRangeChanged(position, items.size());
-//        } else {
-        notifyItemRangeChanged(0, items.size()-1);
-//        }
+        if (items.size() == 1) {
+            notifyItemRangeChanged(position, items.size()-1);
+        } else {
+            notifyItemRangeChanged(0, items.size() - 1);
+        }
         notifyDataSetChanged();
     }
 
@@ -182,14 +182,14 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         items.add(scannedTagLocal);
         String auxTotalCount = String.valueOf(items.size());
         totalCount.setText(auxTotalCount);
-        Date lastUpdateAux = new Database().getLastUpadateByStore(store);
+        Date lastUpdateAux = scannedTagLocal.getStorageDate();
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
         String dateString = "";
         try {
             dateString = format.format(lastUpdateAux);
         } catch (Exception e) {
             Log.e("ShowStore", "onCreate: ", e);
-            dateString = "Indeterminda";
+            dateString = "Indeterminada";
         }
         lastUpdate.setText(dateString);
 
@@ -199,7 +199,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             dateString2 = format2.format(lastUpdateAux);
         } catch (Exception e) {
             Log.e("ShowStore", "onCreate: ", e);
-            dateString = "Indeterminda";
+            dateString = "Indeterminada";
         }
         lastUpdate_time.setText(dateString2);
 
