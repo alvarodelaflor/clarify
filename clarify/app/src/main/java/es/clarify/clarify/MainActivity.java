@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NfcUtility nfcUtility = new NfcUtility();
     private BottomNavigationView bottomNavigationView;
     private TabLayout tabLayout;
-    private ViewPager viewPager;
+    public ViewPager viewPager;
     private ViewPageAdapter viewPageAdapter;
     private NfcIdentifyFragment nfcIdentifyFragment;
     private HomeFragment homeFragment;
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Add fragment
         homeFragment = new HomeFragment();
-        storeFragment = new StoreFragment();
+        storeFragment = new StoreFragment(this);
         nfcIdentifyFragment = new NfcIdentifyFragment();
 
         viewPageAdapter.addFragment(homeFragment, "");
@@ -193,25 +193,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
                         super.onTabSelected(tab);
-                        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.colorAccent);
-                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                         if (tab.getPosition() == 2) {
                             identify = true;
                         } else {
                             identify = false;
                         }
-                    }
-
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
-                        super.onTabUnselected(tab);
-                        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.white);
-                        tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                    }
-
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
-                        super.onTabReselected(tab);
                     }
                 }
         );

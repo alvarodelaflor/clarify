@@ -13,10 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+
+import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -30,9 +33,17 @@ public class StoreFragment extends Fragment {
     private Database database;
     RecyclerViewAdapter recyclerViewAdapter;
     private CardView noStores;
+    private Button goToFind;
+    private MainActivity mainActivity;
+
+    public StoreFragment(MainActivity mainActivity) {
+        database = new Database();
+        this.mainActivity = mainActivity;
+    }
 
     public StoreFragment() {
         database = new Database();
+        this.mainActivity = null;
         // Required empty public constructor
     }
 
@@ -42,6 +53,15 @@ public class StoreFragment extends Fragment {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_store, container, false);
         noStores = (CardView) v.findViewById(R.id.card_view_no_stores);
+        goToFind = (Button) v.findViewById(R.id.go_to_find);
+        goToFind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mainActivity != null) {
+                    mainActivity.viewPager.setCurrentItem(3);
+                }
+            }
+        });
         myRecyclerView = (RecyclerView) v.findViewById(R.id.store_recyclerview);
         textViewPrincipal = (TextView) v.findViewById(R.id.text_second);
         textViewPrincipal.setText(listStoreLocal.size() + " boxes");
