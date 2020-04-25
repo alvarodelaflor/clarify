@@ -1,4 +1,4 @@
-package es.clarify.clarify.ShoppingCard;
+package es.clarify.clarify.ShoppingCart;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,19 +8,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
-import com.bumptech.glide.Glide;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.R;
 
-public class ShoppingCard extends AppCompatActivity {
+public class ShoppingCart extends AppCompatActivity {
 
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shopping_card);
+        setContentView(R.layout.activity_shopping_cart);
 
         // Init Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_shopping_card);
