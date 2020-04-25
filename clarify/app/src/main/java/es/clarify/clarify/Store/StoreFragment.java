@@ -1,5 +1,7 @@
 package es.clarify.clarify.Store;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -17,11 +19,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.List;
 
 import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.ShoppingCard.ShoppingCard;
 import es.clarify.clarify.Utilities.Database;
 
 public class StoreFragment extends Fragment {
@@ -35,6 +40,7 @@ public class StoreFragment extends Fragment {
     private CardView noStores;
     private Button goToFind;
     private MainActivity mainActivity;
+    private FloatingActionButton shoppingCard;
 
     public StoreFragment(MainActivity mainActivity) {
         database = new Database();
@@ -60,6 +66,15 @@ public class StoreFragment extends Fragment {
                 if (mainActivity != null) {
                     mainActivity.viewPager.setCurrentItem(3);
                 }
+            }
+        });
+        shoppingCard = (FloatingActionButton)v.findViewById(R.id.shopping_card);
+        shoppingCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, ShoppingCard.class);
+                context.startActivity(intent);
             }
         });
         myRecyclerView = (RecyclerView) v.findViewById(R.id.store_recyclerview);

@@ -114,7 +114,7 @@
                                     android:textColor="#6f6f6f"
                                     android:textSize="18sp"
                                     android:textAlignment="center"
-                                    android:text="\nPara añadir un producto es tan simple como ir a la sección de identificación o pulsar el siguiente botón"/>
+                                    android:text="\nDebes añadir primero un producto. Pulsa el botón para añadirlo."/>
 
                                 <Button
                                     android:layout_width="match_parent"
@@ -123,7 +123,7 @@
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginTop="20dp"
                                     android:layout_marginRight="20dp"
-                                    android:layout_marginBottom="40dp"
+                                    android:layout_marginBottom="15dp"
                                     android:background="@drawable/btn_uno"
                                     android:text="Escanear producto"
                                     android:textColor="@color/put_tag"
@@ -152,10 +152,10 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab1"
+        android:id="@+id/shopping_card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
+        android:layout_margin="20dp"
         android:scaleType="center"
         app:fabSize="auto"
         android:backgroundTint="@color/colorPrimary"

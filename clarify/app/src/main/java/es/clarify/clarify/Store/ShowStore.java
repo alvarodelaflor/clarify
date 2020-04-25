@@ -74,7 +74,6 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-        appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_show_store);
         toolbar = (Toolbar) findViewById(R.id.toolbar_level_2);
         toolbar.setTitle(store);
         setSupportActionBar(toolbar);

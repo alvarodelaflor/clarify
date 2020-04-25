@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Store.ShowStore"></activity>
+        <activity android:name=".ShoppingCard.ShoppingCard"></activity>
+        <activity android:name=".Store.ShowStore" />
         <activity android:name=".Login.Login">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
