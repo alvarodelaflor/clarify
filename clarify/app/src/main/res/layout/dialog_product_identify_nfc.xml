@@ -59,6 +59,7 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="40dp"
                 android:background="@drawable/btn_uno"
+                android:textColor="@color/put_tag"
                 android:text="Cancelar"
                 android:textAllCaps="false"
                 android:textSize="18sp" />
