@@ -197,13 +197,44 @@
         android:gravity="center"
         android:visibility="visible"
         android:orientation="vertical"
+        android:padding="25dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
+        <ImageView
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:src="@drawable/worry"/>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="Vaya, paraece que no hay nada por aquí"/>
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:text="Vaya, parece que no hay nada por aquí"
+                android:textAlignment="center"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="18dp" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_delete_store"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/btn_uno"
+            android:text="Borrar este almacén"
+            android:textColor="@color/put_tag"
+            android:textAllCaps="false"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

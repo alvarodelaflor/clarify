@@ -112,19 +112,23 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             loadMore.onLoadMore();
                             isLoading = true;
                         }
-                        if (items.size() > 0) {
-                            msg_empty_1.setVisibility(View.GONE);
-                        } else {
-                            msg_empty_1.setVisibility(View.VISIBLE);
-                        }
                     }
                 }
+                uploadNothingView();
             }
         });
     }
 
     public List<ScannedTagLocal> getItems() {
         return items;
+    }
+
+    public void uploadNothingView() {
+        if (items.size() > 0) {
+            msg_empty_1.setVisibility(View.GONE);
+        } else {
+            msg_empty_1.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -188,6 +192,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             notifyDataSetChanged();
         }
+        uploadNothingView();
     }
 
     public void addItem(ScannedTagLocal scannedTagLocal) {
@@ -216,6 +221,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         lastUpdate_time.setText(dateString2);
 
         notifyDataSetChanged();
+        uploadNothingView();
     }
 
     @Override

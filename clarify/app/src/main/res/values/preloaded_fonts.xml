@@ -3,6 +3,7 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/aclonica</item>
         <item>@font/carter_one</item>
+        <item>@font/roboto</item>
         <item>@font/roboto_bold</item>
         <item>@font/roboto_condensed_bold_italic</item>
     </array>
