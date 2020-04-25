@@ -229,6 +229,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof ItemViewHoder) {
             ItemViewHoder viewHoder = (ItemViewHoder) holder;
             ScannedTagLocal res = items.get(position);
+            String idFirebase = res.getIdFirebase();
             viewHoder.name.setText(res.getModel());
             viewHoder.brand.setText(res.getBrand());
             Picasso.get().load(res.getImage()).into(viewHoder.img);
@@ -246,23 +247,27 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     viewHoder.dialog_btn_delete.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ScannedTagLocal scannedTagLocal = res;
+//                            ScannedTagLocal scannedTagLocal = res;
+                            Realm realm = Realm.getDefaultInstance();
+                            ScannedTagLocal scannedTagLocal = realm.where(ScannedTagLocal.class).equalTo("idFirebase", idFirebase).findFirst();
                             if (scannedTagLocal == null) {
                                 viewHoder.mydialog.dismiss();
-                            }
-                            Boolean result = new Utilities().deleteItemFromPrivateStore(scannedTagLocal.getStore(), scannedTagLocal.getIdFirebase());
-                            if (result) {
-                                viewHoder.mydialog.dismiss();
-                                try {
-                                    Toast.makeText(myContext, "¡Se ha borrado el producto!", Toast.LENGTH_LONG).show();
-                                    removeItem(position);
-                                } catch (Exception e) {
-                                    Toast.makeText(myContext, "¡No se ha podido guardar!", Toast.LENGTH_LONG).show();
-                                }
                             } else {
-                                Toast.makeText(myContext, "¡Error!", Toast.LENGTH_LONG).show();
-                                Log.i("RecyclerViewAdaptarShowStore", "Product couldn't be deleted");
+                                Boolean result = new Utilities().deleteItemFromPrivateStore(scannedTagLocal.getStore(), scannedTagLocal.getIdFirebase());
+                                if (result) {
+                                    viewHoder.mydialog.dismiss();
+                                    try {
+                                        Toast.makeText(myContext, "¡Se ha borrado el producto!", Toast.LENGTH_LONG).show();
+                                        removeItem(position);
+                                    } catch (Exception e) {
+                                        Toast.makeText(myContext, "¡No se ha podido guardar!", Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    Toast.makeText(myContext, "¡Error!", Toast.LENGTH_LONG).show();
+                                    Log.i("RecyclerViewAdaptarShowStore", "Product couldn't be deleted");
+                                }
                             }
+                            realm.close();
                         }
                     });
                 }

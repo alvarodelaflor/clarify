@@ -207,4 +207,13 @@ public class GoogleUtilities {
 
         return res;
     }
+
+    public void deleteStore(String store) {
+        DatabaseReference databaseReference = database.getReference("private");
+        databaseReference.child(getCurrentUser()
+                .getUid())
+                .child("stores")
+                .child(store)
+                .removeValue();
+    }
 }

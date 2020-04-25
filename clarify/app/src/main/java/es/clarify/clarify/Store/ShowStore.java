@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,6 +55,7 @@ public class ShowStore extends AppCompatActivity {
     private Utilities utilities;
     private ValueEventListener valueEventListener;
     private LinearLayout msg_empty_1;
+    private Button buttonDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,16 @@ public class ShowStore extends AppCompatActivity {
         setContentView(R.layout.activity_show_store);
         store = getIntent().getStringExtra("store_name");
         numberProducts = database.getNumberScannedTagLocalByStore(store);
+
+        buttonDelete = (Button)findViewById(R.id.button_delete_store);
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+                new GoogleUtilities().deleteStore(store);
+                database.deleteStoreLocal(store);
+            }
+        });
 
         appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_show_store);
         toolbar = (Toolbar) findViewById(R.id.toolbar_level_2);
