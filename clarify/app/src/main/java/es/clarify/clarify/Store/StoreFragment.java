@@ -3,6 +3,7 @@ package es.clarify.clarify.Store;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +29,7 @@ public class StoreFragment extends Fragment {
     private TextView textViewPrincipal;
     private Database database;
     RecyclerViewAdapter recyclerViewAdapter;
+    private CardView noStores;
 
     public StoreFragment() {
         database = new Database();
@@ -39,6 +41,7 @@ public class StoreFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_store, container, false);
+        noStores = (CardView) v.findViewById(R.id.card_view_no_stores);
         myRecyclerView = (RecyclerView) v.findViewById(R.id.store_recyclerview);
         textViewPrincipal = (TextView) v.findViewById(R.id.text_second);
         textViewPrincipal.setText(listStoreLocal.size() + " boxes");
@@ -48,7 +51,6 @@ public class StoreFragment extends Fragment {
         updateData();
         return v;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,7 +68,16 @@ public class StoreFragment extends Fragment {
             recyclerViewAdapter.notifyDataSetChanged();
             recyclerViewAdapter.notifyItemRangeChanged(0, lastSize);
         }
+        updateNoStores();
         refresh(1000);
+    }
+
+    public void updateNoStores () {
+        if (listStoreLocal.size() < 1) {
+            noStores.setVisibility(View.VISIBLE);
+        } else {
+            noStores.setVisibility(View.GONE);
+        }
     }
 
     public void refresh(int milliseconds) {
