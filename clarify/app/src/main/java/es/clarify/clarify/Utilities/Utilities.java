@@ -37,9 +37,13 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
+import es.clarify.clarify.Objects.PurchaseLocal;
+import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.Objects.ScannedTagRemote;
+import es.clarify.clarify.Objects.ShoppingCartLocal;
+import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Store.MyAdapter;
 import io.realm.Realm;
@@ -190,13 +194,13 @@ public class Utilities {
      * @since 19/04/2020
      */
 
-    public Boolean synchronizationWithFirebaseFirstLogin() {
+    public Boolean synchronizationWithFirebaseFirstLoginTags() {
         try {
             String userId = googleUtilities.getCurrentUser().getUid();
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference().child(("private")).child(userId);
-            Query query = databaseReference.child("stores");
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
+            Query query1 = databaseReference.child("stores");
+            query1.addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -259,8 +263,57 @@ public class Utilities {
                 }
             });
             return true;
+
         } catch (Exception e) {
-            Log.e("Ulities", "synchronizationWithFirebaseFirstLogin: ", e);
+            Log.e("Ulities", "synchronizationWithFirebaseFirstLoginTags: ", e);
+            return false;
+        }
+    }
+
+    public Boolean synchronizationWithFirebaseFirstLoginShoppingCart() {
+        try {
+            String userId = googleUtilities.getCurrentUser().getUid();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = database.getReference().child(("private")).child(userId);
+            Query query2 = databaseReference.child("listaCompra");
+            query2.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Realm realm = Realm.getDefaultInstance();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                            ShoppingCartLocal shoppingCartLocal = null;
+                            if (shoppingCartRemote != null && shoppingCartRemote.getIdFirebase() != null) {
+                                shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
+                            }
+                            if (shoppingCartLocal == null) {
+                                realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
+                            }
+
+                        }
+                        realm.close();
+                        Thread.interrupted();
+                    } else {
+                        Thread.interrupted();
+                        /*
+                        TODO
+                        No data was found in Firebase
+                         */
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Thread.interrupted();
+                }
+            });
+            return true;
+
+
+        } catch (Exception e) {
+            Log.e("Ulities", "synchronizationWithFirebaseFirstLoginShoppingCart: ", e);
             return false;
         }
     }
@@ -498,5 +551,36 @@ public class Utilities {
 
             }
         };
+    }
+
+    public void listenerOwnShoppingCart() {
+        String userId = googleUtilities.getCurrentUser().getUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("listaCompra");
+        databaseReference
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Realm realm = Realm.getDefaultInstance();
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                            ShoppingCartLocal shoppingCartLocal = null;
+                            if (shoppingCartRemote != null && shoppingCartRemote.getIdFirebase() != null) {
+                                shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
+                                ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
+                                if (shoppingCartLocalCopy == null) {
+                                    realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
+                                } else if (shoppingCartLocalCopy!=null && shoppingCartLocalCopy.getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
+                                    realmDatabase.updateShoppingCartLocal(shoppingCartLocalCopy, shoppingCartRemote);
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 }

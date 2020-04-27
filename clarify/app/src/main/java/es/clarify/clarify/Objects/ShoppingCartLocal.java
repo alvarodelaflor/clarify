@@ -6,42 +6,40 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class ShoppingCart extends RealmObject {
+public class ShoppingCartLocal extends RealmObject {
 
     @PrimaryKey
-    private int id;
-    private int idFirebase;
+    private String id;
     private Date lastUpdate;
     private Boolean own;
     private RealmList<PurchaseLocal> purcharse;
     private RealmList<String> allowUsers;
 
-    public ShoppingCart() {
+    public ShoppingCartLocal() {
     }
 
-    public ShoppingCart(int id, int idFirebase, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<String> allowUsers) {
+    public ShoppingCartLocal(String id, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<String> allowUsers) {
         this.id = id;
-        this.idFirebase = idFirebase;
         this.lastUpdate = lastUpdate;
         this.own = own;
         this.purcharse = purchase;
         this.allowUsers = allowUsers;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getIdFirebase() {
-        return idFirebase;
+    public RealmList<PurchaseLocal> getPurcharse() {
+        return purcharse;
     }
 
-    public void setIdFirebase(int idFirebase) {
-        this.idFirebase = idFirebase;
+    public void setPurcharse(RealmList<PurchaseLocal> purcharse) {
+        this.purcharse = purcharse;
     }
 
     public Date getLastUpdate() {

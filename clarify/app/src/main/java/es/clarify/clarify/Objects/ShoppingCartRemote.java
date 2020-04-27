@@ -1,26 +1,24 @@
 package es.clarify.clarify.Objects;
 
 import java.util.Date;
+import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class ShoppingCart extends RealmObject {
+public class ShoppingCartRemote {
 
-    @PrimaryKey
-    private int id;
-    private int idFirebase;
+    private String idFirebase;
     private Date lastUpdate;
     private Boolean own;
-    private RealmList<PurchaseLocal> purcharse;
-    private RealmList<String> allowUsers;
+    private List<PurchaseRemote> purcharse;
+    private List<String> allowUsers;
 
-    public ShoppingCart() {
+    public ShoppingCartRemote() {
     }
 
-    public ShoppingCart(int id, int idFirebase, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<String> allowUsers) {
-        this.id = id;
+    public ShoppingCartRemote(String idFirebase, Date lastUpdate, Boolean own, List<PurchaseRemote> purchase, List<String> allowUsers) {
         this.idFirebase = idFirebase;
         this.lastUpdate = lastUpdate;
         this.own = own;
@@ -28,20 +26,20 @@ public class ShoppingCart extends RealmObject {
         this.allowUsers = allowUsers;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getIdFirebase() {
+    public String getIdFirebase() {
         return idFirebase;
     }
 
-    public void setIdFirebase(int idFirebase) {
+    public void setIdFirebase(String idFirebase) {
         this.idFirebase = idFirebase;
+    }
+
+    public List<PurchaseRemote> getPurcharse() {
+        return purcharse;
+    }
+
+    public void setPurcharse(List<PurchaseRemote> purcharse) {
+        this.purcharse = purcharse;
     }
 
     public Date getLastUpdate() {
@@ -60,11 +58,11 @@ public class ShoppingCart extends RealmObject {
         this.own = own;
     }
 
-    public RealmList<String> getAllowUsers() {
+    public List<String> getAllowUsers() {
         return allowUsers;
     }
 
-    public void setAllowUsers(RealmList<String> allowUsers) {
+    public void setAllowUsers(List<String> allowUsers) {
         this.allowUsers = allowUsers;
     }
 }

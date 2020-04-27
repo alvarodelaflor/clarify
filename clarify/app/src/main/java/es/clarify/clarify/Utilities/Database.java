@@ -9,10 +9,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.clarify.clarify.Objects.PurchaseLocal;
+import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
+import es.clarify.clarify.Objects.ShoppingCartLocal;
+import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Objects.UserDataLocal;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
@@ -221,6 +226,20 @@ public class Database {
         }
     }
 
+    public List<PurchaseLocal> getAllPurchaseLocalOwnerLogin() {
+        List<PurchaseLocal> res;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            String uidUser = new GoogleUtilities().getCurrentUser().getUid();
+            ShoppingCartLocal aux = realm.where(ShoppingCartLocal.class).findFirst();
+            res = realm.where(PurchaseLocal.class).equalTo("idShoppingCart", uidUser).findAll();
+        } catch (Exception e) {
+            Log.e(TAG, "getAllPurchaseLocalOwnerLogin: ", e);
+            res = new ArrayList<>();
+        }
+        return res;
+    }
+
     public Boolean deleteAllStoreLocal() {
         try {
             Realm realm = Realm.getDefaultInstance();
@@ -259,5 +278,121 @@ public class Database {
 
     public ScannedTag getScannedTagFromLocal(ScannedTagLocal scannedTagLocal) {
         return new ScannedTag(scannedTagLocal.getIdFirebase(), scannedTagLocal.getBrand(), scannedTagLocal.getModel(), scannedTagLocal.getLote(), scannedTagLocal.getColor(), scannedTagLocal.getExpiration_date(), scannedTagLocal.getReference(), scannedTagLocal.getImage(), scannedTagLocal.getStore());
+    }
+
+    public ShoppingCartLocal synchronizeShoppingCart(ShoppingCartRemote shoppingCartRemote) {
+        ShoppingCartLocal res;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            ShoppingCartLocal shoppingCartLocal = realm.createObject(ShoppingCartLocal.class, shoppingCartRemote.getIdFirebase());
+            Boolean own = shoppingCartRemote.getOwn();
+            Date lastUpdate = shoppingCartRemote.getLastUpdate();
+            RealmList<String> allowUsersLocal = new RealmList<>();
+            List<String> allowUsers = shoppingCartRemote.getAllowUsers();
+            if (allowUsers != null) {
+                allowUsersLocal.addAll(allowUsers);
+            }
+
+            shoppingCartLocal.setOwn(own);
+            shoppingCartLocal.setLastUpdate(lastUpdate);
+            shoppingCartLocal.setAllowUsers(allowUsersLocal);
+            shoppingCartLocal.getPurcharse().addAll(syncronizePurcharse(shoppingCartRemote));
+            realm.commitTransaction();
+            res = realm.copyFromRealm(shoppingCartLocal);
+        } catch (Exception e) {
+            Log.e(TAG, "synchronizeShoppingCart: ", e);
+            res = null;
+        }
+        return res;
+    }
+
+    private RealmList<PurchaseLocal> syncronizePurcharse(ShoppingCartRemote shoppingCartRemote) {
+        RealmList<PurchaseLocal> res = new RealmList<>();
+        try {
+            List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
+            for (PurchaseRemote elem : aux) {
+                Realm realm = Realm.getDefaultInstance();
+
+                int id = elem.getIdFirebase();
+                int idFirebase = elem.getIdFirebase();
+                int idScannedTag = elem.getIdScannedTag();
+                String idShoppingCart = elem.getIdShoppingCart();
+                String name = elem.getName();
+
+                PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
+                purchaseLocal.setIdFirebase(idFirebase);
+                purchaseLocal.setIdScannedTag(idScannedTag);
+                purchaseLocal.setIdShoppingCart(idShoppingCart);
+                purchaseLocal.setName(name);
+
+                res.add(realm.copyFromRealm(purchaseLocal));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "syncronizePurcharse: ", e);
+        }
+        return res;
+    }
+
+    public void updateShoppingCartLocal(ShoppingCartLocal shoppingCartLocal, ShoppingCartRemote shoppingCartRemote) {
+        Realm realm = Realm.getDefaultInstance();
+        List<PurchaseLocal> purchaseLocals = shoppingCartLocal.getPurcharse();
+        List<PurchaseRemote> purchaseRemotes = shoppingCartRemote.getPurcharse();
+        // First we delete the purchases that no longer exist in remote
+        List<PurchaseLocal> toDelete = purchaseLocals.stream()
+                .filter(x -> purchaseRemotes.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
+                .collect(Collectors.toList());
+        for (PurchaseLocal elem : toDelete) {
+            realm.beginTransaction();
+            realm.where(PurchaseLocal.class).equalTo("id", elem.getId()).findFirst().deleteFromRealm();
+            realm.commitTransaction();
+        }
+
+        // Finally we add the new purchases
+        List<PurchaseRemote> toAdd = purchaseRemotes.stream()
+                .filter(x -> purchaseLocals.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
+                .collect(Collectors.toList());
+        for (PurchaseRemote elem : toAdd) {
+            PurchaseLocal check = realm.where(PurchaseLocal.class).equalTo("idFirebase", elem.getIdFirebase()).findFirst();
+            if (check == null) {
+                realm.beginTransaction();
+                int id = elem.getIdFirebase();
+                int idFirebase = elem.getIdFirebase();
+                int idScannedTag = elem.getIdScannedTag();
+                String idShoppingCart = elem.getIdShoppingCart();
+                String name = elem.getName();
+                PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
+                purchaseLocal.setIdFirebase(idFirebase);
+                purchaseLocal.setIdScannedTag(idScannedTag);
+                purchaseLocal.setIdShoppingCart(idShoppingCart);
+                purchaseLocal.setName(name);
+                realm.commitTransaction();
+
+                realm.beginTransaction();
+                shoppingCartLocal.getPurcharse().add(purchaseLocal);
+                realm.commitTransaction();
+            }
+        }
+
+        realm.close();
+    }
+
+    public Boolean deletePurchaseFromLocal(PurchaseLocal purchaseLocal) {
+        Boolean res;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            PurchaseLocal aux = realm.where(PurchaseLocal.class).equalTo("id", purchaseLocal.getId()).findFirst();
+            if (aux != null) {
+                realm.beginTransaction();
+                aux.deleteFromRealm();
+                realm.commitTransaction();
+            }
+            realm.close();
+            res = true;
+        } catch (Exception e) {
+            Log.e(TAG, "deletePurchaseFromLocal: ", e);
+            res = false;
+        }
+        return res;
     }
 }

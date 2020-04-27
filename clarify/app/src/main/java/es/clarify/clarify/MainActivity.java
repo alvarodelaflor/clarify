@@ -8,6 +8,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,11 +31,22 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Login.Login;
+import es.clarify.clarify.Objects.PurchaseRemote;
+import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Store.StoreFragment;
@@ -42,6 +55,7 @@ import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -71,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        populate();
+
         setContentView(R.layout.activity_main);
         firebaseUser = new GoogleUtilities().getCurrentUser();
         database = new Database();
@@ -88,46 +104,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new Thread(new Runnable() {
             @Override
             public void run() {
-                utilities.synchronizationWithFirebaseFirstLogin();
+                utilities.synchronizationWithFirebaseFirstLoginTags();
             }
         }).run();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                utilities.synchronizationWithFirebaseFirstLoginShoppingCart();
+            }
+        }).run();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 utilities.storeListenerFirebase();
             }
         }).run();
-        // Firebase instances
 
-        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
-//        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
-//        DatabaseReference databaseReference2 = database2.getReference("public");
-//        ScannedTag scannedTagPush1 = new ScannedTag("41521", "Hacendado", "Leche Semidesnatada 1L", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "http://i.imgur.com/aN80yXm.png", "Frigorífico");
-//        ScannedTag scannedTagPush2 = new ScannedTag("41522", "Hacendado", "Pizza mediterránea", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/VJA0WIX.png", "Frigorífico");
-//        ScannedTag scannedTagPush3 = new ScannedTag("41523", "Hacendado", "Paté Iberico 160 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush4 = new ScannedTag("41524", "Hacendado", "Paté Iberico 260 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush5 = new ScannedTag("41525", "Hacendado", "Paté Iberico 360 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush6 = new ScannedTag("41526", "Hacendado", "Paté Iberico 460 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush7 = new ScannedTag("41527", "Hacendado", "Paté Iberico 560 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush8 = new ScannedTag("41528", "Hacendado", "Paté Iberico 660 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush9 = new ScannedTag("41529", "Hacendado", "Paté Iberico 760 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush10 = new ScannedTag("41530", "Hacendado", "Paté Iberico 860 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush11 = new ScannedTag("41531", "Hacendado", "Paté Iberico 960 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-//        ScannedTag scannedTagPush12 = new ScannedTag("41532", "Hacendado", "Paté Iberico 1060 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
-////        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush1);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush2);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush3);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush4);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush5);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush6);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush7);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush8);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush9);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush10);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush11);
-//        databaseReference2.child("tags").push().setValue(scannedTagPush12);
-        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                utilities.listenerOwnShoppingCart();
+            }
+        }).run();
 
         // NFC instances
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
-        if(identify) {
+        if (identify) {
             nfcIdentifyFragment.resolveIntent(intent);
         }
 
@@ -287,6 +287,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    public void populate() {
+        // Firebase instances
+
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
+//        FirebaseDatabase database2 = FirebaseDatabase.getInstance();
+//        DatabaseReference databaseReference2 = database2.getReference("public");
+//        ScannedTag scannedTagPush1 = new ScannedTag("41521", "Hacendado", "Leche Semidesnatada 1L", false, "verde y blanca", "2020-12-31", "aldkmfalkdmflakdml", "http://i.imgur.com/aN80yXm.png", "Frigorífico");
+//        ScannedTag scannedTagPush2 = new ScannedTag("41522", "Hacendado", "Pizza mediterránea", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/VJA0WIX.png", "Frigorífico");
+//        ScannedTag scannedTagPush3 = new ScannedTag("41523", "Hacendado", "Paté Iberico 160 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush4 = new ScannedTag("41524", "Hacendado", "Paté Iberico 260 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush5 = new ScannedTag("41525", "Hacendado", "Paté Iberico 360 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush6 = new ScannedTag("41526", "Hacendado", "Paté Iberico 460 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush7 = new ScannedTag("41527", "Hacendado", "Paté Iberico 560 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush8 = new ScannedTag("41528", "Hacendado", "Paté Iberico 660 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush9 = new ScannedTag("41529", "Hacendado", "Paté Iberico 760 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush10 = new ScannedTag("41530", "Hacendado", "Paté Iberico 860 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush11 = new ScannedTag("41531", "Hacendado", "Paté Iberico 960 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+//        ScannedTag scannedTagPush12 = new ScannedTag("41532", "Hacendado", "Paté Iberico 1060 gramos", false, "None", "2020-06-31", "aldkmfalkdmflakdml", "https://i.imgur.com/HRvAsFR.png", "Despensa");
+////        databaseReference2.child("carlosjavier@gmail,com").child("stores").child("wardrobe").push().setValue(scannedTagPush);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush1);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush2);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush3);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush4);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush5);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush6);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush7);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush8);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush9);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush10);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush11);
+//        databaseReference2.child("tags").push().setValue(scannedTagPush12);
+        String uid = new GoogleUtilities().getCurrentUser().getUid();
+        PurchaseRemote purchaseRemote1 = new PurchaseRemote(1, -1, uid, "Pate de cerdo");
+        PurchaseRemote purchaseRemote2 = new PurchaseRemote(2, -1, uid, "Camiseta de diario");
+        PurchaseRemote purchaseRemote3 = new PurchaseRemote(3, -1, uid, "PC HP");
+        List<PurchaseRemote> listPurcharse = Arrays.asList(purchaseRemote1, purchaseRemote2, purchaseRemote3);
+        ShoppingCartRemote shoppingCartRemote = new ShoppingCartRemote(uid, new Date(), true, listPurcharse, new ArrayList<>());
+        FirebaseDatabase databaseShoppingCart = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReferenceShoppingCart = databaseShoppingCart.getReference("private").child(uid).child("listaCompra");
+        databaseReferenceShoppingCart.push().setValue(shoppingCartRemote);
+        ///////////////////   CREATE INSTANCE    /////////////////////////////////////////////////////////////////////////
     }
 
 }

@@ -1,19 +1,21 @@
 package es.clarify.clarify.Objects;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class Purcharse extends RealmObject {
+public class PurchaseLocal extends RealmObject {
 
+    @PrimaryKey
     private int id;
     private int idFirebase;
     private int idScannedTag;
-    private int idShoppingCart;
+    private String idShoppingCart;
     private String name;
 
-    public Purcharse() {
+    public PurchaseLocal() {
     }
 
-    public Purcharse(int id, int idFirebase, int idScannedTag, int idShoppingCart, String name) {
+    public PurchaseLocal(int id, int idFirebase, int idScannedTag, String idShoppingCart, String name) {
         this.id = id;
         this.idFirebase = idFirebase;
         this.idScannedTag = idScannedTag;
@@ -45,11 +47,11 @@ public class Purcharse extends RealmObject {
         this.idScannedTag = idScannedTag;
     }
 
-    public int getIdShoppingCart() {
+    public String getIdShoppingCart() {
         return idShoppingCart;
     }
 
-    public void setIdShoppingCart(int idShoppingCart) {
+    public void setIdShoppingCart(String idShoppingCart) {
         this.idShoppingCart = idShoppingCart;
     }
 

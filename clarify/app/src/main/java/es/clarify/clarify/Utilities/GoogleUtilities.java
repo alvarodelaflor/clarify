@@ -15,15 +15,22 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import es.clarify.clarify.Objects.PurchaseLocal;
+import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTagRemote;
+import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 
 public class GoogleUtilities {
 
@@ -215,5 +222,32 @@ public class GoogleUtilities {
                 .child("stores")
                 .child(store)
                 .removeValue();
+    }
+
+    public void deletePurchaseFromRemote(PurchaseLocal purchaseLocal) {
+        String uid = getCurrentUser().getUid();
+        DatabaseReference databaseReference = database.getReference("private");
+        Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        shoppingCartRemote.setLastUpdate(new Date());
+                        shoppingCartRemote.getPurcharse().removeAll(shoppingCartRemote.getPurcharse().stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
+                        new Database().deletePurchaseFromLocal(purchaseLocal);
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });
     }
 }

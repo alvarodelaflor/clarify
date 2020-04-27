@@ -121,6 +121,7 @@
                     android:layout_marginTop="32dp">
 
                     <LinearLayout
+                        android:id="@+id/no_purchase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -138,8 +139,8 @@
                             android:layout_height="wrap_content"
                             android:text="Todavía no has añadido nada a tu lista"
                             android:textAlignment="center"
-                            android:textColor="#6f6f6f"
-                            android:textSize="18sp" />
+                            android:textColor="@android:color/darker_gray"
+                            android:textSize="18dp" />
 
                         <Button
                             android:id="@+id/go_to_find"
@@ -156,17 +157,10 @@
                             android:textSize="18sp" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_below="@+id/layout_to_below">
-
-                    </LinearLayout>
-
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/store_recyclerview"
+                    android:id="@+id/purchase_recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_row="0"
@@ -177,7 +171,7 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/share_list"
+        android:id="@+id/add_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
