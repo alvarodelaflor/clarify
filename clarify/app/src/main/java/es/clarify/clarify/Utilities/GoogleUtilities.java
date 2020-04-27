@@ -234,9 +234,19 @@ public class GoogleUtilities {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot data: dataSnapshot.getChildren()) {
                     ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                    if (shoppingCartRemote != null) {
+                    PurchaseRemote purchaseRemote = shoppingCartRemote.getPurcharse() != null
+                            ?
+                            shoppingCartRemote.getPurcharse()
+                                    .stream()
+                                    .filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase())
+                                    .findFirst()
+                                    .orElse(null)
+                            :
+                            null;
+                    if (purchaseRemote != null) {
+                        List<PurchaseRemote> purchaseRemotes  = shoppingCartRemote.getPurcharse();
                         shoppingCartRemote.setLastUpdate(new Date());
-                        shoppingCartRemote.getPurcharse().removeAll(shoppingCartRemote.getPurcharse().stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
+                        shoppingCartRemote.getPurcharse().removeAll(purchaseRemotes.stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
                         new Database().deletePurchaseFromLocal(purchaseLocal);
                         databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
                         databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
