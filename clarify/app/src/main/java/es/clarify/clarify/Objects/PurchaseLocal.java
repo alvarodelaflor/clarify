@@ -6,8 +6,8 @@ import io.realm.annotations.PrimaryKey;
 public class PurchaseLocal extends RealmObject {
 
     @PrimaryKey
-    private int id;
-    private int idFirebase;
+    private Integer id;
+    private Integer idFirebase;
     private int idScannedTag;
     private String idShoppingCart;
     private String name;

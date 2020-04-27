@@ -286,7 +286,10 @@ public class Database {
         try {
             Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
-            ShoppingCartLocal shoppingCartLocal = realm.createObject(ShoppingCartLocal.class, shoppingCartRemote.getIdFirebase());
+            ShoppingCartLocal shoppingCartLocal= realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
+            if (shoppingCartLocal == null) {
+                shoppingCartLocal = realm.createObject(ShoppingCartLocal.class, shoppingCartRemote.getIdFirebase());
+            }
             Boolean own = shoppingCartRemote.getOwn();
             Date lastUpdate = shoppingCartRemote.getLastUpdate();
             RealmList<String> allowUsersLocal = new RealmList<>();
@@ -368,12 +371,13 @@ public class Database {
         // Finally we add the new purchases
         List<PurchaseRemote> toAdd = purchaseLocals != null
                 && purchaseRemotes != null
-                &&purchaseLocals.size() > 0
-                && purchaseRemotes.size() > 0
                 ?
                 purchaseRemotes.stream()
-                .filter(x -> purchaseLocals.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
-                .collect(Collectors.toList())
+                        .filter(x -> purchaseLocals
+                                .stream()
+                                    .map(PurchaseLocal::getIdFirebase)
+                                    .allMatch(y -> y != x.getIdFirebase()))
+                        .collect(Collectors.toList())
                 :
                 new ArrayList<>();
         for (PurchaseRemote elem : toAdd) {
@@ -393,7 +397,15 @@ public class Database {
                 realm.commitTransaction();
 
                 realm.beginTransaction();
-                shoppingCartLocal.getPurcharse().add(purchaseLocal);
+                ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+                shoppingCartLocalAux.getPurcharse().add(realm.copyFromRealm(purchaseLocal));
+                shoppingCartLocalAux.setLastUpdate(new Date());
+                List<String> allowUsers = shoppingCartRemote.getAllowUsers();
+                if (allowUsers != null) {
+                    RealmList<String> allowUsersRealm = new RealmList<>();
+                    allowUsersRealm.addAll(allowUsers);
+                    shoppingCartLocalAux.setAllowUsers(allowUsersRealm);
+                }
                 realm.commitTransaction();
             }
         }

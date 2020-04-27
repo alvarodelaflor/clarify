@@ -2,7 +2,7 @@ package es.clarify.clarify.Objects;
 
 public class PurchaseRemote {
 
-    private int idFirebase;
+    private Integer idFirebase;
     private int idScannedTag;
     private String idShoppingCart;
     private String name;

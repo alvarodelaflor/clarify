@@ -567,10 +567,10 @@ public class Utilities {
                             ShoppingCartLocal shoppingCartLocal = null;
                             if (shoppingCartRemote != null && shoppingCartRemote.getIdFirebase() != null) {
                                 shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
-                                ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
-                                if (shoppingCartLocalCopy == null) {
+                                if (shoppingCartLocal == null) {
                                     realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
-                                } else if (shoppingCartLocalCopy!=null && shoppingCartLocalCopy.getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
+                                } else if (shoppingCartLocal!=null && realm.copyFromRealm(shoppingCartLocal).getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
+                                    ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
                                     realmDatabase.updateShoppingCartLocal(shoppingCartLocalCopy, shoppingCartRemote);
                                 }
                             }
