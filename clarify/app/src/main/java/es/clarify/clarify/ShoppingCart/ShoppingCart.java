@@ -31,6 +31,7 @@ import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class ShoppingCart extends AppCompatActivity {
 
@@ -144,7 +145,7 @@ public class ShoppingCart extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(ShoppingCart.this, query, Toast.LENGTH_SHORT).show();
+                new Utilities().savePurchase(query, -1, ShoppingCart.this);
                 searchView.clearFocus();
                 itemAdd.collapseActionView();
                 setHideFloatingButton(false);

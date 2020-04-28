@@ -57,6 +57,18 @@ public class Database {
         return nextId;
     }
 
+    public int calculateIndexPurchase() {
+        Realm realm = Realm.getDefaultInstance();
+        Number currentIdNum = realm.where(PurchaseLocal.class).max("id");
+        int nextId;
+        if (currentIdNum == null) {
+            nextId = 0;
+        } else {
+            nextId = currentIdNum.intValue() + 1;
+        }
+        return nextId;
+    }
+
     public List<ScannedTagLocal> getAllScannedTagLocal() {
         Realm realm = Realm.getDefaultInstance();
         List<ScannedTagLocal> res = new ArrayList<>();
@@ -440,6 +452,34 @@ public class Database {
         } catch (Exception e) {
             Log.e(TAG, "deletePurchaseFromLocal: ", e);
             res = false;
+        }
+        return res;
+    }
+
+    public boolean savePurchase(String query, int id, int idScannedTag) {
+        Boolean res;
+        try {
+            String uid = new GoogleUtilities().getCurrentUser().getUid();
+            Realm realm = Realm.getDefaultInstance();
+            ShoppingCartLocal shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", uid).findFirst();
+            realm.beginTransaction();
+            RealmList<PurchaseLocal> purchaseLocals = new RealmList<>();
+            if (shoppingCartLocal == null) {
+                shoppingCartLocal = realm.createObject(ShoppingCartLocal.class, uid);
+                shoppingCartLocal.setOwn(true);
+                shoppingCartLocal.setPurcharse(purchaseLocals);
+            }
+            PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
+            purchaseLocal.setName(query);
+            purchaseLocal.setIdShoppingCart(uid);
+            purchaseLocal.setIdFirebase(id);
+            purchaseLocal.setIdScannedTag(idScannedTag);
+            shoppingCartLocal.getPurcharse().add(realm.copyFromRealm(purchaseLocal));
+            realm.commitTransaction();
+            res = true;
+        } catch (Exception e) {
+            res = false;
+            Log.e(TAG, "savePuchase: ", e);
         }
         return res;
     }

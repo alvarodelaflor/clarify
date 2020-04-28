@@ -31,6 +31,7 @@ import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
+import io.realm.Realm;
 
 public class GoogleUtilities {
 
@@ -257,6 +258,41 @@ public class GoogleUtilities {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });
+    }
+
+    public void savePurchase(String query, int idFirebase, int idScannedTag) {
+        String uid = new GoogleUtilities().getCurrentUser().getUid();
+        DatabaseReference mReference = database.getReference("private")
+                .child(uid);
+
+                mReference.child("listaCompra")
+                    .orderByChild("idFirebase")
+                        .equalTo(uid)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        PurchaseRemote purchaseRemote = new PurchaseRemote(idFirebase, idScannedTag, uid, query);
+                        List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
+                        if (aux == null) {
+                            aux = new ArrayList<>();
+                        }
+                        aux.add(purchaseRemote);
+                        DatabaseReference purcharse = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("purcharse");
+                        purcharse.setValue(aux);
+                        DatabaseReference date = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("lastUpdate");
+                        date.setValue(new Date());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

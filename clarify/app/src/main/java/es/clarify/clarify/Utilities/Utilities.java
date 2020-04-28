@@ -2,6 +2,7 @@ package es.clarify.clarify.Utilities;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.nfc.NdefMessage;
@@ -582,5 +583,20 @@ public class Utilities {
 
                     }
                 });
+    }
+
+    public void savePurchase(String query, int idScannedTag, Context context) {
+        try {
+            int id = realmDatabase.calculateIndexPurchase();
+            Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag);
+            if (saveLocal) {
+                googleUtilities.savePurchase(query, id, idScannedTag);
+            } else {
+                Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("Utilities", "savePurchase: ", e);
+            Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
+        }
     }
 }
