@@ -111,17 +111,9 @@ public class ShoppingCart extends AppCompatActivity {
         List<Integer> ids2 = mDataAux.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
         Boolean check = mData.size() != mDataAux.size() || ids1.stream().anyMatch(x -> !ids2.contains(x));
         if (check) {
-            if (mDataAux.size() == 0) {
-                List<PurchaseLocal> aux = new ArrayList<>(recyclerViewAdapter.mData);
-                recyclerViewAdapter.mData.removeAll(aux);
-                mData.removeAll(aux);
-                recyclerViewAdapter.notifyItemRangeRemoved(0, recyclerViewAdapter.mData.size());
-                recyclerViewAdapter.notifyDataSetChanged();
-            } else {
-                recyclerViewAdapter.mData = new ArrayList<>(mDataAux);
-                mData = new ArrayList<>(mDataAux);
-                recyclerViewAdapter.notifyDataSetChanged();
-            }
+            recyclerViewAdapter.mData = new ArrayList<>(mDataAux);
+            mData = new ArrayList<>(mDataAux);
+            recyclerViewAdapter.notifyDataSetChanged();
         }
         updateNoPurchase();
         refresh(1000);

@@ -286,7 +286,7 @@ public class Database {
         try {
             Realm realm = Realm.getDefaultInstance();
             realm.beginTransaction();
-            ShoppingCartLocal shoppingCartLocal= realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
+            ShoppingCartLocal shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
             if (shoppingCartLocal == null) {
                 shoppingCartLocal = realm.createObject(ShoppingCartLocal.class, shoppingCartRemote.getIdFirebase());
             }
@@ -343,17 +343,18 @@ public class Database {
         List<PurchaseLocal> purchaseLocals = shoppingCartLocal.getPurcharse();
         List<PurchaseRemote> purchaseRemotes = shoppingCartRemote.getPurcharse();
         // First we delete the purchases that no longer exist in remote
-        List<PurchaseLocal> toDelete =  purchaseLocals != null
+        List<PurchaseLocal> toDelete = purchaseLocals != null
                 && purchaseRemotes != null
                 && purchaseLocals.size() > 0
                 && purchaseRemotes.size() > 0
                 ?
                 purchaseLocals.stream()
-                .filter(x -> purchaseRemotes.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
-                .collect(Collectors.toList())
+                        .filter(x -> purchaseRemotes.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
+                        .collect(Collectors.toList())
                 : new ArrayList<>();
         for (PurchaseLocal elem : toDelete) {
             realm.beginTransaction();
+            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().getPurcharse().remove(elem);
             realm.where(PurchaseLocal.class).equalTo("id", elem.getId()).findFirst().deleteFromRealm();
             realm.commitTransaction();
         }
@@ -375,39 +376,42 @@ public class Database {
                 purchaseRemotes.stream()
                         .filter(x -> purchaseLocals
                                 .stream()
-                                    .map(PurchaseLocal::getIdFirebase)
-                                    .allMatch(y -> y != x.getIdFirebase()))
+                                .map(PurchaseLocal::getIdFirebase)
+                                .allMatch(y -> y != x.getIdFirebase()))
                         .collect(Collectors.toList())
                 :
                 new ArrayList<>();
         for (PurchaseRemote elem : toAdd) {
             PurchaseLocal check = realm.where(PurchaseLocal.class).equalTo("idFirebase", elem.getIdFirebase()).findFirst();
-            if (check == null) {
+            if (check != null) {
                 realm.beginTransaction();
-                int id = elem.getIdFirebase();
-                int idFirebase = elem.getIdFirebase();
-                int idScannedTag = elem.getIdScannedTag();
-                String idShoppingCart = elem.getIdShoppingCart();
-                String name = elem.getName();
-                PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
-                purchaseLocal.setIdFirebase(idFirebase);
-                purchaseLocal.setIdScannedTag(idScannedTag);
-                purchaseLocal.setIdShoppingCart(idShoppingCart);
-                purchaseLocal.setName(name);
-                realm.commitTransaction();
-
-                realm.beginTransaction();
-                ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
-                shoppingCartLocalAux.getPurcharse().add(realm.copyFromRealm(purchaseLocal));
-                shoppingCartLocalAux.setLastUpdate(new Date());
-                List<String> allowUsers = shoppingCartRemote.getAllowUsers();
-                if (allowUsers != null) {
-                    RealmList<String> allowUsersRealm = new RealmList<>();
-                    allowUsersRealm.addAll(allowUsers);
-                    shoppingCartLocalAux.setAllowUsers(allowUsersRealm);
-                }
+                check.deleteFromRealm();
                 realm.commitTransaction();
             }
+            realm.beginTransaction();
+            int id = elem.getIdFirebase();
+            int idFirebase = elem.getIdFirebase();
+            int idScannedTag = elem.getIdScannedTag();
+            String idShoppingCart = elem.getIdShoppingCart();
+            String name = elem.getName();
+            PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
+            purchaseLocal.setIdFirebase(idFirebase);
+            purchaseLocal.setIdScannedTag(idScannedTag);
+            purchaseLocal.setIdShoppingCart(idShoppingCart);
+            purchaseLocal.setName(name);
+            realm.commitTransaction();
+
+            realm.beginTransaction();
+            ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+            shoppingCartLocalAux.getPurcharse().add(realm.copyFromRealm(purchaseLocal));
+            shoppingCartLocalAux.setLastUpdate(new Date());
+            List<String> allowUsers = shoppingCartRemote.getAllowUsers();
+            if (allowUsers != null) {
+                RealmList<String> allowUsersRealm = new RealmList<>();
+                allowUsersRealm.addAll(allowUsers);
+                shoppingCartLocalAux.setAllowUsers(allowUsersRealm);
+            }
+            realm.commitTransaction();
         }
 
         realm.close();
@@ -419,12 +423,20 @@ public class Database {
             Realm realm = Realm.getDefaultInstance();
             PurchaseLocal aux = realm.where(PurchaseLocal.class).equalTo("id", purchaseLocal.getId()).findFirst();
             if (aux != null) {
+                ShoppingCartLocal shoppingCartLocal = realm.where(ShoppingCartLocal.class).findFirst();
+                PurchaseLocal toDelete = null;
+                if (shoppingCartLocal != null) {
+                    toDelete = shoppingCartLocal.getPurcharse().stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).findFirst().orElse(null);
+                }
                 realm.beginTransaction();
                 aux.deleteFromRealm();
                 realm.commitTransaction();
             }
             realm.close();
             res = true;
+            if (res) {
+                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal);
+            }
         } catch (Exception e) {
             Log.e(TAG, "deletePurchaseFromLocal: ", e);
             res = false;

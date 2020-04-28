@@ -247,7 +247,7 @@ public class GoogleUtilities {
                         List<PurchaseRemote> purchaseRemotes  = shoppingCartRemote.getPurcharse();
                         shoppingCartRemote.setLastUpdate(new Date());
                         shoppingCartRemote.getPurcharse().removeAll(purchaseRemotes.stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
-                        new Database().deletePurchaseFromLocal(purchaseLocal);
+//                        new Database().deletePurchaseFromLocal(purchaseLocal);
                         databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
                         databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
                     }

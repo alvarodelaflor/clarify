@@ -14,6 +14,7 @@ import java.util.List;
 
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 
 public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<RecyclerViewAdapterShoppingCart.MyViewHolder> {
@@ -37,7 +38,7 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
             @Override
             public void onClick(View view) {
                 try {
-                    new GoogleUtilities().deletePurchaseFromRemote(mData.get(vHolder.getAdapterPosition()));
+                    new Database().deletePurchaseFromLocal(mData.get(vHolder.getAdapterPosition()));
                 } catch (Exception e) {
                     Log.e("Opening a Store", "onClick: ", e);
                 }
