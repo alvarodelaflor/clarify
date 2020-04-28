@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -139,6 +140,7 @@ public class ShoppingCart extends AppCompatActivity {
         searchView = (SearchView)itemAdd.getActionView();
         searchView.setQueryHint("Nombre del producto");
         itemAdd.setVisible(false);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
