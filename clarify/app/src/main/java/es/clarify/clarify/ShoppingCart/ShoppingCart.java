@@ -1,28 +1,29 @@
 package es.clarify.clarify.ShoppingCart;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -40,6 +41,8 @@ public class ShoppingCart extends AppCompatActivity {
     private LinearLayout noPurchase;
     private FloatingActionButton addListButton;
     private Button addButtonInitial;
+    private SearchView searchView;
+    Boolean hideFloatingButton = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,21 +66,9 @@ public class ShoppingCart extends AppCompatActivity {
         mData = new ArrayList<>(realmDatabase.getAllPurchaseLocalOwnerLogin());
 
         noPurchase = (LinearLayout) findViewById(R.id.no_purchase);
-        addListButton = (FloatingActionButton) findViewById(R.id.add_item);
-        addListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                populate();
-            }
-        });
 
+        addListButton = (FloatingActionButton) findViewById(R.id.add_item);
         addButtonInitial = (Button) findViewById(R.id.add_item_initial);
-        addButtonInitial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                populate();
-            }
-        });
 
         myRecyclerView = (RecyclerView) findViewById(R.id.purchase_recyclerview);
         recyclerViewAdapter = new RecyclerViewAdapterShoppingCart(this, mData);
@@ -96,11 +87,16 @@ public class ShoppingCart extends AppCompatActivity {
 
     public void updateNoPurchase() {
         if (mData.size() < 1) {
-            noPurchase.setVisibility(View.VISIBLE);
+            if (!hideFloatingButton) {
+                noPurchase.setVisibility(View.VISIBLE);
+                addButtonInitial.setVisibility(View.VISIBLE);
+            }
             addListButton.hide();
         } else {
             noPurchase.setVisibility(View.GONE);
-            addListButton.show();
+            if (!hideFloatingButton) {
+                addListButton.show();
+            }
         }
     }
 
@@ -131,6 +127,53 @@ public class ShoppingCart extends AppCompatActivity {
 
         handler.postDelayed(runnable, milliseconds);
     }
+
+    public void setHideFloatingButton(Boolean visibility) {
+        this.hideFloatingButton = visibility;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_shopping_cart, menu);
+        MenuItem itemAdd = menu.findItem(R.id.search_icon);
+        searchView = (SearchView)itemAdd.getActionView();
+        searchView.setQueryHint("Nombre del producto");
+        itemAdd.setVisible(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(ShoppingCart.this, query, Toast.LENGTH_SHORT).show();
+                searchView.clearFocus();
+                itemAdd.collapseActionView();
+                setHideFloatingButton(false);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        addListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemAdd.expandActionView();
+                setHideFloatingButton(true);
+                addListButton.hide();
+            }
+        });
+        addButtonInitial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemAdd.expandActionView();
+                setHideFloatingButton(true);
+                addButtonInitial.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
     public void populate() {
         String uid = new GoogleUtilities().getCurrentUser().getUid();

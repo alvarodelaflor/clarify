@@ -14,49 +14,6 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="Lista de la compra"
         app:titleTextColor="@color/white">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_centerVertical="true"
-                android:fontFamily="@font/roboto_condensed_bold_italic"
-                android:text="Lista de la Compra"
-                android:textColor="@color/white"
-                android:textSize="22sp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:foregroundGravity="center_vertical"
-                    android:src="@drawable/ic_person_add_black_24dp"
-                    android:tint="@color/colorAccent" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:contentDescription="@string/app_name"
-                    android:foregroundGravity="center_vertical"
-                    android:src="@drawable/ic_mic_black_24dp"
-                    android:tint="@color/colorAccent" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
     </androidx.appcompat.widget.Toolbar>
 
     <LinearLayout
