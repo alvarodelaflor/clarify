@@ -34,22 +34,25 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
         View v;
         v = LayoutInflater.from(mContext).inflate(R.layout.item_purchase, parent, false);
         MyViewHolder vHolder = new MyViewHolder(v);
-        vHolder.img_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                vHolder.img_delete.animate().rotationBy(180);
-                new Database().deletePurchaseFromLocal(mData.get(vHolder.getAdapterPosition()));
-            }
-        });
 
         return vHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        ImageView img_aux = holder.img_delete;
-        CardView cardView_aux = holder.cardView;
         holder.purchase_name.setText(mData.get(position).getName());
+        ImageView img_aux = holder.img_delete;
+        int actualPosition = holder.getAdapterPosition();
+        img_aux.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Boolean check = new Database().deletePurchaseFromLocal(mData.get(actualPosition));
+                if (check) {
+                    mData.remove(mData.get(actualPosition));
+                    notifyItemRemoved(actualPosition);
+                }
+            }
+        });
     }
 
     @Override
