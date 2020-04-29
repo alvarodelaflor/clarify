@@ -55,11 +55,12 @@
                 android:layout_height="match_parent">
 
                 <ImageView
+                    android:layout_marginRight="15dp"
                     android:layout_gravity="center"
                     android:id="@+id/shopping_card_item_img"
-                    android:src="@drawable/box_opt"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"/>
+                    android:src="@drawable/cross"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"/>
             </LinearLayout>
 
 

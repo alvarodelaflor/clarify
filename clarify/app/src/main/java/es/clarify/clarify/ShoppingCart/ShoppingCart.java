@@ -3,6 +3,7 @@ package es.clarify.clarify.ShoppingCart;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +46,7 @@ public class ShoppingCart extends AppCompatActivity {
     private Button addButtonInitial;
     private SearchView searchView;
     Boolean hideFloatingButton = false;
+    private CardView cardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,8 @@ public class ShoppingCart extends AppCompatActivity {
         recyclerViewAdapter = new RecyclerViewAdapterShoppingCart(this, mData);
         myRecyclerView.setLayoutManager(new GridLayoutManager(getApplication(), 1));
         myRecyclerView.setAdapter(recyclerViewAdapter);
+
+        cardView = (CardView)findViewById(R.id.card_view_stores);
 
         updateData();
         updateNoPurchase();
