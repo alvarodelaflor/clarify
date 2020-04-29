@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -97,8 +98,8 @@ public class GoogleUtilities {
                 } else {
                     Log.i(TAG, "Push to Firebase: pushing object");
                     databaseReferenceFinal.push().setValue(value);
-                    if (childs.size() > 2 && childs.get(childs.size()-2).equals("stores")) {
-                        pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", childs.get(childs.size() -1), "lastUpdate"), new Date());
+                    if (childs.size() > 2 && childs.get(childs.size() - 2).equals("stores")) {
+                        pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", childs.get(childs.size() - 1), "lastUpdate"), new Date());
                     }
                     pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", "lastUpdate"), new Date());
                     Toast.makeText(activity, "¡Guardado!", Toast.LENGTH_LONG).show();
@@ -155,7 +156,7 @@ public class GoogleUtilities {
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.hasChild(storeName)){
+                    if (dataSnapshot.hasChild(storeName)) {
                         Log.i(TAG, "Push to Firebase: store already exist");
                         Toast.makeText(activity, "¡Ya tenías creado ese almacen!", Toast.LENGTH_LONG).show();
                     } else {
@@ -190,7 +191,7 @@ public class GoogleUtilities {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot appleSnapshot: dataSnapshot.getChildren()) {
+                            for (DataSnapshot appleSnapshot : dataSnapshot.getChildren()) {
                                 appleSnapshot.getRef().removeValue();
                             }
                             pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", store, "lastUpdate"), new Date());
@@ -225,7 +226,7 @@ public class GoogleUtilities {
                 .removeValue();
     }
 
-    public void deletePurchaseFromRemote(PurchaseLocal purchaseLocal) {
+    public void deletePurchaseFromRemote(PurchaseLocal purchaseLocal, Boolean deleteAll) {
         String uid = getCurrentUser().getUid();
         DatabaseReference databaseReference = database.getReference("private");
         Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
@@ -233,24 +234,29 @@ public class GoogleUtilities {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot data: dataSnapshot.getChildren()) {
-                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                    PurchaseRemote purchaseRemote = shoppingCartRemote.getPurcharse() != null
-                            ?
-                            shoppingCartRemote.getPurcharse()
-                                    .stream()
-                                    .filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase())
-                                    .findFirst()
-                                    .orElse(null)
-                            :
-                            null;
-                    if (purchaseRemote != null) {
-                        List<PurchaseRemote> purchaseRemotes  = shoppingCartRemote.getPurcharse();
-                        shoppingCartRemote.setLastUpdate(new Date());
-                        shoppingCartRemote.getPurcharse().removeAll(purchaseRemotes.stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    if (!deleteAll) {
+                        ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                        PurchaseRemote purchaseRemote = shoppingCartRemote.getPurcharse() != null
+                                ?
+                                shoppingCartRemote.getPurcharse()
+                                        .stream()
+                                        .filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase())
+                                        .findFirst()
+                                        .orElse(null)
+                                :
+                                null;
+                        if (purchaseRemote != null) {
+                            List<PurchaseRemote> purchaseRemotes = shoppingCartRemote.getPurcharse();
+                            shoppingCartRemote.setLastUpdate(new Date());
+                            shoppingCartRemote.getPurcharse().removeAll(purchaseRemotes.stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).collect(Collectors.toList()));
 //                        new Database().deletePurchaseFromLocal(purchaseLocal);
-                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
-                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                            databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
+                            databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                        }
+                    } else if (deleteAll) {
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(new ArrayList<>());
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(new Date());
                     }
                 }
             }
@@ -267,33 +273,33 @@ public class GoogleUtilities {
         DatabaseReference mReference = database.getReference("private")
                 .child(uid);
 
-                mReference.child("listaCompra")
-                    .orderByChild("idFirebase")
-                        .equalTo(uid)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data: dataSnapshot.getChildren()) {
-                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                    if (shoppingCartRemote != null) {
-                        PurchaseRemote purchaseRemote = new PurchaseRemote(idFirebase, idScannedTag, uid, query);
-                        List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
-                        if (aux == null) {
-                            aux = new ArrayList<>();
+        mReference.child("listaCompra")
+                .orderByChild("idFirebase")
+                .equalTo(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                            if (shoppingCartRemote != null) {
+                                PurchaseRemote purchaseRemote = new PurchaseRemote(idFirebase, idScannedTag, uid, query);
+                                List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
+                                if (aux == null) {
+                                    aux = new ArrayList<>();
+                                }
+                                aux.add(purchaseRemote);
+                                DatabaseReference purcharse = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("purcharse");
+                                purcharse.setValue(aux);
+                                DatabaseReference date = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("lastUpdate");
+                                date.setValue(new Date());
+                            }
                         }
-                        aux.add(purchaseRemote);
-                        DatabaseReference purcharse = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("purcharse");
-                        purcharse.setValue(aux);
-                        DatabaseReference date = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("lastUpdate");
-                        date.setValue(new Date());
                     }
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                    }
+                });
     }
 }

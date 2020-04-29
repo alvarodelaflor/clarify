@@ -429,6 +429,29 @@ public class Database {
         realm.close();
     }
 
+    public Boolean deleteAllPurchaseFromLocal(String idShoppingCart) {
+        Boolean res = false;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            realm.beginTransaction();
+            RealmResults<PurchaseLocal> aux1 = realm.where(PurchaseLocal.class).equalTo("idShoppingCart", idShoppingCart).findAll();
+            aux1.deleteAllFromRealm();
+            ShoppingCartLocal aux2 = realm.where(ShoppingCartLocal.class).equalTo("id", idShoppingCart).findFirst();
+            if (aux2 != null) {
+                aux2.setPurcharse(new RealmList<>());
+            }
+            realm.commitTransaction();
+            res = true;
+            if (res) {
+                new GoogleUtilities().deletePurchaseFromRemote(null, true);
+            }
+        } catch (Exception e) {
+            res = false;
+            Log.e(TAG, "deleteAllPurcharseFromLocal: ", e);
+        }
+        return  res;
+    }
+
     public Boolean deletePurchaseFromLocal(PurchaseLocal purchaseLocal) {
         Boolean res;
         try {
@@ -442,7 +465,7 @@ public class Database {
             realm.close();
             res = true;
             if (res) {
-                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal);
+                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false);
             }
         } catch (Exception e) {
             Log.e(TAG, "deletePurchaseFromLocal: ", e);

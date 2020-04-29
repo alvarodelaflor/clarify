@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="390dp"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/id_delete_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="8dp"
+        app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:text="Oye, ten cuidado"
+                android:textAlignment="center"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginBottom="25dp"
+                android:src="@drawable/alert" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:textAlignment="center"
+                android:text="¿Seguro que quieres borrarlo todo?"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="18sp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button_cancel_delete_all"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/btn_uno"
+                android:textColor="@color/put_tag"
+                android:textAlignment="center"
+                android:text="Sí, borrar toda la lista"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

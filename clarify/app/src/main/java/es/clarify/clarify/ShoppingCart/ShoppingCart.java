@@ -7,12 +7,17 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -28,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -52,6 +56,8 @@ public class ShoppingCart extends AppCompatActivity {
     private CardView cardView;
     private LinearLayout deleteAll;
     private View view;
+    private Dialog dialog;
+    Button confirmDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,29 @@ public class ShoppingCart extends AppCompatActivity {
 
         updateData();
         updateNoPurchase();
+
+        dialog = new Dialog(ShoppingCart.this);
+        dialog.setContentView(R.layout.dialog_alert_delete);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow()
+                .setLayout(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+        confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
+        confirmDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                Boolean check = realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
+            }
+        });
     }
 
     public void changeColor(int resourseColor) {
@@ -128,6 +157,8 @@ public class ShoppingCart extends AppCompatActivity {
         IntStream
                 .range(0, mData.size())
                 .filter(x -> ((mDataAux.size() == 0 && mData.size()!=0) || mDataAux.size() > x) && !mDataAux.stream().anyMatch(y -> y.getIdFirebase() == mData.get(x).getIdFirebase()))
+                .boxed()
+                .sorted(Comparator.reverseOrder())
                 .forEach( x -> deleteItem(x));
 
         IntStream
@@ -140,7 +171,9 @@ public class ShoppingCart extends AppCompatActivity {
 
     public void deleteItem(int position) {
         recyclerViewAdapter.notifyItemRemoved(position);
-        mData.remove(position);
+        if (mData.size() > position) {
+            mData.remove(position);
+        }
     }
 
     public void insertItem(int position, PurchaseLocal purchaseLocal) {

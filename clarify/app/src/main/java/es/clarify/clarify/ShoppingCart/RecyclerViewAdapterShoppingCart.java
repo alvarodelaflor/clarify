@@ -1,7 +1,9 @@
 package es.clarify.clarify.ShoppingCart;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.util.Log;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 import java.util.List;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.R;
@@ -19,7 +19,7 @@ import es.clarify.clarify.Utilities.Database;
 
 public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<RecyclerViewAdapterShoppingCart.MyViewHolder> {
 
-    Context mContext;
+    public Context mContext;
     List<PurchaseLocal> mData;
 
     public RecyclerViewAdapterShoppingCart(Context mContext, List<PurchaseLocal> mData) {
