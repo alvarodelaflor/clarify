@@ -167,6 +167,12 @@ public class ShoppingCart extends AppCompatActivity {
                 .boxed()
                 .forEach(x -> insertItem(x, mDataAux.get(x)));
 
+        IntStream
+                .range(0, mData.size())
+                .filter(x -> mDataAux.stream().anyMatch(y -> y.getIdFirebase() == mData.get(x).getIdFirebase() && y.getCheck() != mData.get(x).getCheck()))
+                .boxed()
+                .forEach(z -> updateCheck(z, !mData.get(z).getCheck()));
+
         refresh(1000);
     }
 
@@ -180,6 +186,11 @@ public class ShoppingCart extends AppCompatActivity {
     public void insertItem(int position, PurchaseLocal purchaseLocal) {
         mData.add(position, purchaseLocal);
         recyclerViewAdapter.notifyItemInserted(position);
+    }
+
+    public void updateCheck(int position, Boolean check) {
+        mData.get(position).setCheck(check);
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     public void refresh(int milliseconds) {
