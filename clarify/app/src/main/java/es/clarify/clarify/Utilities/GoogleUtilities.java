@@ -302,4 +302,43 @@ public class GoogleUtilities {
                     }
                 });
     }
+
+    public void changeCheckStatusFromLocal(PurchaseLocal purchaseLocal, boolean checked) {
+        String uid = getCurrentUser().getUid();
+        DatabaseReference databaseReference = database.getReference("private");
+        Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    PurchaseRemote purchaseRemote = shoppingCartRemote.getPurcharse() != null
+                            ?
+                            shoppingCartRemote.getPurcharse()
+                                    .stream()
+                                    .filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase())
+                                    .findFirst()
+                                    .orElse(null)
+                            :
+                            null;
+                    if (purchaseRemote != null) {
+                        List<PurchaseRemote> purchaseRemotes = shoppingCartRemote.getPurcharse();
+                        shoppingCartRemote.setLastUpdate(new Date());
+                        purchaseRemote.setCheck(checked);
+                        purchaseRemotes.remove(purchaseRemote);
+                        purchaseRemotes.add(purchaseRemote);
+//                        new Database().deletePurchaseFromLocal(purchaseLocal);
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException());
+            }
+        });
+    }
 }

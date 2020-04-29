@@ -522,4 +522,26 @@ public class Database {
         }
         return res;
     }
+
+    public Boolean changeCheckStatusFromLocal(PurchaseLocal purchaseLocal, boolean checked) {
+        Boolean res = false;
+        try {
+            String uid = new GoogleUtilities().getCurrentUser().getUid();
+            Realm realm = Realm.getDefaultInstance();
+            PurchaseLocal aux = realm.where(PurchaseLocal.class).equalTo("id", purchaseLocal.getId()).findFirst();
+            if (aux != null) {
+                realm.beginTransaction();
+                aux.setCheck(checked);
+                realm.commitTransaction();
+                res = true;
+            }
+            if (res) {
+                new GoogleUtilities().changeCheckStatusFromLocal(aux, checked);
+            }
+        } catch (Exception e) {
+            res = false;
+            Log.e(TAG, "savePuchase: ", e);
+        }
+        return res;
+    }
 }

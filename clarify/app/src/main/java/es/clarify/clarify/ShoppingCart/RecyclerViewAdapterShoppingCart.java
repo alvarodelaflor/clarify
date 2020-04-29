@@ -43,8 +43,15 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.purchase_name.setText(mData.get(holder.getAdapterPosition()).getName());
-        Boolean checkBox = mData.get(holder.getAdapterPosition()).getCheck();
-        holder.checkBox.setChecked(checkBox);
+        Boolean checkData = mData.get(holder.getAdapterPosition()).getCheck();
+        CheckBox checkBox = holder.checkBox;
+        checkBox.setChecked(checkData);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Boolean check = new Database().changeCheckStatusFromLocal(mData.get(holder.getAdapterPosition()), holder.checkBox.isChecked());
+            }
+        });
         LinearLayout linearLayoutAux = holder.linearLayoutDelete;
         linearLayoutAux.setOnClickListener(new View.OnClickListener() {
             @Override
