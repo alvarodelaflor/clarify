@@ -211,7 +211,7 @@ public class ShoppingCart extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                new Utilities().savePurchase(query, -1, ShoppingCart.this);
+                new Utilities().savePurchase(query, -1, ShoppingCart.this, false);
                 searchView.clearFocus();
                 itemAdd.collapseActionView();
                 setHideFloatingButton(false);
@@ -246,9 +246,9 @@ public class ShoppingCart extends AppCompatActivity {
 
     public void populate() {
         String uid = new GoogleUtilities().getCurrentUser().getUid();
-        PurchaseRemote purchaseRemote1 = new PurchaseRemote(1, -1, uid, "Pate de cerdo");
-        PurchaseRemote purchaseRemote2 = new PurchaseRemote(2, -1, uid, "Camiseta de diario");
-        PurchaseRemote purchaseRemote3 = new PurchaseRemote(3, -1, uid, "PC HP");
+        PurchaseRemote purchaseRemote1 = new PurchaseRemote(1, -1, uid, "Pate de cerdo", false);
+        PurchaseRemote purchaseRemote2 = new PurchaseRemote(2, -1, uid, "Camiseta de diario", false);
+        PurchaseRemote purchaseRemote3 = new PurchaseRemote(3, -1, uid, "PC HP", false);
         List<PurchaseRemote> listPurcharse = Arrays.asList(purchaseRemote1, purchaseRemote2, purchaseRemote3);
         ShoppingCartRemote shoppingCartRemote = new ShoppingCartRemote(uid, new Date(), true, listPurcharse, new ArrayList<>());
         FirebaseDatabase databaseShoppingCart = FirebaseDatabase.getInstance();

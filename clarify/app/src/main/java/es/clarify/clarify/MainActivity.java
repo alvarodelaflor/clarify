@@ -321,9 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        databaseReference2.child("tags").push().setValue(scannedTagPush11);
 //        databaseReference2.child("tags").push().setValue(scannedTagPush12);
         String uid = new GoogleUtilities().getCurrentUser().getUid();
-        PurchaseRemote purchaseRemote1 = new PurchaseRemote(1, -1, uid, "Pate de cerdo");
-        PurchaseRemote purchaseRemote2 = new PurchaseRemote(2, -1, uid, "Camiseta de diario");
-        PurchaseRemote purchaseRemote3 = new PurchaseRemote(3, -1, uid, "PC HP");
+        PurchaseRemote purchaseRemote1 = new PurchaseRemote(1, -1, uid, "Pate de cerdo", false);
+        PurchaseRemote purchaseRemote2 = new PurchaseRemote(2, -1, uid, "Camiseta de diario", false);
+        PurchaseRemote purchaseRemote3 = new PurchaseRemote(3, -1, uid, "PC HP", false);
         List<PurchaseRemote> listPurcharse = Arrays.asList(purchaseRemote1, purchaseRemote2, purchaseRemote3);
         ShoppingCartRemote shoppingCartRemote = new ShoppingCartRemote(uid, new Date(), true, listPurcharse, new ArrayList<>());
         FirebaseDatabase databaseShoppingCart = FirebaseDatabase.getInstance();

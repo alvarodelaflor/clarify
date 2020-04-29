@@ -6,16 +6,18 @@ public class PurchaseRemote {
     private int idScannedTag;
     private String idShoppingCart;
     private String name;
+    private Boolean check;
 
     public PurchaseRemote() {
     }
 
-    public PurchaseRemote(int idFirebase, int idScannedTag, String idShoppingCart, String name) {
+    public PurchaseRemote(int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check) {
 
         this.idFirebase = idFirebase;
         this.idScannedTag = idScannedTag;
         this.idShoppingCart = idShoppingCart;
         this.name = name;
+        this.check = check;
     }
 
     public int getIdFirebase() {
@@ -48,5 +50,13 @@ public class PurchaseRemote {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(Boolean check) {
+        this.check = check;
     }
 }

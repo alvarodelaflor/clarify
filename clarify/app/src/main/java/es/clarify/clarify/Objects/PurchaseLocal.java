@@ -11,16 +11,18 @@ public class PurchaseLocal extends RealmObject {
     private int idScannedTag;
     private String idShoppingCart;
     private String name;
+    private Boolean check;
 
     public PurchaseLocal() {
     }
 
-    public PurchaseLocal(int id, int idFirebase, int idScannedTag, String idShoppingCart, String name) {
+    public PurchaseLocal(int id, int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check) {
         this.id = id;
         this.idFirebase = idFirebase;
         this.idScannedTag = idScannedTag;
         this.idShoppingCart = idShoppingCart;
         this.name = name;
+        this.check = check;
     }
 
     public int getId() {
@@ -61,5 +63,17 @@ public class PurchaseLocal extends RealmObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setIdFirebase(Integer idFirebase) {
+        this.idFirebase = idFirebase;
+    }
+
+    public Boolean getCheck() {
+        return check;
+    }
+
+    public void setCheck(Boolean check) {
+        this.check = check;
     }
 }

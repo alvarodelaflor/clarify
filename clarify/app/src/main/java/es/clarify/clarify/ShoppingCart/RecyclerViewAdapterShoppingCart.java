@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,7 +42,9 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.purchase_name.setText(mData.get(position).getName());
+        holder.purchase_name.setText(mData.get(holder.getAdapterPosition()).getName());
+        Boolean checkBox = mData.get(holder.getAdapterPosition()).getCheck();
+        holder.checkBox.setChecked(checkBox);
         LinearLayout linearLayoutAux = holder.linearLayoutDelete;
         linearLayoutAux.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +64,7 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private TextView purchase_name;
-//        private ImageView img_delete;
+        private CheckBox checkBox;
         private LinearLayout linearLayoutDelete;
         private CardView cardView;
 
@@ -69,7 +72,7 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
             super(itemView);
 
             purchase_name = (TextView) itemView.findViewById(R.id.shopping_card_item_txt);
-//            img_delete = (ImageView) itemView.findViewById(R.id.shopping_card_item_img);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkbox_product);
             linearLayoutDelete = (LinearLayout) itemView.findViewById(R.id.linear_layout_delete);
             cardView = (CardView) itemView.findViewById(R.id.card_view_stores);
         }

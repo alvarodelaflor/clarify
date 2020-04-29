@@ -268,7 +268,7 @@ public class GoogleUtilities {
         });
     }
 
-    public void savePurchase(String query, int idFirebase, int idScannedTag) {
+    public void savePurchase(String query, int idFirebase, int idScannedTag, Boolean check) {
         String uid = new GoogleUtilities().getCurrentUser().getUid();
         DatabaseReference mReference = database.getReference("private")
                 .child(uid);
@@ -282,7 +282,7 @@ public class GoogleUtilities {
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
                             if (shoppingCartRemote != null) {
-                                PurchaseRemote purchaseRemote = new PurchaseRemote(idFirebase, idScannedTag, uid, query);
+                                PurchaseRemote purchaseRemote = new PurchaseRemote(idFirebase, idScannedTag, uid, query, check);
                                 List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
                                 if (aux == null) {
                                     aux = new ArrayList<>();

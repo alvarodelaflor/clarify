@@ -585,12 +585,12 @@ public class Utilities {
                 });
     }
 
-    public void savePurchase(String query, int idScannedTag, Context context) {
+    public void savePurchase(String query, int idScannedTag, Context context, Boolean check) {
         try {
             int id = realmDatabase.calculateIndexPurchase();
-            Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag);
+            Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag, check);
             if (saveLocal) {
-                googleUtilities.savePurchase(query, id, idScannedTag);
+                googleUtilities.savePurchase(query, id, idScannedTag, check);
             } else {
                 Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
             }

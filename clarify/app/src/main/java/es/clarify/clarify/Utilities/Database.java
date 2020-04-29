@@ -335,12 +335,14 @@ public class Database {
                 int idScannedTag = elem.getIdScannedTag();
                 String idShoppingCart = elem.getIdShoppingCart();
                 String name = elem.getName();
+                Boolean check = elem.getCheck();
 
                 PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
                 purchaseLocal.setIdFirebase(idFirebase);
                 purchaseLocal.setIdScannedTag(idScannedTag);
                 purchaseLocal.setIdShoppingCart(idShoppingCart);
                 purchaseLocal.setName(name);
+                purchaseLocal.setCheck(check);
 
                 res.add(realm.copyFromRealm(purchaseLocal));
             }
@@ -406,11 +408,14 @@ public class Database {
             int idScannedTag = elem.getIdScannedTag();
             String idShoppingCart = elem.getIdShoppingCart();
             String name = elem.getName();
+            Boolean checkAtribute = elem.getCheck();
+
             PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
             purchaseLocal.setIdFirebase(idFirebase);
             purchaseLocal.setIdScannedTag(idScannedTag);
             purchaseLocal.setIdShoppingCart(idShoppingCart);
             purchaseLocal.setName(name);
+            purchaseLocal.setCheck(checkAtribute);
             realm.commitTransaction();
 
             realm.beginTransaction();
@@ -426,6 +431,21 @@ public class Database {
             realm.commitTransaction();
         }
 
+        // We now update the products that have been marked as check
+        List<PurchaseLocal> toCheck = purchaseLocals.stream()
+                .filter(x -> purchaseRemotes.stream().anyMatch(y -> x.getIdFirebase() == y.getIdFirebase() && x.getCheck() != y.getCheck()))
+                .collect(Collectors.toList());
+        for (PurchaseLocal elem : toCheck) {
+            PurchaseLocal p = realm.where(PurchaseLocal.class).equalTo("id", elem.getId()).findFirst();
+            if (p != null) {
+                realm.beginTransaction();
+                PurchaseRemote purchaseRemoteAux = purchaseRemotes.stream().filter(x -> x.getIdFirebase() == p.getIdFirebase()).findFirst().orElse(null);
+                if (purchaseRemoteAux != null && purchaseRemoteAux.getCheck()!= null) {
+                    p.setCheck(purchaseRemoteAux.getCheck());
+                }
+                realm.commitTransaction();
+            }
+        }
         realm.close();
     }
 
@@ -474,7 +494,7 @@ public class Database {
         return res;
     }
 
-    public boolean savePurchase(String query, int id, int idScannedTag) {
+    public boolean savePurchase(String query, int id, int idScannedTag, Boolean check) {
         Boolean res;
         try {
             String uid = new GoogleUtilities().getCurrentUser().getUid();
@@ -492,6 +512,7 @@ public class Database {
             purchaseLocal.setIdShoppingCart(uid);
             purchaseLocal.setIdFirebase(id);
             purchaseLocal.setIdScannedTag(idScannedTag);
+            purchaseLocal.setCheck(check);
             shoppingCartLocal.getPurcharse().add(realm.copyFromRealm(purchaseLocal));
             realm.commitTransaction();
             res = true;
