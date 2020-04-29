@@ -432,9 +432,11 @@ public class Database {
         }
 
         // We now update the products that have been marked as check
-        List<PurchaseLocal> toCheck = purchaseLocals.stream()
+        List<PurchaseLocal> toCheck = purchaseLocals != null && purchaseRemotes != null ?
+                purchaseLocals.stream()
                 .filter(x -> purchaseRemotes.stream().anyMatch(y -> x.getIdFirebase() == y.getIdFirebase() && x.getCheck() != y.getCheck()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : new ArrayList<>();
         for (PurchaseLocal elem : toCheck) {
             PurchaseLocal p = realm.where(PurchaseLocal.class).equalTo("id", elem.getId()).findFirst();
             if (p != null) {
