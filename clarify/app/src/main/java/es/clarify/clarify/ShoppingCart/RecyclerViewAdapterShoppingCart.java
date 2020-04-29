@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -41,8 +42,8 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.purchase_name.setText(mData.get(position).getName());
-        ImageView img_aux = holder.img_delete;
-        img_aux.setOnClickListener(new View.OnClickListener() {
+        LinearLayout linearLayoutAux = holder.linearLayoutDelete;
+        linearLayoutAux.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Boolean check = new Database().deletePurchaseFromLocal(mData.get(holder.getAdapterPosition()));
@@ -60,14 +61,16 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private TextView purchase_name;
-        private ImageView img_delete;
+//        private ImageView img_delete;
+        private LinearLayout linearLayoutDelete;
         private CardView cardView;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             purchase_name = (TextView) itemView.findViewById(R.id.shopping_card_item_txt);
-            img_delete = (ImageView) itemView.findViewById(R.id.shopping_card_item_img);
+//            img_delete = (ImageView) itemView.findViewById(R.id.shopping_card_item_img);
+            linearLayoutDelete = (LinearLayout) itemView.findViewById(R.id.linear_layout_delete);
             cardView = (CardView) itemView.findViewById(R.id.card_view_stores);
         }
     }
