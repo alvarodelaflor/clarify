@@ -50,6 +50,8 @@ public class ShoppingCart extends AppCompatActivity {
     private SearchView searchView;
     Boolean hideFloatingButton = false;
     private CardView cardView;
+    private LinearLayout deleteAll;
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,9 @@ public class ShoppingCart extends AppCompatActivity {
         });
 
         changeColor(R.color.colorPrimary);
+
+        deleteAll = (LinearLayout)findViewById(R.id.delete_all_ly);
+        view = (View) findViewById(R.id.view_1);
 
         realmDatabase = new Database();
         List<PurchaseLocal> mDataFromLocalAux1 = realmDatabase.getAllPurchaseLocalOwnerLogin();
@@ -98,12 +103,16 @@ public class ShoppingCart extends AppCompatActivity {
 
     public void updateNoPurchase() {
         if (mData.size() < 1) {
+            view.setVisibility(View.GONE);
+            deleteAll.setVisibility(View.GONE);
             if (!hideFloatingButton) {
                 noPurchase.setVisibility(View.VISIBLE);
                 addButtonInitial.setVisibility(View.VISIBLE);
             }
             addListButton.hide();
         } else {
+            view.setVisibility(View.VISIBLE);
+            deleteAll.setVisibility(View.VISIBLE);
             noPurchase.setVisibility(View.GONE);
             if (!hideFloatingButton) {
                 addListButton.show();

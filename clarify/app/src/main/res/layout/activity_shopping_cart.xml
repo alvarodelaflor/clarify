@@ -16,43 +16,11 @@
         app:titleTextColor="@color/white">
     </androidx.appcompat.widget.Toolbar>
 
-    <LinearLayout
-        android:id="@+id/share_options"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar_shopping_card"
-        android:background="#C0CAC7C7"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="11dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_condensed_bold_italic"
-            android:text="Personal"
-            android:textSize="22sp" />
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_condensed_bold_italic"
-            android:text="Mis amigos"
-            android:textSize="22sp" />
-
-    </LinearLayout>
-
     <ScrollView
         android:id="@+id/card_view_list_stores"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/share_options">
+        android:layout_below="@+id/toolbar_shopping_card">
 
         <LinearLayout
             android:id="@+id/linear_layout_shopping_list"
@@ -69,19 +37,80 @@
                 android:columnOrderPreserved="false"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/share_options"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/toolbar_shopping_card"
+                    android:background="@drawable/carview_gradient_shopping"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <LinearLayout
+                        android:id="@+id/delete_all_ly"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/bin"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Borrar todo"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"/>
+
+                    </LinearLayout>
+                    <View
+                        android:id="@+id/view_1"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@color/white"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:src="@drawable/smiles"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Compartidas"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
                 <RelativeLayout
                     android:id="@+id/relative_layout_shopping_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:gravity="center"
-                    android:layout_marginTop="32dp">
+                    android:gravity="center">
 
                     <LinearLayout
                         android:id="@+id/no_purchase"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:layout_marginTop="65dp"
                         android:gravity="center">
 
                         <ImageView
@@ -114,14 +143,14 @@
                             android:textSize="18sp" />
                     </LinearLayout>
 
-                </RelativeLayout>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/purchase_recyclerview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_row="0"
+                        android:layout_column="0" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/purchase_recyclerview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_row="0"
-                    android:layout_column="0" />
+                </RelativeLayout>
 
             </GridLayout>
         </LinearLayout>
