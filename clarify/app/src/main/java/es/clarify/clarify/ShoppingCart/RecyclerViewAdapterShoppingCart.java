@@ -42,15 +42,12 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.purchase_name.setText(mData.get(position).getName());
         ImageView img_aux = holder.img_delete;
-        int actualPosition = holder.getAdapterPosition();
         img_aux.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean check = new Database().deletePurchaseFromLocal(mData.get(actualPosition));
-                if (check) {
-                    mData.remove(mData.get(actualPosition));
-                    notifyItemRemoved(actualPosition);
-                }
+                Boolean check = new Database().deletePurchaseFromLocal(mData.get(holder.getAdapterPosition()));
+                mData.remove(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getAdapterPosition());
             }
         });
     }

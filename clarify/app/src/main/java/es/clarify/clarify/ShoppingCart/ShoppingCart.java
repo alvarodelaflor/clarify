@@ -156,7 +156,7 @@ public class ShoppingCart extends AppCompatActivity {
 
         IntStream
                 .range(0, mData.size())
-                .filter(x -> ((mDataAux.size() == 0 && mData.size()!=0) || mDataAux.size() > x) && !mDataAux.stream().anyMatch(y -> y.getIdFirebase() == mData.get(x).getIdFirebase()))
+                .filter(x -> mDataAux.stream().map(PurchaseLocal::getIdFirebase).noneMatch(y -> mData.get(x).getIdFirebase() == y))
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .forEach( x -> deleteItem(x));
@@ -164,6 +164,7 @@ public class ShoppingCart extends AppCompatActivity {
         IntStream
                 .range(0, mDataAux.size())
                 .filter(x -> mData.stream().noneMatch(y -> y.getIdFirebase() == mDataAux.get(x).getIdFirebase()))
+                .boxed()
                 .forEach(x -> insertItem(x, mDataAux.get(x)));
 
         refresh(1000);
