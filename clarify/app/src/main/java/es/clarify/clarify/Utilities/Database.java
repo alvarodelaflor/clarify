@@ -435,11 +435,6 @@ public class Database {
             Realm realm = Realm.getDefaultInstance();
             PurchaseLocal aux = realm.where(PurchaseLocal.class).equalTo("id", purchaseLocal.getId()).findFirst();
             if (aux != null) {
-                ShoppingCartLocal shoppingCartLocal = realm.where(ShoppingCartLocal.class).findFirst();
-                PurchaseLocal toDelete = null;
-                if (shoppingCartLocal != null) {
-                    toDelete = shoppingCartLocal.getPurcharse().stream().filter(x -> x.getIdFirebase() == purchaseLocal.getIdFirebase()).findFirst().orElse(null);
-                }
                 realm.beginTransaction();
                 aux.deleteFromRealm();
                 realm.commitTransaction();

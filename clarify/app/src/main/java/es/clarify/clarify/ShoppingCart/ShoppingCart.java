@@ -23,9 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -67,7 +70,9 @@ public class ShoppingCart extends AppCompatActivity {
         changeColor(R.color.colorPrimary);
 
         realmDatabase = new Database();
-        mData = new ArrayList<>(realmDatabase.getAllPurchaseLocalOwnerLogin());
+        List<PurchaseLocal> mDataFromLocalAux1 = realmDatabase.getAllPurchaseLocalOwnerLogin();
+        mDataFromLocalAux1.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
+        mData = new ArrayList<>(mDataFromLocalAux1);
 
         noPurchase = (LinearLayout) findViewById(R.id.no_purchase);
 
@@ -81,7 +86,7 @@ public class ShoppingCart extends AppCompatActivity {
 
         cardView = (CardView)findViewById(R.id.card_view_stores);
 
-        updateData();
+        refresh(1000);
         updateNoPurchase();
     }
 
@@ -107,15 +112,37 @@ public class ShoppingCart extends AppCompatActivity {
     }
 
     public void updateData() {
-        int lastSize = mData.size();
-        List<PurchaseLocal> mDataAux = realmDatabase.getAllPurchaseLocalOwnerLogin();
-        List<Integer> ids1 = mData.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
-        List<Integer> ids2 = mDataAux.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
-        Boolean check = mData.size() != mDataAux.size() || ids1.stream().anyMatch(x -> !ids2.contains(x));
-        if (check) {
-            recyclerViewAdapter.mData = new ArrayList<>(mDataAux);
-            mData = new ArrayList<>(mDataAux);
-            recyclerViewAdapter.notifyDataSetChanged();
+        List<PurchaseLocal> mDataFromLocalAux2 = realmDatabase.getAllPurchaseLocalOwnerLogin();
+        mDataFromLocalAux2.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
+        List<PurchaseLocal> mDataAux = new ArrayList<>(mDataFromLocalAux2);
+//        mDataAux.sort(Comparator.comparing(PurchaseLocal::getIdFirebase));
+//
+//        List<Integer> ids1 = mData.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
+//        List<Integer> ids2 = mDataAux.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
+//        Boolean check = mData.size() != mDataAux.size() || ids1.stream().anyMatch(x -> !ids2.contains(x));
+//        if (check) {
+//            recyclerViewAdapter.mData = new ArrayList<>(mDataAux);
+//            mData = new ArrayList<>(mDataAux);
+//            recyclerViewAdapter.notifyDataSetChanged();
+//        }
+        // New Version
+        List<Integer> newPurchase = IntStream
+                .range(0, mDataAux.size())
+                .filter(x -> mData.stream().noneMatch(y -> y.getIdFirebase() == mDataAux.get(x).getIdFirebase()))
+                .boxed()
+                .collect(Collectors.toList());
+        for (Integer i : newPurchase) {
+            mData.add(i, mDataAux.get(i));
+            recyclerViewAdapter.notifyItemInserted(i);
+        }
+        List<Integer> deletePurchase = IntStream
+                .range(0, mData.size())
+                .filter(x -> !mDataAux.stream().anyMatch(y -> mData.get(x).getIdFirebase() == y.getIdFirebase()))
+                .boxed()
+                .collect(Collectors.toList());
+        for (Integer i : deletePurchase) {
+            mData.remove(mData.get(i));
+            recyclerViewAdapter.notifyItemRemoved(i);
         }
         updateNoPurchase();
         refresh(1000);
