@@ -86,7 +86,7 @@ public class ShoppingCart extends AppCompatActivity {
 
         cardView = (CardView)findViewById(R.id.card_view_stores);
 
-        refresh(1000);
+        updateData();
         updateNoPurchase();
     }
 
@@ -115,37 +115,28 @@ public class ShoppingCart extends AppCompatActivity {
         List<PurchaseLocal> mDataFromLocalAux2 = realmDatabase.getAllPurchaseLocalOwnerLogin();
         mDataFromLocalAux2.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
         List<PurchaseLocal> mDataAux = new ArrayList<>(mDataFromLocalAux2);
-//        mDataAux.sort(Comparator.comparing(PurchaseLocal::getIdFirebase));
-//
-//        List<Integer> ids1 = mData.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
-//        List<Integer> ids2 = mDataAux.stream().map(x -> x.getIdFirebase()).collect(Collectors.toList());
-//        Boolean check = mData.size() != mDataAux.size() || ids1.stream().anyMatch(x -> !ids2.contains(x));
-//        if (check) {
-//            recyclerViewAdapter.mData = new ArrayList<>(mDataAux);
-//            mData = new ArrayList<>(mDataAux);
-//            recyclerViewAdapter.notifyDataSetChanged();
-//        }
-        // New Version
-        List<Integer> newPurchase = IntStream
+
+        IntStream
+                .range(0, mData.size())
+                .filter(x -> ((mDataAux.size() == 0 && mData.size()!=0) || mDataAux.size() > x) && !mDataAux.stream().anyMatch(y -> y.getIdFirebase() == mData.get(x).getIdFirebase()))
+                .forEach( x -> deleteItem(x));
+
+        IntStream
                 .range(0, mDataAux.size())
                 .filter(x -> mData.stream().noneMatch(y -> y.getIdFirebase() == mDataAux.get(x).getIdFirebase()))
-                .boxed()
-                .collect(Collectors.toList());
-        for (Integer i : newPurchase) {
-            mData.add(i, mDataAux.get(i));
-            recyclerViewAdapter.notifyItemInserted(i);
-        }
-        List<Integer> deletePurchase = IntStream
-                .range(0, mData.size())
-                .filter(x -> !mDataAux.stream().anyMatch(y -> mData.get(x).getIdFirebase() == y.getIdFirebase()))
-                .boxed()
-                .collect(Collectors.toList());
-        for (Integer i : deletePurchase) {
-            mData.remove(mData.get(i));
-            recyclerViewAdapter.notifyItemRemoved(i);
-        }
-        updateNoPurchase();
+                .forEach(x -> insertItem(x, mDataAux.get(x)));
+
         refresh(1000);
+    }
+
+    public void deleteItem(int position) {
+        recyclerViewAdapter.notifyItemRemoved(position);
+        mData.remove(position);
+    }
+
+    public void insertItem(int position, PurchaseLocal purchaseLocal) {
+        mData.add(position, purchaseLocal);
+        recyclerViewAdapter.notifyItemInserted(position);
     }
 
     public void refresh(int milliseconds) {
@@ -155,6 +146,7 @@ public class ShoppingCart extends AppCompatActivity {
             @Override
             public void run() {
                 updateData();
+                updateNoPurchase();
             }
         };
 
