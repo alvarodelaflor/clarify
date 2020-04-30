@@ -71,4 +71,16 @@ public class FriendRemote {
     public void setIdShoppingCart(String idShoppingCart) {
         this.idShoppingCart = idShoppingCart;
     }
+
+    @Override
+    public String toString() {
+        return "FriendRemote{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", uid='" + uid + '\'' +
+                ", status=" + status +
+                ", photo='" + photo + '\'' +
+                ", idShoppingCart='" + idShoppingCart + '\'' +
+                '}';
+    }
 }

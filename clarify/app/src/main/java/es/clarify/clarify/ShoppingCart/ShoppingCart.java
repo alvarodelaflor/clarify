@@ -14,12 +14,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -58,6 +60,7 @@ public class ShoppingCart extends AppCompatActivity {
     private View view;
     private Dialog dialog;
     private Dialog dialogShareOption;
+    private EditText email;
     Button confirmDelete;
 
     @Override
@@ -120,6 +123,7 @@ public class ShoppingCart extends AppCompatActivity {
                 );
 
         confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
+        email = (EditText)dialogShareOption.findViewById(R.id.email);
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -277,6 +281,24 @@ public class ShoppingCart extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void shareList(View view) {
+        try {
+            String emailAux = email.getText().toString().trim();
+            if (emailAux != null) {
+                if (!emailAux.isEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(emailAux).matches()) {
+                    new GoogleUtilities().shareShoppingCart(emailAux, ShoppingCart.this);
+                } else {
+                    Toast.makeText(ShoppingCart.this, "El correo no es válido", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(ShoppingCart.this, "Inténtalo otra vez", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Log.e("ShoppingCart", "shareList: ", e);
+            Toast.makeText(ShoppingCart.this, "Se ha producido un error", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void populate() {

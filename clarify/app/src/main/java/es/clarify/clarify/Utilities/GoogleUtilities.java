@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTagRemote;
@@ -32,6 +33,7 @@ import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 
 public class GoogleUtilities {
 
@@ -345,5 +347,41 @@ public class GoogleUtilities {
                 Log.e(TAG, "onCancelled", databaseError.toException());
             }
         });
+    }
+
+    public void shareShoppingCart(String emailAux, Activity activity) {
+        try {
+            DatabaseReference databaseReference = database.getReference("private");
+            databaseReference.orderByChild("user_profile/email").equalTo(emailAux).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                            DataSnapshot userProfile = data.child("user_profile");
+                            FriendRemote friendRemote = new FriendRemote(
+                                    userProfile.child("name").getValue(String.class),
+                                    userProfile.child("email").getValue(String.class),
+                                    userProfile.child("uid").getValue(String.class),
+                                    false,
+                                    userProfile.child("photo").getValue(String.class),
+                                    getCurrentUser().getUid()
+                            );
+                            Toast.makeText(activity, "Usuario encontrado " + friendRemote, Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(activity, "No existe ese usuario", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        } catch (Exception e) {
+            Log.e(TAG, "shareShoppingCart: ", e);
+            Toast.makeText(activity.getApplicationContext(), "Vaya, se ha producido un error", Toast.LENGTH_LONG).show();
+        }
     }
 }

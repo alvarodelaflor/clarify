@@ -1,5 +1,6 @@
 package es.clarify.clarify.Utilities;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -19,6 +20,7 @@ import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Objects.UserDataLocal;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
