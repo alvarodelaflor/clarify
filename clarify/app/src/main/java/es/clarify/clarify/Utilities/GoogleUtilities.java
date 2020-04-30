@@ -1,6 +1,7 @@
 package es.clarify.clarify.Utilities;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
@@ -366,7 +367,7 @@ public class GoogleUtilities {
                                     userProfile.child("name").getValue(String.class),
                                     userProfile.child("email").getValue(String.class),
                                     userProfile.child("uid").getValue(String.class),
-                                    false,
+                                    true,
                                     userProfile.child("photo").getValue(String.class),
                                     getCurrentUser().getUid()
                             );
@@ -389,15 +390,15 @@ public class GoogleUtilities {
                                     shoppingCartRemote.setFriendInvitation(Arrays.asList(friendRemoteMe));
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
+                                    saveNewAllowUser(friendRemote, activity);
                                     dialog.hide();
-                                    Toast.makeText(activity, "¡Invitación enviada!", Toast.LENGTH_LONG).show();
                                 } else if (key != null && myFriends.stream().filter(x -> x.getUid() == uidFriend).findFirst() == null) {
                                     myFriends.add(friendRemoteMe);
                                     shoppingCartRemote.setFriendInvitation(myFriends);
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
+                                    saveNewAllowUser(friendRemote, activity);
                                     dialog.hide();
-                                    Toast.makeText(activity, "¡Invitación enviada!", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(activity, "¡Ya le has enviado una invitación a este correo!", Toast.LENGTH_LONG).show();
                                 }
@@ -418,6 +419,46 @@ public class GoogleUtilities {
             });
         } catch (Exception e) {
             Log.e(TAG, "shareShoppingCart: ", e);
+            Toast.makeText(activity.getApplicationContext(), "Vaya, se ha producido un error", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void saveNewAllowUser(FriendRemote friendRemote, Activity activity) {
+        try {
+            String uid = new GoogleUtilities().getCurrentUser().getUid();
+            DatabaseReference mReference = database.getReference("private")
+                    .child(uid);
+
+            mReference.child("listaCompra")
+                    .orderByChild("idFirebase")
+                    .equalTo(uid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                                if (shoppingCartRemote != null) {
+                                    List<FriendRemote> aux = shoppingCartRemote.getAllowUsers();
+                                    if (aux == null) {
+                                        aux = new ArrayList<>();
+                                    }
+                                    aux.add(friendRemote);
+                                    DatabaseReference allowUsers = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("allowUsers");
+                                    allowUsers.setValue(aux);
+                                    DatabaseReference date = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("lastUpdate");
+                                    date.setValue(new Date());
+                                }
+                            }
+                            Toast.makeText(activity, "¡Invitación enviada!", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "saveFriendToLocal: ", e);
             Toast.makeText(activity.getApplicationContext(), "Vaya, se ha producido un error", Toast.LENGTH_LONG).show();
         }
     }
