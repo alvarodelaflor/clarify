@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTagRemote;
+import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
@@ -66,6 +67,8 @@ public class GoogleUtilities {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber());
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>());
+        pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
     }
 
     public void pushToFirebaseWithoutId(String reference, List<String> childs, Object value) {
@@ -92,7 +95,9 @@ public class GoogleUtilities {
 
                 if (dataSnapshot.exists()) {
                     Log.i(TAG, "Push to Firebase: object already exist");
-                    Toast.makeText(activity, "¡Ya lo tenías guardado!", Toast.LENGTH_LONG).show();
+                    if (activity!=null) {
+                        Toast.makeText(activity, "¡Ya lo tenías guardado!", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Log.i(TAG, "Push to Firebase: pushing object");
                     databaseReferenceFinal.push().setValue(value);
@@ -100,7 +105,9 @@ public class GoogleUtilities {
                         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", childs.get(childs.size() - 1), "lastUpdate"), new Date());
                     }
                     pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "stores", "lastUpdate"), new Date());
-                    Toast.makeText(activity, "¡Guardado!", Toast.LENGTH_LONG).show();
+                    if (activity != null) {
+                        Toast.makeText(activity, "¡Guardado!", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
