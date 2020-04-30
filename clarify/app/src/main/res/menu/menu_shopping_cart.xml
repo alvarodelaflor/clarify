@@ -9,6 +9,13 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         />
 
+    <item android:id="@+id/share_list"
+        android:title="Asistente de voz"
+        android:icon="@drawable/ic_person_add_black_24dp"
+        android:visible="true"
+        app:showAsAction="always"
+        />
+
     <item android:id="@+id/microphone"
         android:title="Asistente de voz"
         android:icon="@drawable/ic_mic_black_24dp"

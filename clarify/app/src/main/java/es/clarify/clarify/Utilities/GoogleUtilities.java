@@ -31,8 +31,6 @@ import es.clarify.clarify.Objects.ScannedTagRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
-import es.clarify.clarify.ShoppingCart.ShoppingCart;
-import io.realm.Realm;
 
 public class GoogleUtilities {
 

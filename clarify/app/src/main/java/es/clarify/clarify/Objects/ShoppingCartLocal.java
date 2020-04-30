@@ -13,12 +13,12 @@ public class ShoppingCartLocal extends RealmObject {
     private Date lastUpdate;
     private Boolean own;
     private RealmList<PurchaseLocal> purcharse;
-    private RealmList<String> allowUsers;
+    private RealmList<FriendLocal> allowUsers;
 
     public ShoppingCartLocal() {
     }
 
-    public ShoppingCartLocal(String id, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<String> allowUsers) {
+    public ShoppingCartLocal(String id, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<FriendLocal> allowUsers) {
         this.id = id;
         this.lastUpdate = lastUpdate;
         this.own = own;
@@ -58,11 +58,11 @@ public class ShoppingCartLocal extends RealmObject {
         this.own = own;
     }
 
-    public RealmList<String> getAllowUsers() {
+    public RealmList<FriendLocal> getAllowUsers() {
         return allowUsers;
     }
 
-    public void setAllowUsers(RealmList<String> allowUsers) {
+    public void setAllowUsers(RealmList<FriendLocal> allowUsers) {
         this.allowUsers = allowUsers;
     }
 }

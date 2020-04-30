@@ -3,26 +3,22 @@ package es.clarify.clarify.Objects;
 import java.util.Date;
 import java.util.List;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-
 public class ShoppingCartRemote {
 
     private String idFirebase;
     private Date lastUpdate;
     private Boolean own;
     private List<PurchaseRemote> purcharse;
-    private List<String> allowUsers;
+    private List<FriendRemote> allowUsers;
 
     public ShoppingCartRemote() {
     }
 
-    public ShoppingCartRemote(String idFirebase, Date lastUpdate, Boolean own, List<PurchaseRemote> purchase, List<String> allowUsers) {
+    public ShoppingCartRemote(String idFirebase, Date lastUpdate, Boolean own, List<PurchaseRemote> purcharse, List<FriendRemote> allowUsers) {
         this.idFirebase = idFirebase;
         this.lastUpdate = lastUpdate;
         this.own = own;
-        this.purcharse = purchase;
+        this.purcharse = purcharse;
         this.allowUsers = allowUsers;
     }
 
@@ -58,11 +54,11 @@ public class ShoppingCartRemote {
         this.own = own;
     }
 
-    public List<String> getAllowUsers() {
+    public List<FriendRemote> getAllowUsers() {
         return allowUsers;
     }
 
-    public void setAllowUsers(List<String> allowUsers) {
+    public void setAllowUsers(List<FriendRemote> allowUsers) {
         this.allowUsers = allowUsers;
     }
 }

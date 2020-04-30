@@ -57,6 +57,7 @@ public class ShoppingCart extends AppCompatActivity {
     private LinearLayout deleteAll;
     private View view;
     private Dialog dialog;
+    private Dialog dialogShareOption;
     Button confirmDelete;
 
     @Override
@@ -108,6 +109,16 @@ public class ShoppingCart extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
+
+        dialogShareOption = new Dialog(ShoppingCart.this);
+        dialogShareOption.setContentView(R.layout.dialog_edit_share);
+        dialogShareOption.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogShareOption.getWindow()
+                .setLayout(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+
         confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,6 +226,7 @@ public class ShoppingCart extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_shopping_cart, menu);
         MenuItem itemAdd = menu.findItem(R.id.search_icon);
+        MenuItem itemShare = menu.findItem(R.id.share_list);
         searchView = (SearchView)itemAdd.getActionView();
         searchView.setQueryHint("Nombre del producto");
         itemAdd.setVisible(false);
@@ -225,6 +237,7 @@ public class ShoppingCart extends AppCompatActivity {
                 new Utilities().savePurchase(query, -1, ShoppingCart.this, false);
                 searchView.clearFocus();
                 itemAdd.collapseActionView();
+                itemShare.setVisible(true);
                 setHideFloatingButton(false);
                 return true;
             }
@@ -238,6 +251,7 @@ public class ShoppingCart extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 itemAdd.expandActionView();
+                itemShare.setVisible(false);
                 setHideFloatingButton(true);
                 addListButton.hide();
             }
@@ -247,6 +261,7 @@ public class ShoppingCart extends AppCompatActivity {
             public void onClick(View view) {
                 itemAdd.expandActionView();
                 setHideFloatingButton(true);
+                itemShare.setVisible(false);
                 addButtonInitial.setVisibility(View.INVISIBLE);
             }
         });
@@ -254,6 +269,15 @@ public class ShoppingCart extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share_list:
+                dialogShareOption.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void populate() {
         String uid = new GoogleUtilities().getCurrentUser().getUid();
