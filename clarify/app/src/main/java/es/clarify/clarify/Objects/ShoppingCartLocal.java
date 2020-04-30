@@ -14,16 +14,18 @@ public class ShoppingCartLocal extends RealmObject {
     private Boolean own;
     private RealmList<PurchaseLocal> purcharse;
     private RealmList<FriendLocal> allowUsers;
+    private RealmList<FriendLocal> friendInvitation;
 
     public ShoppingCartLocal() {
     }
 
-    public ShoppingCartLocal(String id, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<FriendLocal> allowUsers) {
+    public ShoppingCartLocal(String id, Date lastUpdate, Boolean own, RealmList<PurchaseLocal> purchase, RealmList<FriendLocal> allowUsers, RealmList<FriendLocal> friendInvitation) {
         this.id = id;
         this.lastUpdate = lastUpdate;
         this.own = own;
         this.purcharse = purchase;
         this.allowUsers = allowUsers;
+        this.friendInvitation = friendInvitation;
     }
 
     public String getId() {
@@ -64,5 +66,13 @@ public class ShoppingCartLocal extends RealmObject {
 
     public void setAllowUsers(RealmList<FriendLocal> allowUsers) {
         this.allowUsers = allowUsers;
+    }
+
+    public RealmList<FriendLocal> getFriendInvitation() {
+        return friendInvitation;
+    }
+
+    public void setFriendInvitation(RealmList<FriendLocal> friendInvitation) {
+        this.friendInvitation = friendInvitation;
     }
 }

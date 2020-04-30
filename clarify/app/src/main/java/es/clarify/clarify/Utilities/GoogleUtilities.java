@@ -1,6 +1,7 @@
 package es.clarify.clarify.Utilities;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -69,7 +70,7 @@ public class GoogleUtilities {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber());
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
-        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>());
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
     }
 
@@ -349,17 +350,19 @@ public class GoogleUtilities {
         });
     }
 
-    public void shareShoppingCart(String emailAux, Activity activity) {
+    public void shareShoppingCart(String emailAux, Activity activity, Dialog dialog) {
         try {
             DatabaseReference databaseReference = database.getReference("private");
+            DatabaseReference databaseReference2 = database.getReference("private");
             databaseReference.orderByChild("user_profile/email").equalTo(emailAux).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.exists()) {
+                        FriendRemote friendRemote = null;
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
                             DataSnapshot userProfile = data.child("user_profile");
-                            FriendRemote friendRemote = new FriendRemote(
+                            friendRemote = new FriendRemote(
                                     userProfile.child("name").getValue(String.class),
                                     userProfile.child("email").getValue(String.class),
                                     userProfile.child("uid").getValue(String.class),
@@ -367,7 +370,41 @@ public class GoogleUtilities {
                                     userProfile.child("photo").getValue(String.class),
                                     getCurrentUser().getUid()
                             );
-                            Toast.makeText(activity, "Usuario encontrado " + friendRemote, Toast.LENGTH_LONG).show();
+                            FriendRemote friendRemoteMe = new FriendRemote(
+                                    getCurrentUser().getDisplayName(),
+                                    getCurrentUser().getEmail(),
+                                    getCurrentUser().getUid(),
+                                    false,
+                                    getCurrentUser().getPhotoUrl().toString(),
+                                    getCurrentUser().getUid());
+                            String key = null;
+                            for (DataSnapshot elem : data.child("listaCompra").getChildren()) {
+                                key = elem.getKey();
+                            }
+                            ShoppingCartRemote shoppingCartRemote = data.child("listaCompra").child(key).getValue(ShoppingCartRemote.class);
+                            if (key != null && shoppingCartRemote != null && friendRemote != null) {
+                                List<FriendRemote> myFriends = shoppingCartRemote.getFriendInvitation();
+                                final String uidFriend = friendRemote.getUid();
+                                if (myFriends == null) {
+                                    shoppingCartRemote.setFriendInvitation(Arrays.asList(friendRemoteMe));
+                                    databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
+                                    databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
+                                    dialog.hide();
+                                    Toast.makeText(activity, "¡Invitación enviada!", Toast.LENGTH_LONG).show();
+                                } else if (key != null && myFriends.stream().filter(x -> x.getUid() == uidFriend).findFirst() == null) {
+                                    myFriends.add(friendRemoteMe);
+                                    shoppingCartRemote.setFriendInvitation(myFriends);
+                                    databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
+                                    databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
+                                    dialog.hide();
+                                    Toast.makeText(activity, "¡Invitación enviada!", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(activity, "¡Ya le has enviado una invitación a este correo!", Toast.LENGTH_LONG).show();
+                                }
+
+                            } else {
+                                Toast.makeText(activity, "No se ha podido guardar" + friendRemote, Toast.LENGTH_LONG).show();
+                            }
                         }
                     } else {
                         Toast.makeText(activity, "No existe ese usuario", Toast.LENGTH_LONG).show();

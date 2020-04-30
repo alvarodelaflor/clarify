@@ -10,16 +10,18 @@ public class ShoppingCartRemote {
     private Boolean own;
     private List<PurchaseRemote> purcharse;
     private List<FriendRemote> allowUsers;
+    private List<FriendRemote> friendInvitation;
 
     public ShoppingCartRemote() {
     }
 
-    public ShoppingCartRemote(String idFirebase, Date lastUpdate, Boolean own, List<PurchaseRemote> purcharse, List<FriendRemote> allowUsers) {
+    public ShoppingCartRemote(String idFirebase, Date lastUpdate, Boolean own, List<PurchaseRemote> purcharse, List<FriendRemote> allowUsers, List<FriendRemote> friendInvitation) {
         this.idFirebase = idFirebase;
         this.lastUpdate = lastUpdate;
         this.own = own;
         this.purcharse = purcharse;
         this.allowUsers = allowUsers;
+        this.friendInvitation = friendInvitation;
     }
 
     public String getIdFirebase() {
@@ -60,5 +62,13 @@ public class ShoppingCartRemote {
 
     public void setAllowUsers(List<FriendRemote> allowUsers) {
         this.allowUsers = allowUsers;
+    }
+
+    public List<FriendRemote> getFriendInvitation() {
+        return friendInvitation;
+    }
+
+    public void setFriendInvitation(List<FriendRemote> friendInvitation) {
+        this.friendInvitation = friendInvitation;
     }
 }
