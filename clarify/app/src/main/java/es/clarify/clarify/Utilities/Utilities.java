@@ -371,50 +371,54 @@ public class Utilities {
         }
     }
 
-    public void storeListenerFirebase() {
+    public ValueEventListener createStoreListenerFirebase() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Date lastUpdateFirebase = null;
+                Map<String, Date> lastUpadateAllStoresLocal = getLastUpdateAllStores();
+                List<String> storesFirebase = new ArrayList<>();
+
+                List<String> storesToSyncronize = new ArrayList<String>();
+                List<String> newStores = new ArrayList<>();
+                List<String> deleteStore = new ArrayList<>();
+
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+
+                for (DataSnapshot child : children) {
+
+                    if (child.getKey().equals("lastUpdate")) {
+                        lastUpdateFirebase = child.getValue(Date.class);
+                    } else {
+                        storesFirebase.add(child.getKey());
+                    }
+                }
+
+                // First of all, if there is a new store, we add it together with all its labels
+                newStores.addAll(storesFirebase.stream().filter(x -> !lastUpadateAllStoresLocal.keySet().contains(x)).collect(Collectors.toList()));
+                updateStore(newStores, dataSnapshot);
+
+                // Second, we delete the stores that no longer exist remotely
+                deleteStore.addAll(lastUpadateAllStoresLocal.keySet());
+                deleteStore.removeAll(storesFirebase);
+                realmDatabase.deleteStoresLocal(deleteStore);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    public void storeListenerFirebase(ValueEventListener valueEventListener) {
         try {
             String userId = googleUtilities.getCurrentUser().getUid();
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("stores");
             databaseReference
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Date lastUpdateFirebase = null;
-                            Map<String, Date> lastUpadateAllStoresLocal = getLastUpdateAllStores();
-                            List<String> storesFirebase = new ArrayList<>();
-
-                            List<String> storesToSyncronize = new ArrayList<String>();
-                            List<String> newStores = new ArrayList<>();
-                            List<String> deleteStore = new ArrayList<>();
-
-                            Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-
-                            for (DataSnapshot child : children) {
-
-                                if (child.getKey().equals("lastUpdate")) {
-                                    lastUpdateFirebase = child.getValue(Date.class);
-                                } else {
-                                    storesFirebase.add(child.getKey());
-                                }
-                            }
-
-                            // First of all, if there is a new store, we add it together with all its labels
-                            newStores.addAll(storesFirebase.stream().filter(x -> !lastUpadateAllStoresLocal.keySet().contains(x)).collect(Collectors.toList()));
-                            updateStore(newStores, dataSnapshot);
-
-                            // Second, we delete the stores that no longer exist remotely
-                            deleteStore.addAll(lastUpadateAllStoresLocal.keySet());
-                            deleteStore.removeAll(storesFirebase);
-                            realmDatabase.deleteStoresLocal(deleteStore);
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    .addValueEventListener(valueEventListener);
         } catch (Exception e) {
             Log.e("Utilities", "updateDataFromFirebaseToLocal: ", e);
         }
@@ -554,35 +558,39 @@ public class Utilities {
         };
     }
 
-    public void listenerOwnShoppingCart() {
+    public ValueEventListener createListenerOwnShoppingCart() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Realm realm = Realm.getDefaultInstance();
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    ShoppingCartLocal shoppingCartLocal = null;
+                    if (shoppingCartRemote != null && shoppingCartRemote.getIdFirebase() != null) {
+                        shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
+                        if (shoppingCartLocal == null) {
+                            realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
+                        } else if (shoppingCartLocal != null && shoppingCartLocal.getLastUpdate() != null && realm.copyFromRealm(shoppingCartLocal).getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
+                            ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
+                            realmDatabase.updateShoppingCartLocal(shoppingCartLocalCopy, shoppingCartRemote);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+    }
+
+    public void listenerOwnShoppingCart(ValueEventListener valueEventListener) {
         String userId = googleUtilities.getCurrentUser().getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference().child(("private")).child(userId).child("listaCompra");
         databaseReference
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Realm realm = Realm.getDefaultInstance();
-                        for (DataSnapshot data : dataSnapshot.getChildren()) {
-                            ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                            ShoppingCartLocal shoppingCartLocal = null;
-                            if (shoppingCartRemote != null && shoppingCartRemote.getIdFirebase() != null) {
-                                shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
-                                if (shoppingCartLocal == null) {
-                                    realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
-                                } else if (shoppingCartLocal!=null && realm.copyFromRealm(shoppingCartLocal).getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
-                                    ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
-                                    realmDatabase.updateShoppingCartLocal(shoppingCartLocalCopy, shoppingCartRemote);
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                .addValueEventListener(valueEventListener);
     }
 
     public void savePurchase(String query, int idScannedTag, Context context, Boolean check) {

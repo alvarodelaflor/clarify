@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.FriendRemote;
@@ -245,7 +246,6 @@ public class Database {
         List<PurchaseLocal> res;
         try {
             Realm realm = Realm.getDefaultInstance();
-            String uidUser = new GoogleUtilities().getCurrentUser().getUid();
             ShoppingCartLocal aux = realm.where(ShoppingCartLocal.class).findFirst();
             res = new ArrayList<>(realm.copyFromRealm(aux.getPurcharse()));
             realm.close();
@@ -307,25 +307,48 @@ public class Database {
             }
             Boolean own = shoppingCartRemote.getOwn();
             Date lastUpdate = shoppingCartRemote.getLastUpdate();
+            realm.commitTransaction();
+
             RealmList<FriendLocal> allowUsersLocal = new RealmList<>();
             List<FriendRemote> allowUsers = shoppingCartRemote.getAllowUsers();
             if (allowUsers != null) {
                 for (FriendRemote elem : allowUsers) {
                     FriendLocal friendLocal = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
                     if (friendLocal == null) {
+                        realm.beginTransaction();
                         friendLocal = realm.createObject(FriendLocal.class, elem.getUid());
+                        friendLocal.setEmail(elem.getEmail());
+                        friendLocal.setName(elem.getName());
+                        friendLocal.setPhoto(elem.getPhoto());
+                        friendLocal.setStatus(elem.getStatus());
+                        realm.commitTransaction();
                     }
-                    friendLocal.setEmail(elem.getEmail());
-                    friendLocal.setName(elem.getName());
-                    friendLocal.setPhoto(elem.getPhoto());
-                    friendLocal.setStatus(elem.getStatus());
                     allowUsersLocal.add(realm.copyFromRealm(friendLocal));
                 }
             }
 
+            RealmList<FriendLocal> friendInvitationListLocal = new RealmList<>();
+            List<FriendRemote> friendInvitationListRemote = shoppingCartRemote.getFriendInvitation();
+            if (friendInvitationListRemote != null) {
+                for (FriendRemote elem : friendInvitationListRemote) {
+                    FriendLocal friendLocal = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+                    if (friendLocal == null) {
+                        realm.beginTransaction();
+                        friendLocal = realm.createObject(FriendLocal.class, elem.getUid());
+                        friendLocal.setEmail(elem.getEmail());
+                        friendLocal.setName(elem.getName());
+                        friendLocal.setPhoto(elem.getPhoto());
+                        friendLocal.setStatus(elem.getStatus());
+                        realm.commitTransaction();
+                    }
+                    friendInvitationListLocal.add(realm.copyFromRealm(friendLocal));
+                }
+            }
+            realm.beginTransaction();
             shoppingCartLocal.setOwn(own);
             shoppingCartLocal.setLastUpdate(lastUpdate);
-            shoppingCartLocal.setAllowUsers(allowUsersLocal);
+            shoppingCartLocal.getAllowUsers().addAll(allowUsersLocal);
+            shoppingCartLocal.getFriendInvitation().addAll(friendInvitationListLocal);
             shoppingCartLocal.getPurcharse().addAll(syncronizePurcharse(shoppingCartRemote));
             realm.commitTransaction();
             res = realm.copyFromRealm(shoppingCartLocal);
@@ -340,24 +363,26 @@ public class Database {
         RealmList<PurchaseLocal> res = new RealmList<>();
         try {
             List<PurchaseRemote> aux = shoppingCartRemote.getPurcharse();
-            for (PurchaseRemote elem : aux) {
-                Realm realm = Realm.getDefaultInstance();
+            if (aux != null) {
+                for (PurchaseRemote elem : aux) {
+                    Realm realm = Realm.getDefaultInstance();
 
-                int id = elem.getIdFirebase();
-                int idFirebase = elem.getIdFirebase();
-                int idScannedTag = elem.getIdScannedTag();
-                String idShoppingCart = elem.getIdShoppingCart();
-                String name = elem.getName();
-                Boolean check = elem.getCheck();
+                    int id = elem.getIdFirebase();
+                    int idFirebase = elem.getIdFirebase();
+                    int idScannedTag = elem.getIdScannedTag();
+                    String idShoppingCart = elem.getIdShoppingCart();
+                    String name = elem.getName();
+                    Boolean check = elem.getCheck();
 
-                PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
-                purchaseLocal.setIdFirebase(idFirebase);
-                purchaseLocal.setIdScannedTag(idScannedTag);
-                purchaseLocal.setIdShoppingCart(idShoppingCart);
-                purchaseLocal.setName(name);
-                purchaseLocal.setCheck(check);
+                    PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
+                    purchaseLocal.setIdFirebase(idFirebase);
+                    purchaseLocal.setIdScannedTag(idScannedTag);
+                    purchaseLocal.setIdShoppingCart(idShoppingCart);
+                    purchaseLocal.setName(name);
+                    purchaseLocal.setCheck(check);
 
-                res.add(realm.copyFromRealm(purchaseLocal));
+                    res.add(realm.copyFromRealm(purchaseLocal));
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "syncronizePurcharse: ", e);
@@ -456,97 +481,98 @@ public class Database {
             }
         }
 
-//        // Finally, we update the users who have access to the shopping list
-//        List<FriendLocal> friendLocals = shoppingCartLocal.getAllowUsers();
-//        List<FriendRemote> friendRemotes = shoppingCartRemote.getAllowUsers();
-//
-//        List<FriendLocal> toDeleteFriend = purchaseLocals != null
-//                && friendRemotes != null
-//                && friendLocals.size() > 0
-//                && friendRemotes.size() > 0
-//                ?
-//                friendLocals.stream()
-//                        .filter(x -> friendRemotes.stream().noneMatch(y -> y.getUid() == x.getUid()))
-//                        .collect(Collectors.toList())
-//                : new ArrayList<>();
-//        for (FriendLocal elem : toDeleteFriend) {
-//            realm.beginTransaction();
-//            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().getAllowUsers().remove(elem);
-//            realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst().deleteFromRealm();
-//            realm.commitTransaction();
-//        }
-//
-//        if (friendRemotes == null) {
-//            realm.beginTransaction();
-//            RealmResults<FriendLocal> friendLocalToDelete = realm.where(FriendLocal.class).equalTo("idShoppingCart", shoppingCartLocal.getId()).findAll();
-//            if (friendLocalToDelete.size() > 1) {
-//                friendLocalToDelete.deleteAllFromRealm();
-//            }
-//            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().setAllowUsers(new RealmList<>());
-//            realm.commitTransaction();
-//        }
-//
-//        // Finally we add the new purchases
-//        List<FriendRemote> toAddFriend = friendLocals != null
-//                && purchaseRemotes != null
-//                ?
-//                friendRemotes.stream()
-//                        .filter(x -> friendLocals
-//                                .stream()
-//                                .map(FriendLocal::getUid)
-//                                .allMatch(y -> y != x.getUid()))
-//                        .collect(Collectors.toList())
-//                :
-//                new ArrayList<>();
-//        for (FriendRemote elem : toAddFriend) {
-//            FriendLocal check = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
-//            if (check != null) {
-//                realm.beginTransaction();
-//                check.deleteFromRealm();
-//                realm.commitTransaction();
-//            }
-//            realm.beginTransaction();
-//            String name = elem.getName();
-//            String email = elem.getEmail();
-//            String uid = elem.getUid();
-//            Boolean status = elem.getStatus();
-//            String photo = elem.getPhoto();
-//            String idShoppingCart = elem.getIdShoppingCart();
-//
-//            FriendLocal friendLocalToCreate = realm.createObject(FriendLocal.class, uid);
-//            friendLocalToCreate.setName(name);
-//            friendLocalToCreate.setEmail(email);
-//            friendLocalToCreate.setStatus(status);
-//            friendLocalToCreate.setPhoto(photo);
-//            friendLocalToCreate.setIdShoppingCart(idShoppingCart);
-//            realm.commitTransaction();
-//
-//            realm.beginTransaction();
-//            ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
-//            shoppingCartLocalAux.getAllowUsers().add(realm.copyFromRealm(friendLocalToCreate));
-//            shoppingCartLocalAux.setLastUpdate(new Date());
-//            realm.commitTransaction();
-//        }
-//
-//        // We now update the products that have been marked as check
-//        List<FriendLocal> toCheckFriend = friendLocals != null && friendRemotes != null ?
-//                friendLocals.stream()
-//                        .filter(x -> friendRemotes.stream().anyMatch(y -> x.getUid() == y.getUid() && (x.getName() != y.getName() || x.getPhoto() != y.getPhoto() || x.getStatus() != y.getStatus())))
-//                        .collect(Collectors.toList())
-//                : new ArrayList<>();
-//        for (FriendLocal elem : toCheckFriend) {
-//            FriendLocal p = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
-//            if (p != null) {
-//                realm.beginTransaction();
-//                FriendRemote friendRemoteAux = friendRemotes.stream().filter(x -> x.getUid() == p.getUid()).findFirst().orElse(null);
-//                if (friendRemoteAux != null) {
-//                    p.setName(elem.getName());
-//                    p.setPhoto(elem.getPhoto());
-//                    p.setStatus(elem.getStatus());
-//                }
-//                realm.commitTransaction();
-//            }
-//        }
+        // Finally, we update the users who have access to the shopping list
+        List<FriendLocal> friendLocals = shoppingCartLocal.getAllowUsers();
+        List<FriendRemote> friendRemotes = shoppingCartRemote.getAllowUsers();
+
+        List<FriendLocal> toDeleteFriend = purchaseLocals != null
+                && friendRemotes != null
+                && friendLocals.size() > 0
+                && friendRemotes.size() > 0
+                ?
+                friendLocals.stream()
+                        .filter(x -> friendRemotes.stream().noneMatch(y -> y.getUid() == x.getUid()))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
+        for (FriendLocal elem : toDeleteFriend) {
+            realm.beginTransaction();
+            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().getAllowUsers().remove(elem);
+            realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst().deleteFromRealm();
+            realm.commitTransaction();
+        }
+
+        if (friendRemotes == null) {
+            realm.beginTransaction();
+            RealmResults<FriendLocal> friendLocalToDelete = realm.where(FriendLocal.class).equalTo("idShoppingCart", shoppingCartLocal.getId()).findAll();
+            if (friendLocalToDelete.size() > 1) {
+                friendLocalToDelete.deleteAllFromRealm();
+            }
+            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().setAllowUsers(new RealmList<>());
+            realm.commitTransaction();
+        }
+
+        // Finally we add the new purchases
+        List<FriendRemote> toAddFriend = friendLocals != null
+                && purchaseRemotes != null
+                && friendRemotes != null
+                ?
+                friendRemotes.stream()
+                        .filter(x -> friendLocals
+                                .stream()
+                                .map(FriendLocal::getUid)
+                                .allMatch(y -> y != x.getUid()))
+                        .collect(Collectors.toList())
+                :
+                new ArrayList<>();
+        for (FriendRemote elem : toAddFriend) {
+            FriendLocal check = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            if (check != null) {
+                realm.beginTransaction();
+                check.deleteFromRealm();
+                realm.commitTransaction();
+            }
+            realm.beginTransaction();
+            String name = elem.getName();
+            String email = elem.getEmail();
+            String uid = elem.getUid();
+            Boolean status = elem.getStatus();
+            String photo = elem.getPhoto();
+            String idShoppingCart = elem.getIdShoppingCart();
+
+            FriendLocal friendLocalToCreate = realm.createObject(FriendLocal.class, uid);
+            friendLocalToCreate.setName(name);
+            friendLocalToCreate.setEmail(email);
+            friendLocalToCreate.setStatus(status);
+            friendLocalToCreate.setPhoto(photo);
+            friendLocalToCreate.setIdShoppingCart(idShoppingCart);
+            realm.commitTransaction();
+
+            realm.beginTransaction();
+            ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+            shoppingCartLocalAux.getAllowUsers().add(realm.copyFromRealm(friendLocalToCreate));
+            shoppingCartLocalAux.setLastUpdate(new Date());
+            realm.commitTransaction();
+        }
+
+        // We now update the products that have been marked as check
+        List<FriendLocal> toCheckFriend = friendLocals != null && friendRemotes != null ?
+                friendLocals.stream()
+                        .filter(x -> friendRemotes.stream().anyMatch(y -> x.getUid() == y.getUid() && (x.getName() != y.getName() || x.getPhoto() != y.getPhoto() || x.getStatus() != y.getStatus())))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
+        for (FriendLocal elem : toCheckFriend) {
+            FriendLocal p = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            if (p != null) {
+                realm.beginTransaction();
+                FriendRemote friendRemoteAux = friendRemotes.stream().filter(x -> x.getUid() == p.getUid()).findFirst().orElse(null);
+                if (friendRemoteAux != null) {
+                    p.setName(elem.getName());
+                    p.setPhoto(elem.getPhoto());
+                    p.setStatus(elem.getStatus());
+                }
+                realm.commitTransaction();
+            }
+        }
         realm.close();
     }
 

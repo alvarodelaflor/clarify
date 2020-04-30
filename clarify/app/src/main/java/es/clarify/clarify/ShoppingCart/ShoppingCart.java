@@ -214,8 +214,12 @@ public class ShoppingCart extends AppCompatActivity {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                updateData();
-                updateNoPurchase();
+                if (new GoogleUtilities().getCurrentUser() != null) {
+                    updateData();
+                    updateNoPurchase();
+                } else {
+                    return;
+                }
             }
         };
 

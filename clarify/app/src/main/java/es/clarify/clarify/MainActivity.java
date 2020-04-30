@@ -37,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FirebaseUser firebaseUser;
     private Boolean identify = false;
     private Utilities utilities;
+    public List<Thread> threads;
+    private ValueEventListener valueEventListenerStores;
+    private ValueEventListener valueEventListenerShoppingCart;
 
 
     @Override
@@ -101,33 +105,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         utilities = new Utilities();
 
-        new Thread(new Runnable() {
+        Thread threadA = new Thread(new Runnable() {
             @Override
             public void run() {
                 utilities.synchronizationWithFirebaseFirstLoginTags();
             }
-        }).run();
+        });
+        threadA.run();
 
-        new Thread(new Runnable() {
+        Thread threadB = new Thread(new Runnable() {
             @Override
             public void run() {
                 utilities.synchronizationWithFirebaseFirstLoginShoppingCart();
             }
-        }).run();
+        });
+        threadB.run();
 
-        new Thread(new Runnable() {
+        valueEventListenerStores = utilities.createStoreListenerFirebase();
+        Thread threadC = new Thread(new Runnable() {
             @Override
             public void run() {
-                utilities.storeListenerFirebase();
+                utilities.storeListenerFirebase(valueEventListenerStores);
             }
-        }).run();
+        });
+        threadC.run();
 
-        new Thread(new Runnable() {
+        valueEventListenerShoppingCart = utilities.createListenerOwnShoppingCart();
+        Thread threadD = new Thread(new Runnable() {
             @Override
             public void run() {
-                utilities.listenerOwnShoppingCart();
+                utilities.listenerOwnShoppingCart(valueEventListenerShoppingCart);
             }
-        }).run();
+        });
+        threadD.run();
+
+        threads = Arrays.asList(threadA, threadB, threadC, threadD);
 
         // NFC instances
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -237,6 +249,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void logOut() {
+        FirebaseDatabase databaseAux = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference1 = databaseAux.getReference().child(("private")).child(new GoogleUtilities().getCurrentUser().getUid()).child("stores");
+        databaseReference1.removeEventListener(valueEventListenerStores);
+
+        DatabaseReference databaseReference2 = databaseAux.getReference().child(("private")).child(new GoogleUtilities().getCurrentUser().getUid()).child("listaCompra");
+        databaseReference2.removeEventListener(valueEventListenerShoppingCart);
+
         FirebaseAuth.getInstance().signOut();
         // Google sign out
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -248,9 +267,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        threads.stream().forEach(x -> x.interrupt());
                         database.deleteAllDataFromDevice();
-                        startActivity(new Intent(getApplicationContext(), Login.class));
-                        finish();
+                        Intent intent = new Intent(getApplicationContext(), Login.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                 });
     }
