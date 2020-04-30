@@ -104,6 +104,7 @@ public class ShowStore extends AppCompatActivity {
 
         populate();
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.toolbar_show_store);
         totalCountProducts = (TextView)findViewById(R.id.number_products);
         totalCountProducts.setText(numberProducts.toString());
 

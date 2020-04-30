@@ -147,9 +147,10 @@ public class Database {
 
     public Boolean synchronizeScannedTagLocal(ScannedTagLocal scannedTagLocal) {
         try {
-            if (scannedTagLocal.getStorageDate() == null) {
-                Realm realm = Realm.getDefaultInstance();
-                final StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", scannedTagLocal.getStore()).findFirst();
+            Realm realm = Realm.getDefaultInstance();
+            ScannedTagLocal scannedTagLocalFromRealm = realm.where(ScannedTagLocal.class).equalTo("id", scannedTagLocal.getId()).findFirst();
+            if (scannedTagLocalFromRealm == null && scannedTagLocal.getStorageDate() == null) {
+                StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", scannedTagLocal.getStore()).findFirst();
                 realm.beginTransaction();
                 scannedTagLocal.setStorageDate(new Date());
                 if (storeLocal == null) {
