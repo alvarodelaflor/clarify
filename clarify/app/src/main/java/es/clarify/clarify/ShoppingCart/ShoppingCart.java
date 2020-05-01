@@ -1,5 +1,6 @@
 package es.clarify.clarify.ShoppingCart;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -7,6 +8,8 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
@@ -128,6 +131,22 @@ public class ShoppingCart extends AppCompatActivity {
         ViewPager2 myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
         List<FriendLocal> myAccessList = realmDatabase.getAccessListUserLogin();
         myAccessListViewPager.setAdapter(new FriendAdapter(myAccessList));
+        myAccessListViewPager.setClipToPadding(false);
+        myAccessListViewPager.setClipChildren(false);
+        myAccessListViewPager.setOffscreenPageLimit(3);
+        myAccessListViewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.95f + r * 0.15f);
+                page.setScaleX(0.95f + r * 0.15f);
+            }
+        });
+        myAccessListViewPager.setPageTransformer(compositePageTransformer);
 
         confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
         email = (EditText)dialogShareOption.findViewById(R.id.email);

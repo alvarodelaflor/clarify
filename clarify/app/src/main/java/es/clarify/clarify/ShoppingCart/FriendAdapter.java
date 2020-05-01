@@ -1,9 +1,11 @@
 package es.clarify.clarify.ShoppingCart;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,6 +52,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
 
         private ImageView imageUserProfile;
         private TextView statusUser, nameUser, emailUser;
+        private LinearLayout statusInfoUser;
 
         FriendAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,14 +60,18 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
             statusUser = itemView.findViewById(R.id.status_accep_user);
             nameUser = itemView.findViewById(R.id.text_name_user);
             emailUser = itemView.findViewById(R.id.text_email_user);
+            statusInfoUser = itemView.findViewById(R.id.status_info_user);
         }
 
         public void setUserData(FriendLocal friendLocal) {
             Picasso.get().load(friendLocal.getPhoto()).into(imageUserProfile);
             if (friendLocal.getStatus()) {
                 statusUser.setText("Aceptada");
+                statusInfoUser.setVisibility(View.INVISIBLE);
+
             } else {
                 statusUser.setText("Pendiente");
+                statusInfoUser.setVisibility(View.VISIBLE);
             }
             nameUser.setText(friendLocal.getName().trim().split(" ")[0]);
             emailUser.setText(friendLocal.getEmail());

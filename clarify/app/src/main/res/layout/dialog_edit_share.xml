@@ -2,106 +2,135 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_gravity="center"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/id_delete_all"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:cardCornerRadius="25dp"
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/id_picture"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="15dp"
-                android:text="Permisos de acceso"
-                android:textAlignment="center"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="24sp" />
 
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:src="@drawable/friend" />
+                android:id="@+id/cross"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cross"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/img_intro_cardview"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/friend"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <TextView
+                android:id="@+id/hello_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Permisos de acceso"
+                android:textColor="#212121"
+                android:textSize="32sp"
                 android:textAlignment="center"
-                android:text="¿Quieres a añadir a alguien?"
-                android:textColor="@android:color/darker_gray"
-                android:textSize="19sp" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/img_intro_cardview" />
+
+            <TextView
+                android:id="@+id/hello_msg_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/roboto_bold"
+                android:paddingTop="20dp"
+                android:paddingBottom="5dp"
+                android:text="Añade un nuevo usurio"
+                android:textColor="#757575"
+                android:textSize="24sp"
+                app:layout_constraintTop_toBottomOf="@id/hello_msg" />
+
 
             <LinearLayout
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
+                android:id="@+id/edit_data"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/hello_msg_2">
 
                 <EditText
                     android:id="@+id/email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
-                    android:hint="Escribe su correo"
-                    android:textCursorDrawable="@color/colorPrimary"
                     android:ems="10"
-                    android:inputType="textEmailAddress" />
+                    android:hint="Escribe su correo"
+                    android:inputType="textEmailAddress"
+                    android:textCursorDrawable="@color/colorPrimary" />
+
                 <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
                     android:id="@+id/button_cancel_delete_all"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
                     android:background="@drawable/btn_uno"
-                    android:textColor="@color/put_tag"
-                    android:textAlignment="center"
-                    android:text="Añadir"
                     android:onClick="shareList"
+                    android:text="Añadir"
+                    android:textAlignment="center"
                     android:textAllCaps="false"
-                    android:textSize="18sp" />
+                    android:textColor="@color/put_tag"
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/hello_msg_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Usuarios actuales"
+                android:textColor="#757575"
+                android:textSize="24sp"
+                app:layout_constraintTop_toBottomOf="@id/edit_data" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:textAlignment="center"
-                    android:text="Personas con acceso ahora:"
-                    android:textColor="@android:color/darker_gray"
-                    android:textSize="19sp" />
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/friends"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:paddingStart="60dp"
+                android:paddingEnd="60dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hello_msg_3" />
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:id="@+id/friends"
-                    />
-                
-            </LinearLayout>
-
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
