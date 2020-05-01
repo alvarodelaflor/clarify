@@ -513,7 +513,6 @@ public class Database {
 
         // Finally we add the new access user to list
         List<FriendRemote> toAddFriend = friendLocals != null
-                && purchaseRemotes != null
                 && friendRemotes != null
                 ?
                 friendRemotes.stream()

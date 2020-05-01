@@ -182,6 +182,7 @@ public class ShoppingCart extends AppCompatActivity {
 
         updateData();
         updateNoPurchase();
+        updateVisibilityViewPager2();
     }
 
     public void changeColor(int resourseColor) {
