@@ -42,14 +42,15 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="25dp"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="2dp"
                 android:textAlignment="center"
-                android:text="¿Quieres a añadir a alguien? Escribe su correo"
+                android:text="¿Quieres a añadir a alguien?"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="19sp" />
 
             <LinearLayout
-                android:layout_margin="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -59,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/colorPrimary"
-                    android:hint="usuario@mail.com"
+                    android:hint="Escribe su correo"
                     android:textCursorDrawable="@color/colorPrimary"
                     android:ems="10"
                     android:inputType="textEmailAddress" />
@@ -84,13 +85,19 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:textAlignment="center"
-                    android:text="Estas personas tienen acceso ahora, puedes quitárselo si lo deseas"
+                    android:text="Personas con acceso ahora:"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="19sp" />
 
+                <androidx.viewpager2.widget.ViewPager2
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/friends"
+                    />
+                
             </LinearLayout>
 
 

@@ -671,4 +671,19 @@ public class Database {
         }
         return res;
     }
+
+    public List<FriendLocal> getAccessListUserLogin() {
+        Realm realm = Realm.getDefaultInstance();
+        ShoppingCartLocal aux = null;
+        List<FriendLocal> res = new ArrayList<>();
+        ShoppingCartLocal realmResult = realm.where(ShoppingCartLocal.class).equalTo("id", new GoogleUtilities().getCurrentUser().getUid()).findFirst();
+        if (realmResult != null) {
+            aux = realm.copyFromRealm(realmResult);
+        }
+        if (aux != null && aux.getAllowUsers() != null) {
+            res.addAll(aux.getAllowUsers());
+        }
+        realm.close();
+        return res;
+    }
 }

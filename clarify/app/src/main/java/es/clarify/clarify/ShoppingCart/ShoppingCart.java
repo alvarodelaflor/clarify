@@ -7,6 +7,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -35,6 +36,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -121,6 +124,10 @@ public class ShoppingCart extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
+
+        ViewPager2 myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
+        List<FriendLocal> myAccessList = realmDatabase.getAccessListUserLogin();
+        myAccessListViewPager.setAdapter(new FriendAdapter(myAccessList));
 
         confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
         email = (EditText)dialogShareOption.findViewById(R.id.email);
