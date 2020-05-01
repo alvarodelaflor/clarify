@@ -276,12 +276,14 @@ public class ShoppingCart extends AppCompatActivity {
     public void insertAccessUser(int position, FriendLocal friendLocal) {
         myAccessList.add(position, friendLocal);
         myFriendAccessAdapter.notifyItemInserted(position);
+        myAccessListViewPager.requestTransform();
     }
 
     public void deleteAccessUser(int position) {
         myFriendAccessAdapter.notifyItemRemoved(position);
         if (myAccessList.size() > position) {
             myAccessList.remove(position);
+            myAccessListViewPager.requestTransform();
         }
     }
 
