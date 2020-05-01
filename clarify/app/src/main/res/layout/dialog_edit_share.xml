@@ -90,6 +90,7 @@
                     android:backgroundTint="@color/colorPrimary"
                     android:ems="10"
                     android:hint="Escribe su correo"
+                    android:imeOptions="actionDone"
                     android:inputType="textEmailAddress"
                     android:textCursorDrawable="@color/colorPrimary" />
 

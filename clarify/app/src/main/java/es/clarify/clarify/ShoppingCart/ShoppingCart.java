@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -385,6 +386,9 @@ public class ShoppingCart extends AppCompatActivity {
             if (emailAux != null) {
                 if (!emailAux.isEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(emailAux).matches()) {
                     String emailUser = new GoogleUtilities().getCurrentUser().getEmail();
+                    email.getText().clear();
+                    InputMethodManager inputManager = (InputMethodManager) this.getSystemService(this.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(email.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                     if (emailAux.equals(emailUser)) {
                         Toast.makeText(ShoppingCart.this, "¡No puedes invitarte a ti mismo!", Toast.LENGTH_SHORT).show();
                     } else {
