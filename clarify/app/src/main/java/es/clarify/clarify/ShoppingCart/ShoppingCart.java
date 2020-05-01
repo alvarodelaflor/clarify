@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -68,6 +69,7 @@ public class ShoppingCart extends AppCompatActivity {
     private Dialog dialogShareOption;
     private EditText email;
     Button confirmDelete;
+    private ImageView closeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +129,14 @@ public class ShoppingCart extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
+
+        closeDialog = dialogShareOption.findViewById(R.id.close_dialog);
+        closeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogShareOption.dismiss();
+            }
+        });
 
         ViewPager2 myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
         List<FriendLocal> myAccessList = realmDatabase.getAccessListUserLogin();
@@ -318,7 +328,12 @@ public class ShoppingCart extends AppCompatActivity {
             String emailAux = email.getText().toString().trim();
             if (emailAux != null) {
                 if (!emailAux.isEmpty() && android.util.Patterns.EMAIL_ADDRESS.matcher(emailAux).matches()) {
-                    new GoogleUtilities().shareShoppingCart(emailAux, ShoppingCart.this, dialogShareOption);
+                    String emailUser = new GoogleUtilities().getCurrentUser().getEmail();
+                    if (emailAux.equals(emailUser)) {
+                        Toast.makeText(ShoppingCart.this, "¡No puedes invitarte a ti mismo!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        new GoogleUtilities().shareShoppingCart(emailAux, ShoppingCart.this, dialogShareOption);
+                    }
                 } else {
                     Toast.makeText(ShoppingCart.this, "El correo no es válido", Toast.LENGTH_SHORT).show();
                 }

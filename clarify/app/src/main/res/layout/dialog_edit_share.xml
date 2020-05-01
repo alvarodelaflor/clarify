@@ -21,7 +21,7 @@
 
 
             <ImageView
-                android:id="@+id/cross"
+                android:id="@+id/close_dialog"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="20dp"
