@@ -511,7 +511,7 @@ public class Database {
             realm.commitTransaction();
         }
 
-        // Finally we add the new purchases
+        // Finally we add the new access user to list
         List<FriendRemote> toAddFriend = friendLocals != null
                 && purchaseRemotes != null
                 && friendRemotes != null
@@ -554,7 +554,7 @@ public class Database {
             realm.commitTransaction();
         }
 
-        // We now update the products that have been marked as check
+        // We check for changes
         List<FriendLocal> toCheckFriend = friendLocals != null && friendRemotes != null ?
                 friendLocals.stream()
                         .filter(x -> friendRemotes.stream().anyMatch(y -> x.getUid() == y.getUid() && (x.getName() != y.getName() || x.getPhoto() != y.getPhoto() || x.getStatus() != y.getStatus())))

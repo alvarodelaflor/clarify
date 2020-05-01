@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
@@ -461,5 +462,71 @@ public class GoogleUtilities {
             Log.e(TAG, "saveFriendToLocal: ", e);
             Toast.makeText(activity.getApplicationContext(), "Vaya, se ha producido un error", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void deleteAccessFriendFromRemote(FriendLocal friendLocal) {
+        String uidMe = getCurrentUser().getUid();
+        String uidFriend = friendLocal.getUid();
+        DatabaseReference databaseReference = database.getReference("private");
+
+        // First we delete the access from our list
+        Query query1 = databaseReference.child(uidMe).child("listaCompra").orderByChild("idFirebase").equalTo(uidMe);
+        query1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        List<FriendRemote> aux = shoppingCartRemote.getAllowUsers();
+                        if (aux == null) {
+                            aux = new ArrayList<>();
+                        }
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(friendLocal.getUid())).findFirst().orElse(null);
+                        if (friendRemote != null) {
+                            aux.remove(friendRemote);
+                            DatabaseReference allowUsers = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("allowUsers");
+                            allowUsers.setValue(aux);
+                            DatabaseReference date = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                            date.setValue(new Date());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        // Finally we delete the access from the invitation list
+        Query query2 = databaseReference.child(uidFriend).child("listaCompra").orderByChild("idFirebase").equalTo(uidFriend);
+        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        List<FriendRemote> aux = shoppingCartRemote.getFriendInvitation();
+                        if (aux == null) {
+                            aux = new ArrayList<>();
+                        }
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe)).findFirst().orElse(null);
+                        if (friendRemote != null) {
+                            aux.remove(friendRemote);
+                            DatabaseReference allowUsers = databaseReference.child(uidFriend).child("listaCompra").child(data.getKey()).child("friendInvitation");
+                            allowUsers.setValue(aux);
+                            DatabaseReference date = databaseReference.child(uidFriend).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                            date.setValue(new Date());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

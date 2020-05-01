@@ -70,6 +70,8 @@ public class ShoppingCart extends AppCompatActivity {
     private EditText email;
     Button confirmDelete;
     private ImageView closeDialog;
+    private List<FriendLocal> myAccessList;
+    private FriendAdapter myFriendAccessAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,9 +111,6 @@ public class ShoppingCart extends AppCompatActivity {
 
         cardView = (CardView)findViewById(R.id.card_view_stores);
 
-        updateData();
-        updateNoPurchase();
-
         dialog = new Dialog(ShoppingCart.this);
         dialog.setContentView(R.layout.dialog_alert_delete);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -139,8 +138,9 @@ public class ShoppingCart extends AppCompatActivity {
         });
 
         ViewPager2 myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
-        List<FriendLocal> myAccessList = realmDatabase.getAccessListUserLogin();
-        myAccessListViewPager.setAdapter(new FriendAdapter(myAccessList));
+        myAccessList = realmDatabase.getAccessListUserLogin();
+        myFriendAccessAdapter = new FriendAdapter(myAccessList, getApplication());
+        myAccessListViewPager.setAdapter(myFriendAccessAdapter);
         myAccessListViewPager.setClipToPadding(false);
         myAccessListViewPager.setClipChildren(false);
         myAccessListViewPager.setOffscreenPageLimit(3);
@@ -173,6 +173,9 @@ public class ShoppingCart extends AppCompatActivity {
                 Boolean check = realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
             }
         });
+
+        updateData();
+        updateNoPurchase();
     }
 
     public void changeColor(int resourseColor) {
@@ -204,6 +207,7 @@ public class ShoppingCart extends AppCompatActivity {
         List<PurchaseLocal> mDataFromLocalAux2 = realmDatabase.getAllPurchaseLocalOwnerLogin();
         mDataFromLocalAux2.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
         List<PurchaseLocal> mDataAux = new ArrayList<>(mDataFromLocalAux2);
+        List<FriendLocal> accessLocal = realmDatabase.getAccessListUserLogin();
 
         IntStream
                 .range(0, mData.size())
@@ -224,6 +228,19 @@ public class ShoppingCart extends AppCompatActivity {
                 .boxed()
                 .forEach(z -> updateCheck(z, !mData.get(z).getCheck()));
 
+        IntStream
+                .range(0, accessLocal.size())
+                .filter(x -> myAccessList.stream().noneMatch(y -> y.getUid() != accessLocal.get(x).getUid()))
+                .boxed()
+                .forEach(x -> insertAccessUser(x, accessLocal.get(x)));
+
+        IntStream
+                .range(0, myAccessList.size())
+                .filter(x -> accessLocal.stream().map(FriendLocal::getUid).noneMatch(y -> accessLocal.get(x).getUid() == y))
+                .boxed()
+                .sorted(Comparator.reverseOrder())
+                .forEach( x -> deleteAccessUser(x));
+
         refresh(1000);
     }
 
@@ -242,6 +259,18 @@ public class ShoppingCart extends AppCompatActivity {
     public void updateCheck(int position, Boolean check) {
         mData.get(position).setCheck(check);
         recyclerViewAdapter.notifyDataSetChanged();
+    }
+
+    public void insertAccessUser(int position, FriendLocal friendLocal) {
+        myAccessList.add(position, friendLocal);
+        myFriendAccessAdapter.notifyItemInserted(position);
+    }
+
+    public void deleteAccessUser(int position) {
+        myFriendAccessAdapter.notifyItemRemoved(position);
+        if (myAccessList.size() > position) {
+            myAccessList.remove(position);
+        }
     }
 
     public void refresh(int milliseconds) {

@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
+import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
@@ -606,5 +607,25 @@ public class Utilities {
             Log.e("Utilities", "savePurchase: ", e);
             Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public Boolean deleteAccessFriendFromLocal(FriendLocal friendLocal) {
+        Boolean res = false;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            FriendLocal auxRealm = realm.where(FriendLocal.class).equalTo("uid", friendLocal.getUid()).findFirst();
+            if (auxRealm != null) {
+                FriendLocal aux = realm.copyFromRealm(auxRealm);
+                realm.beginTransaction();
+                auxRealm.deleteFromRealm();
+                realm.commitTransaction();
+                googleUtilities.deleteAccessFriendFromRemote(friendLocal);
+                res = true;
+            }
+        } catch (Exception e) {
+            res = false;
+            Log.e("Utilities", "deleteAccessFriendFromLocal: ", e);
+        }
+        return res;
     }
 }

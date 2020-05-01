@@ -1,5 +1,7 @@
 package es.clarify.clarify.ShoppingCart;
 
+import android.app.Application;
+import android.app.Dialog;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,13 +20,16 @@ import java.util.List;
 
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdapterViewHolder>{
 
     private List<FriendLocal> myAccessList;
+    private Application application;
 
-    public FriendAdapter(List<FriendLocal> myAccessList) {
+    public FriendAdapter(List<FriendLocal> myAccessList, Application application) {
         this.myAccessList = myAccessList;
+        this.application = application;
     }
 
     @NonNull
@@ -41,6 +47,22 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
     @Override
     public void onBindViewHolder(@NonNull FriendAdapterViewHolder holder, int position) {
         holder.setUserData(myAccessList.get(position));
+        holder.deleteFriendFromList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Boolean check = new Utilities().deleteAccessFriendFromLocal(myAccessList.get(position));
+                if (check) {
+                    deleteAccessToAnUser(myAccessList.get(position));
+                    Toast.makeText(application, "¡Borrado!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void deleteAccessToAnUser(FriendLocal friendLocal) {
+        int position = myAccessList.indexOf(friendLocal);
+        myAccessList.remove(friendLocal);
+        notifyItemRemoved(position);
     }
 
     @Override
@@ -53,6 +75,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
         private ImageView imageUserProfile;
         private TextView statusUser, nameUser, emailUser;
         private LinearLayout statusInfoUser;
+        private ImageView deleteFriendFromList;
 
         FriendAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,6 +84,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
             nameUser = itemView.findViewById(R.id.text_name_user);
             emailUser = itemView.findViewById(R.id.text_email_user);
             statusInfoUser = itemView.findViewById(R.id.status_info_user);
+            deleteFriendFromList = (ImageView) itemView.findViewById(R.id.delete_from_shopping_cart);
         }
 
         public void setUserData(FriendLocal friendLocal) {
