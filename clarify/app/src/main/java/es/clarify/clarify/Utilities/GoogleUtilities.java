@@ -367,7 +367,7 @@ public class GoogleUtilities {
                                     userProfile.child("name").getValue(String.class),
                                     userProfile.child("email").getValue(String.class),
                                     userProfile.child("uid").getValue(String.class),
-                                    true,
+                                    false,
                                     userProfile.child("photo").getValue(String.class),
                                     getCurrentUser().getUid()
                             );
