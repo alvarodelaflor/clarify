@@ -352,7 +352,7 @@ public class GoogleUtilities {
         });
     }
 
-    public void shareShoppingCart(String emailAux, Activity activity, Dialog dialog) {
+    public void shareShoppingCart(String emailAux, Activity activity) {
         try {
             DatabaseReference databaseReference = database.getReference("private");
             DatabaseReference databaseReference2 = database.getReference("private");
@@ -392,14 +392,12 @@ public class GoogleUtilities {
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
                                     saveNewAllowUser(friendRemote, activity);
-                                    dialog.dismiss();
                                 } else if (key != null && myFriends.stream().filter(x -> x.getUid() == uidFriend).findFirst() == null) {
                                     myFriends.add(friendRemoteMe);
                                     shoppingCartRemote.setFriendInvitation(myFriends);
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
                                     saveNewAllowUser(friendRemote, activity);
-                                    dialog.dismiss();
                                 } else {
                                     Toast.makeText(activity, "¡Ya le has enviado una invitación a este correo!", Toast.LENGTH_LONG).show();
                                 }

@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/id_delete_all"
+        android:id="@+id/id_card_view_share_option"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardCornerRadius="25dp"
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp"
+                android:paddingBottom="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@id/hello_msg_2">
 
@@ -129,6 +129,8 @@
                 android:paddingEnd="60dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/hello_msg_3" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

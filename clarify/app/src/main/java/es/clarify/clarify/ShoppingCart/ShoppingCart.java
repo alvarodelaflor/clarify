@@ -26,8 +26,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -72,6 +74,9 @@ public class ShoppingCart extends AppCompatActivity {
     private ImageView closeDialog;
     private List<FriendLocal> myAccessList;
     private FriendAdapter myFriendAccessAdapter;
+    private TextView textViewPager2;
+    private ViewPager2 myAccessListViewPager;
+    private CardView cardViewDialogShare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +133,7 @@ public class ShoppingCart extends AppCompatActivity {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 );
+        cardViewDialogShare = dialogShareOption.findViewById(R.id.id_card_view_share_option);
 
         closeDialog = dialogShareOption.findViewById(R.id.close_dialog);
         closeDialog.setOnClickListener(new View.OnClickListener() {
@@ -136,8 +142,8 @@ public class ShoppingCart extends AppCompatActivity {
                 dialogShareOption.dismiss();
             }
         });
-
-        ViewPager2 myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
+        textViewPager2 = dialogShareOption.findViewById(R.id.hello_msg_3);
+        myAccessListViewPager = dialogShareOption.findViewById(R.id.friends);
         myAccessList = realmDatabase.getAccessListUserLogin();
         myFriendAccessAdapter = new FriendAdapter(myAccessList, getApplication());
         myAccessListViewPager.setAdapter(myFriendAccessAdapter);
@@ -273,6 +279,25 @@ public class ShoppingCart extends AppCompatActivity {
         }
     }
 
+    public void updateVisibilityViewPager2() {
+        ViewGroup.LayoutParams cardViewParams = (ViewGroup.LayoutParams) cardViewDialogShare.getLayoutParams();
+        if (myAccessList.size() < 1) {
+            textViewPager2.setVisibility(View.GONE);
+            myAccessListViewPager.setVisibility(View.GONE);
+
+            cardViewParams.height = CardView.LayoutParams.WRAP_CONTENT;
+            cardViewParams.width = CardView.LayoutParams.MATCH_PARENT;
+            cardViewDialogShare.setLayoutParams(cardViewParams);
+        } else {
+            textViewPager2.setVisibility(View.VISIBLE);
+            myAccessListViewPager.setVisibility(View.VISIBLE);
+
+            cardViewParams.height = CardView.LayoutParams.MATCH_PARENT;
+            cardViewParams.width = CardView.LayoutParams.MATCH_PARENT;
+            cardViewDialogShare.setLayoutParams(cardViewParams);
+        }
+    }
+
     public void refresh(int milliseconds) {
         Handler handler = new Handler();
 
@@ -282,6 +307,7 @@ public class ShoppingCart extends AppCompatActivity {
                 if (new GoogleUtilities().getCurrentUser() != null) {
                     updateData();
                     updateNoPurchase();
+                    updateVisibilityViewPager2();
                 } else {
                     return;
                 }
@@ -361,7 +387,7 @@ public class ShoppingCart extends AppCompatActivity {
                     if (emailAux.equals(emailUser)) {
                         Toast.makeText(ShoppingCart.this, "¡No puedes invitarte a ti mismo!", Toast.LENGTH_SHORT).show();
                     } else {
-                        new GoogleUtilities().shareShoppingCart(emailAux, ShoppingCart.this, dialogShareOption);
+                        new GoogleUtilities().shareShoppingCart(emailAux, ShoppingCart.this);
                     }
                 } else {
                     Toast.makeText(ShoppingCart.this, "El correo no es válido", Toast.LENGTH_SHORT).show();
