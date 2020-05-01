@@ -359,7 +359,6 @@ public class GoogleUtilities {
             databaseReference.orderByChild("user_profile/email").equalTo(emailAux).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                     if (dataSnapshot.exists()) {
                         FriendRemote friendRemote = null;
                         for (DataSnapshot data : dataSnapshot.getChildren()) {
@@ -386,13 +385,14 @@ public class GoogleUtilities {
                             ShoppingCartRemote shoppingCartRemote = data.child("listaCompra").child(key).getValue(ShoppingCartRemote.class);
                             if (key != null && shoppingCartRemote != null && friendRemote != null) {
                                 List<FriendRemote> myFriends = shoppingCartRemote.getFriendInvitation();
+                                FriendRemote check = myFriends != null ? myFriends.stream().filter(x -> x.getUid().equals(friendRemoteMe.getUid())).findFirst().orElse(null) : null;
                                 final String uidFriend = friendRemote.getUid();
                                 if (myFriends == null) {
                                     shoppingCartRemote.setFriendInvitation(Arrays.asList(friendRemoteMe));
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
                                     saveNewAllowUser(friendRemote, activity);
-                                } else if (key != null && myFriends.stream().filter(x -> x.getUid() == uidFriend).findFirst() == null) {
+                                } else if (key != null &&  check == null) {
                                     myFriends.add(friendRemoteMe);
                                     shoppingCartRemote.setFriendInvitation(myFriends);
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());

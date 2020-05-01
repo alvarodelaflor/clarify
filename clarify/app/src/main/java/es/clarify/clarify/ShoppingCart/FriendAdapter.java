@@ -50,9 +50,9 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.FriendAdap
         holder.deleteFriendFromList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean check = new Utilities().deleteAccessFriendFromLocal(myAccessList.get(position));
+                Boolean check = new Utilities().deleteAccessFriendFromLocal(myAccessList.get(holder.getAdapterPosition()));
                 if (check) {
-                    deleteAccessToAnUser(myAccessList.get(position));
+                    deleteAccessToAnUser(myAccessList.get(holder.getAdapterPosition()));
                     Toast.makeText(application, "¡Borrado!", Toast.LENGTH_SHORT).show();
                 }
             }
