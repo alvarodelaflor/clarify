@@ -491,7 +491,7 @@ public class Database {
                 && friendRemotes.size() > 0
                 ?
                 friendLocals.stream()
-                        .filter(x -> friendRemotes.stream().noneMatch(y -> y.getUid() == x.getUid()))
+                        .filter(x -> friendRemotes.stream().noneMatch(y -> y.getUid().equals(x.getUid())))
                         .collect(Collectors.toList())
                 : new ArrayList<>();
         for (FriendLocal elem : toDeleteFriend) {
@@ -519,7 +519,7 @@ public class Database {
                         .filter(x -> friendLocals
                                 .stream()
                                 .map(FriendLocal::getUid)
-                                .allMatch(y -> y != x.getUid()))
+                                .allMatch(y -> !y.equals(x.getUid())))
                         .collect(Collectors.toList())
                 :
                 new ArrayList<>();

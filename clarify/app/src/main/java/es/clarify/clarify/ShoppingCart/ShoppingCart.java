@@ -236,15 +236,19 @@ public class ShoppingCart extends AppCompatActivity {
                 .boxed()
                 .forEach(z -> updateCheck(z, !mData.get(z).getCheck()));
 
+        if (accessLocal.size()>1) {
+            Log.i("TAG", "updateData: ");
+        }
+
         IntStream
                 .range(0, accessLocal.size())
-                .filter(x -> myAccessList.stream().noneMatch(y -> y.getUid() != accessLocal.get(x).getUid()))
+                .filter(x -> myAccessList.stream().map(FriendLocal::getUid).noneMatch(y -> accessLocal.get(x).getUid().equals(y)))
                 .boxed()
                 .forEach(x -> insertAccessUser(x, accessLocal.get(x)));
 
         IntStream
                 .range(0, myAccessList.size())
-                .filter(x -> accessLocal.stream().map(FriendLocal::getUid).noneMatch(y -> accessLocal.get(x).getUid() == y))
+                .filter(x -> accessLocal.stream().map(FriendLocal::getUid).noneMatch(y -> myAccessList.get(x).getUid().equals(y)))
                 .boxed()
                 .sorted(Comparator.reverseOrder())
                 .forEach( x -> deleteAccessUser(x));
