@@ -277,6 +277,7 @@ public class ShoppingCart extends AppCompatActivity {
         mDataFromLocalAux2.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
         List<PurchaseLocal> mDataAux = new ArrayList<>(mDataFromLocalAux2);
         List<FriendLocal> accessLocal = realmDatabase.getAccessListUserLogin();
+        List<FriendLocal> invitationLocal = realmDatabase.getAllFriendsInvitation();
 
         IntStream
                 .range(0, mData.size())
@@ -316,6 +317,27 @@ public class ShoppingCart extends AppCompatActivity {
                 .boxed()
                 .forEach(x -> applyChangeToAccessFriend(x, accessLocal.get(x)));
 
+        ////////////////////////
+
+        IntStream
+                .range(0, invitationLocal.size())
+                .filter(x -> mDataFriendsInvitation.stream().map(FriendLocal::getUid).noneMatch(y -> invitationLocal.get(x).getUid().equals(y)))
+                .boxed()
+                .forEach(x -> insertInvitation(x, invitationLocal.get(x)));
+
+        IntStream
+                .range(0, mDataFriendsInvitation.size())
+                .filter(x -> invitationLocal.stream().map(FriendLocal::getUid).noneMatch(y -> mDataFriendsInvitation.get(x).getUid().equals(y)))
+                .boxed()
+                .sorted(Comparator.reverseOrder())
+                .forEach( x -> deleteInvitation(x));
+
+        IntStream
+                .range(0, mDataFriendsInvitation.size())
+                .filter(x -> isDifferent(mDataFriendsInvitation.get(x), invitationLocal.get(x)))
+                .boxed()
+                .forEach(x -> applyChangeInvitation(x, invitationLocal.get(x)));
+
         refresh(1000);
     }
 
@@ -353,15 +375,33 @@ public class ShoppingCart extends AppCompatActivity {
         myFriendAccessAdapter.notifyDataSetChanged();
     }
 
+    public void applyChangeInvitation(int position, FriendLocal friendLocalToChange) {
+        mDataFriendsInvitation.remove(position);
+        mDataFriendsInvitation.add(position, friendLocalToChange);
+        recyclerViewAdapterFriendsInvitation.notifyDataSetChanged();
+    }
+
     public void insertAccessUser(int position, FriendLocal friendLocal) {
         myAccessList.add(position, friendLocal);
         myFriendAccessAdapter.notifyItemInserted(position);
+    }
+
+    public void insertInvitation(int position, FriendLocal friendLocal) {
+        mDataFriendsInvitation.add(position, friendLocal);
+        recyclerViewAdapterFriendsInvitation.notifyItemInserted(position);
     }
 
     public void deleteAccessUser(int position) {
         if (myAccessList.size() > position) {
             myAccessList.remove(position);
             myFriendAccessAdapter.notifyItemRemoved(position);
+        }
+    }
+
+    public void deleteInvitation(int position) {
+        if (mDataFriendsInvitation.size() > position) {
+            mDataFriendsInvitation.remove(position);
+            recyclerViewAdapterFriendsInvitation.notifyItemRemoved(position);
         }
     }
 

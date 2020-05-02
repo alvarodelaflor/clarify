@@ -485,7 +485,7 @@ public class Database {
         List<FriendLocal> friendLocals = shoppingCartLocal.getAllowUsers();
         List<FriendRemote> friendRemotes = shoppingCartRemote.getAllowUsers();
 
-        List<FriendLocal> toDeleteFriend = purchaseLocals != null
+        List<FriendLocal> toDeleteFriend = friendLocals != null
                 && friendRemotes != null
                 && friendLocals.size() > 0
                 && friendRemotes.size() > 0
@@ -503,9 +503,9 @@ public class Database {
 
         if (friendRemotes == null) {
             realm.beginTransaction();
-            RealmResults<FriendLocal> friendLocalToDelete = realm.where(FriendLocal.class).equalTo("idShoppingCart", shoppingCartLocal.getId()).findAll();
-            if (friendLocalToDelete.size() > 1) {
-                friendLocalToDelete.deleteAllFromRealm();
+            ShoppingCartLocal shoppingCartLocalAux2 = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+            if (shoppingCartLocalAux2.getAllowUsers().size() > 0) {
+                shoppingCartLocalAux2.getAllowUsers().deleteAllFromRealm();
             }
             realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().setAllowUsers(new RealmList<>());
             realm.commitTransaction();
@@ -570,6 +570,100 @@ public class Database {
                     pAux.setPhoto(friendRemoteAux.getPhoto());
                     pAux.setStatus(friendRemoteAux.getStatus());
                     pAux.setEmail(friendRemoteAux.getEmail());
+                }
+                realm.commitTransaction();
+            }
+        }
+
+        // Finally, we update the users who have access to the shopping list
+        List<FriendLocal> invitationsLocal = shoppingCartLocal.getFriendInvitation();
+        List<FriendRemote> invitationsRemote = shoppingCartRemote.getFriendInvitation();
+
+        if (invitationsRemote == null) {
+            realm.beginTransaction();
+            ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+            if (shoppingCartLocalAux.getFriendInvitation().size() > 0) {
+                shoppingCartLocalAux.getFriendInvitation().deleteAllFromRealm();
+            }
+            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().setFriendInvitation(new RealmList<>());
+            realm.commitTransaction();
+        }
+
+        List<FriendLocal> toDeleteInvitation = invitationsLocal != null
+                && invitationsRemote != null
+                && invitationsLocal.size() > 0
+                && invitationsRemote.size() > 0
+                ?
+                invitationsLocal.stream()
+                        .filter(x -> invitationsRemote.stream().noneMatch(y -> y.getUid().equals(x.getUid())))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
+        for (FriendLocal elem : toDeleteInvitation) {
+            realm.beginTransaction();
+            realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst().getFriendInvitation().remove(elem);
+            realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst().deleteFromRealm();
+            realm.commitTransaction();
+        }
+
+        // Finally we add the new access user to list
+        List<FriendRemote> toAddInvitation = invitationsLocal != null
+                && invitationsRemote != null
+                ?
+                invitationsRemote.stream()
+                        .filter(x -> invitationsLocal
+                                .stream()
+                                .map(FriendLocal::getUid)
+                                .allMatch(y -> !y.equals(x.getUid())))
+                        .collect(Collectors.toList())
+                :
+                new ArrayList<>();
+        for (FriendRemote elem : toAddInvitation) {
+            FriendLocal check = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            if (check != null) {
+                realm.beginTransaction();
+                check.deleteFromRealm();
+                realm.commitTransaction();
+            }
+            realm.beginTransaction();
+            String name = elem.getName();
+            String email = elem.getEmail();
+            String uid = elem.getUid();
+            Boolean status = elem.getStatus();
+            String photo = elem.getPhoto();
+            String idShoppingCart = elem.getIdShoppingCart();
+
+            FriendLocal friendLocalToCreate = realm.createObject(FriendLocal.class, uid);
+            friendLocalToCreate.setName(name);
+            friendLocalToCreate.setEmail(email);
+            friendLocalToCreate.setStatus(status);
+            friendLocalToCreate.setPhoto(photo);
+            friendLocalToCreate.setIdShoppingCart(idShoppingCart);
+            realm.commitTransaction();
+
+            realm.beginTransaction();
+            ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartLocal.getId()).findFirst();
+            shoppingCartLocalAux.getFriendInvitation().add(realm.copyFromRealm(friendLocalToCreate));
+            shoppingCartLocalAux.setLastUpdate(new Date());
+            realm.commitTransaction();
+        }
+
+        // We check for changes
+        List<FriendLocal> toCheckInvitation = invitationsLocal != null && invitationsRemote != null ?
+                shoppingCartLocal.getFriendInvitation().stream()
+                        .filter(x -> invitationsRemote.stream().anyMatch(y -> x.getUid().equals(y.getUid()) && (!x.getName().equals(y.getName()) || !x.getPhoto().equals(y.getPhoto()) || !x.getStatus().equals(y.getStatus()))))
+                        .collect(Collectors.toList())
+                : new ArrayList<>();
+        for (FriendLocal elem : toCheckInvitation) {
+            FriendLocal zAux = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            FriendLocal z = zAux!= null ? realm.copyFromRealm(zAux) : null;
+            if (z != null) {
+                realm.beginTransaction();
+                FriendRemote invitationRemoteAux = invitationsRemote.stream().filter(x -> x.getUid().equals(z.getUid())).findFirst().orElse(null);
+                if (invitationRemoteAux != null) {
+                    zAux.setName(invitationRemoteAux.getName());
+                    zAux.setPhoto(invitationRemoteAux.getPhoto());
+                    zAux.setStatus(invitationRemoteAux.getStatus());
+                    zAux.setEmail(invitationRemoteAux.getEmail());
                 }
                 realm.commitTransaction();
             }
