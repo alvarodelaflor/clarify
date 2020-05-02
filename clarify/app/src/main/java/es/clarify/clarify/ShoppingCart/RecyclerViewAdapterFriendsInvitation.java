@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -85,7 +86,14 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         deleteInvitation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Delete invitation
+                Boolean check = new Database().deleteInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition()));
+                if (check) {
+                    mDataFriendsInvitation.remove(holder.getAdapterPosition());
+                    notifyItemRemoved(holder.getAdapterPosition());
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(mContext, "Se ha producido un error", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         showFriendShoppingCartList.setOnClickListener(new View.OnClickListener() {

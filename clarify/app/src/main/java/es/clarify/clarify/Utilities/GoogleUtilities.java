@@ -533,4 +533,72 @@ public class GoogleUtilities {
             }
         });
     }
+
+    public void deleteInvitation(FriendLocal friendLocal) {
+        String uidMe = getCurrentUser().getUid();
+        String uidFriend = friendLocal.getUid().replace("invitation", "").replace("access", "");
+        DatabaseReference databaseReference = database.getReference("private");
+
+        // First we delete the invitation from our list
+        Query query1 = databaseReference.child(uidMe).child("listaCompra").orderByChild("idFirebase").equalTo(uidMe);
+        query1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        List<FriendRemote> aux = shoppingCartRemote.getFriendInvitation();
+                        if (aux == null) {
+                            aux = new ArrayList<>();
+                        }
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(friendLocal.getUid())).findFirst().orElse(null);
+                        if (friendRemote != null) {
+                            aux.remove(friendRemote);
+                            DatabaseReference allowUsers = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("friendInvitation");
+                            allowUsers.setValue(aux);
+                            DatabaseReference date = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                            date.setValue(new Date());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        // Finally we delete the access from the invitation list
+
+        final String uidFriendToFind = friendLocal.getUid().replaceAll("access", "").replaceAll("invitation", "");
+        Query query2 = databaseReference.child(uidFriend).child("listaCompra").orderByChild("idFirebase").equalTo(uidFriendToFind);
+        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null) {
+                        List<FriendRemote> aux = shoppingCartRemote.getAllowUsers();
+                        if (aux == null) {
+                            aux = new ArrayList<>();
+                        }
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"access")).findFirst().orElse(null);
+                        if (friendRemote != null) {
+                            aux.remove(friendRemote);
+                            DatabaseReference access = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("allowUsers");
+                            access.setValue(aux);
+                            DatabaseReference date = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                            date.setValue(new Date());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

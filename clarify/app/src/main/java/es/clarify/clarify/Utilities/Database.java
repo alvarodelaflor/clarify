@@ -702,4 +702,24 @@ public class Database {
         realm.close();
         return res;
     }
+
+    public Boolean deleteInvitation(FriendLocal friendLocal) {
+        Boolean res;
+        try {
+            Realm realm = Realm.getDefaultInstance();
+            FriendLocal aux = realm.where(FriendLocal.class).equalTo("uid", friendLocal.getUid()).findFirst();
+            realm.beginTransaction();
+            aux.deleteFromRealm();
+            realm.commitTransaction();
+            realm.close();
+            res = true;
+            if (res) {
+                new GoogleUtilities().deleteInvitation(friendLocal);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "changeStatusFriendList: ", e);
+            res = false;
+        }
+        return res;
+    }
 }
