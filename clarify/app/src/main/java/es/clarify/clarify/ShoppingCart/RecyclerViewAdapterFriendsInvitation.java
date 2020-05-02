@@ -60,6 +60,11 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
 
         holder.name.setText(friendLocal.getName());
         holder.email.setText(friendLocal.getEmail());
+        if (friendLocal.getStatus()) {
+            holder.pending.setVisibility(View.INVISIBLE);
+        } else {
+            holder.pending.setVisibility(View.VISIBLE);
+        }
         Picasso.get().load(friendLocal.getPhoto()).into(holder.img);
 
         Button acceptInvitation = dialog.findViewById(R.id.accept_invitation);
