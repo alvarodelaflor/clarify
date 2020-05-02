@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -79,11 +80,20 @@ public class ShoppingCart extends AppCompatActivity {
     private TextView textViewPager2;
     private ViewPager2 myAccessListViewPager;
     private CardView cardViewDialogShare;
+    private ScrollView scrollViewPersonal;
+    private ScrollView scrollViewShare;
+    private LinearLayout changeToShare;
+    private LinearLayout changeToPersonal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_cart);
+
+        scrollViewShare = (ScrollView) findViewById(R.id.card_view_list_share_carts);
+        scrollViewPersonal = (ScrollView) findViewById(R.id.card_view_list_stores);
+        changeToShare = (LinearLayout) findViewById(R.id.go_to_share);
+        changeToPersonal = (LinearLayout) findViewById(R.id.go_to_personal);
 
         // Init Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar_shopping_card);
@@ -182,6 +192,20 @@ public class ShoppingCart extends AppCompatActivity {
             }
         });
 
+        changeToPersonal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeScrollViewMode(false);
+            }
+        });
+
+        changeToShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeScrollViewMode(true);
+            }
+        });
+
         updateData();
         updateNoPurchase();
         updateVisibilityViewPager2();
@@ -190,6 +214,20 @@ public class ShoppingCart extends AppCompatActivity {
     public void changeColor(int resourseColor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), resourseColor));
+        }
+    }
+
+    private void changeScrollViewMode(Boolean mode) {
+        if (mode) {
+            scrollViewPersonal.setVisibility(View.GONE);
+            scrollViewShare.setVisibility(View.VISIBLE);
+            setHideFloatingButton(true);
+            addListButton.hide();
+        } else {
+            scrollViewPersonal.setVisibility(View.VISIBLE);
+            scrollViewShare.setVisibility(View.GONE);
+            setHideFloatingButton(false);
+            addListButton.show();
         }
     }
 
