@@ -481,7 +481,8 @@ public class GoogleUtilities {
                         if (aux == null) {
                             aux = new ArrayList<>();
                         }
-                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(friendLocal.getUid())).findFirst().orElse(null);
+                        final String uidAux1 = friendLocal.getUid().replace("invitation", "access");
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidAux1)).findFirst().orElse(null);
                         if (friendRemote != null) {
                             aux.remove(friendRemote);
                             DatabaseReference allowUsers = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("allowUsers");
@@ -500,6 +501,9 @@ public class GoogleUtilities {
         });
 
         // Finally we delete the access from the invitation list
+        uidFriend = uidFriend.replace("invitation", "");
+        uidFriend = uidFriend.replace("access", "");
+        final String uidFriendToFind = uidFriend;
         Query query2 = databaseReference.child(uidFriend).child("listaCompra").orderByChild("idFirebase").equalTo(uidFriend);
         query2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -511,12 +515,12 @@ public class GoogleUtilities {
                         if (aux == null) {
                             aux = new ArrayList<>();
                         }
-                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe)).findFirst().orElse(null);
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"invitation")).findFirst().orElse(null);
                         if (friendRemote != null) {
                             aux.remove(friendRemote);
-                            DatabaseReference allowUsers = databaseReference.child(uidFriend).child("listaCompra").child(data.getKey()).child("friendInvitation");
-                            allowUsers.setValue(aux);
-                            DatabaseReference date = databaseReference.child(uidFriend).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                            DatabaseReference friendInvitations = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("friendInvitation");
+                            friendInvitations.setValue(aux);
+                            DatabaseReference date = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("lastUpdate");
                             date.setValue(new Date());
                         }
                     }

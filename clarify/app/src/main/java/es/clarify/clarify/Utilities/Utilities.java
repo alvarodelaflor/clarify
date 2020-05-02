@@ -613,12 +613,15 @@ public class Utilities {
         Boolean res = false;
         try {
             Realm realm = Realm.getDefaultInstance();
-            FriendLocal auxRealm = realm.where(FriendLocal.class).equalTo("uid", friendLocal.getUid()).findFirst();
+            final String originalUid = friendLocal.getUid();
+            String uid = friendLocal.getUid().replace("invitation", "access");
+            FriendLocal auxRealm = realm.where(FriendLocal.class).equalTo("uid", uid).findFirst();
             if (auxRealm != null) {
                 FriendLocal aux = realm.copyFromRealm(auxRealm);
                 realm.beginTransaction();
                 auxRealm.deleteFromRealm();
                 realm.commitTransaction();
+                friendLocal.setUid(originalUid);
                 googleUtilities.deleteAccessFriendFromRemote(friendLocal);
                 res = true;
             }
