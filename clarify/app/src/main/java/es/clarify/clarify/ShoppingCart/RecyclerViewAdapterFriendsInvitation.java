@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,24 +56,54 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         dialog.setContentView(R.layout.dialog_show_invitation);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        holder.name.setText(mDataFriendsInvitation.get(holder.getAdapterPosition()).getName());
-        holder.email.setText(mDataFriendsInvitation.get(holder.getAdapterPosition()).getEmail());
-        Picasso.get().load(mDataFriendsInvitation.get(holder.getAdapterPosition()).getPhoto()).into(holder.img);
-        if (mDataFriendsInvitation.get(holder.getAdapterPosition()).getStatus()) {
-            holder.pending.setVisibility(View.GONE);
-        } else {
-            holder.pending.setVisibility(View.VISIBLE);
-        }
+        FriendLocal friendLocal = mDataFriendsInvitation.get(holder.getAdapterPosition());
+
+        holder.name.setText(friendLocal.getName());
+        holder.email.setText(friendLocal.getEmail());
+        Picasso.get().load(friendLocal.getPhoto()).into(holder.img);
+
+        Button acceptInvitation = dialog.findViewById(R.id.accept_invitation);
+        Button showFriendShoppingCartList = dialog.findViewById(R.id.open_friend_shopping_cart);
+
         CircleImageView imgDialog = (CircleImageView) dialog.findViewById(R.id.image_friend_dialog);
         TextView nameDialog = (TextView) dialog.findViewById(R.id.name_user_dialog);
         TextView emailDialog = (TextView) dialog.findViewById(R.id.email_user_dialog);
         nameDialog.setText(mDataFriendsInvitation.get(holder.getAdapterPosition()).getName());
         emailDialog.setText(mDataFriendsInvitation.get(holder.getAdapterPosition()).getEmail());
+        acceptInvitation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO Accept invitation
+            }
+        });
+        Button deleteInvitation = dialog.findViewById(R.id.delete_invitation);
+        deleteInvitation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO Delete invitation
+            }
+        });
+        showFriendShoppingCartList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO Show friend's shopping cart
+            }
+        });
         Glide.with(mContext).load(mDataFriendsInvitation.get(holder.getAdapterPosition()).getPhoto()).into(imgDialog);
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.show();
+                FriendLocal aux = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
+                if (aux!= null) {
+                    if (aux.getStatus()) {
+                        acceptInvitation.setVisibility(View.GONE);
+                        showFriendShoppingCartList.setVisibility(View.VISIBLE);
+                    } else {
+                        acceptInvitation.setVisibility(View.VISIBLE);
+                        showFriendShoppingCartList.setVisibility(View.GONE);
+                    }
+                    dialog.show();
+                }
             }
         });
 

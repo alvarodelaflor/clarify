@@ -374,7 +374,7 @@ public class GoogleUtilities {
                             FriendRemote friendRemoteMe = new FriendRemote(
                                     getCurrentUser().getDisplayName(),
                                     getCurrentUser().getEmail(),
-                                    getCurrentUser().getUid(),
+                                    getCurrentUser().getUid()+"invitation",
                                     false,
                                     getCurrentUser().getPhotoUrl().toString(),
                                     getCurrentUser().getUid());
@@ -441,6 +441,8 @@ public class GoogleUtilities {
                                     if (aux == null) {
                                         aux = new ArrayList<>();
                                     }
+                                    String uidFriend = friendRemote.getUid();
+                                    friendRemote.setUid(uidFriend+"access");
                                     aux.add(friendRemote);
                                     DatabaseReference allowUsers = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("allowUsers");
                                     allowUsers.setValue(aux);
