@@ -61,8 +61,10 @@ public class ShoppingCart extends AppCompatActivity {
     List<PurchaseLocal> mData;
     RecyclerViewAdapterShoppingCart recyclerViewAdapter;
     private RecyclerView myRecyclerView;
+    private RecyclerView myRecyclerViewFriends;
     private Database realmDatabase;
     private LinearLayout noPurchase;
+    private LinearLayout noFriendsInvitation;
     private FloatingActionButton addListButton;
     private Button addButtonInitial;
     private SearchView searchView;
@@ -84,6 +86,8 @@ public class ShoppingCart extends AppCompatActivity {
     private ScrollView scrollViewShare;
     private LinearLayout changeToShare;
     private LinearLayout changeToPersonal;
+    private List<FriendLocal> mDataFriendsInvitation;
+    private RecyclerViewAdapterFriendsInvitation recyclerViewAdapterFriendsInvitation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,16 +119,23 @@ public class ShoppingCart extends AppCompatActivity {
         List<PurchaseLocal> mDataFromLocalAux1 = realmDatabase.getAllPurchaseLocalOwnerLogin();
         mDataFromLocalAux1.sort(Comparator.comparing(PurchaseLocal::getIdFirebase).reversed());
         mData = new ArrayList<>(mDataFromLocalAux1);
-
-        noPurchase = (LinearLayout) findViewById(R.id.no_purchase);
-
-        addListButton = (FloatingActionButton) findViewById(R.id.add_item);
-        addButtonInitial = (Button) findViewById(R.id.add_item_initial);
-
         myRecyclerView = (RecyclerView) findViewById(R.id.purchase_recyclerview);
         recyclerViewAdapter = new RecyclerViewAdapterShoppingCart(this, mData);
         myRecyclerView.setLayoutManager(new GridLayoutManager(getApplication(), 1));
         myRecyclerView.setAdapter(recyclerViewAdapter);
+
+        List<FriendLocal> friendsInvitationAux1 = realmDatabase.getAllFriendsInvitation();
+        mDataFriendsInvitation = new ArrayList<>(friendsInvitationAux1);
+        myRecyclerViewFriends = (RecyclerView) findViewById(R.id.share_list_recyclerview);
+        recyclerViewAdapterFriendsInvitation = new RecyclerViewAdapterFriendsInvitation(this, mDataFriendsInvitation);
+        myRecyclerViewFriends.setLayoutManager(new GridLayoutManager(getApplication(), 1));
+        myRecyclerViewFriends.setAdapter(recyclerViewAdapterFriendsInvitation);
+
+        noPurchase = (LinearLayout) findViewById(R.id.no_purchase);
+        noFriendsInvitation = (LinearLayout) findViewById(R.id.no_share_list);
+
+        addListButton = (FloatingActionButton) findViewById(R.id.add_item);
+        addButtonInitial = (Button) findViewById(R.id.add_item_initial);
 
         cardView = (CardView)findViewById(R.id.card_view_stores);
 
@@ -208,6 +219,7 @@ public class ShoppingCart extends AppCompatActivity {
 
         updateData();
         updateNoPurchase();
+        updateNoShareList();
         updateVisibilityViewPager2();
     }
 
@@ -226,8 +238,18 @@ public class ShoppingCart extends AppCompatActivity {
         } else {
             scrollViewPersonal.setVisibility(View.VISIBLE);
             scrollViewShare.setVisibility(View.GONE);
-            setHideFloatingButton(false);
-            addListButton.show();
+            if (mData.size() > 0) {
+                setHideFloatingButton(false);
+                addListButton.show();
+            }
+        }
+    }
+
+    public void updateNoShareList() {
+        if (mDataFriendsInvitation.size() < 1) {
+            noFriendsInvitation.setVisibility(View.VISIBLE);
+        } else {
+            noFriendsInvitation.setVisibility(View.GONE);
         }
     }
 
@@ -376,6 +398,7 @@ public class ShoppingCart extends AppCompatActivity {
                 if (new GoogleUtilities().getCurrentUser() != null) {
                     updateData();
                     updateNoPurchase();
+                    updateNoShareList();
                     updateVisibilityViewPager2();
                 } else {
                     return;

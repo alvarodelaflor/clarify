@@ -687,4 +687,19 @@ public class Database {
         realm.close();
         return res;
     }
+
+    public List<FriendLocal> getAllFriendsInvitation() {
+        Realm realm = Realm.getDefaultInstance();
+        ShoppingCartLocal aux = null;
+        List<FriendLocal> res = new ArrayList<>();
+        ShoppingCartLocal realmResult = realm.where(ShoppingCartLocal.class).equalTo("id", new GoogleUtilities().getCurrentUser().getUid()).findFirst();
+        if (realmResult != null) {
+            aux = realm.copyFromRealm(realmResult);
+        }
+        if (aux != null && aux.getFriendInvitation() != null) {
+            res.addAll(aux.getFriendInvitation());
+        }
+        realm.close();
+        return res;
+    }
 }
