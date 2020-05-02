@@ -555,19 +555,21 @@ public class Database {
 
         // We check for changes
         List<FriendLocal> toCheckFriend = friendLocals != null && friendRemotes != null ?
-                friendLocals.stream()
-                        .filter(x -> friendRemotes.stream().anyMatch(y -> x.getUid() == y.getUid() && (x.getName() != y.getName() || x.getPhoto() != y.getPhoto() || x.getStatus() != y.getStatus())))
+                shoppingCartLocal.getAllowUsers().stream()
+                        .filter(x -> friendRemotes.stream().anyMatch(y -> x.getUid().equals(y.getUid()) && (!x.getName().equals(y.getName()) || !x.getPhoto().equals(y.getPhoto()) || !x.getStatus().equals(y.getStatus()))))
                         .collect(Collectors.toList())
                 : new ArrayList<>();
         for (FriendLocal elem : toCheckFriend) {
-            FriendLocal p = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            FriendLocal pAux = realm.where(FriendLocal.class).equalTo("uid", elem.getUid()).findFirst();
+            FriendLocal p = pAux!= null ? realm.copyFromRealm(pAux) : null;
             if (p != null) {
                 realm.beginTransaction();
-                FriendRemote friendRemoteAux = friendRemotes.stream().filter(x -> x.getUid() == p.getUid()).findFirst().orElse(null);
+                FriendRemote friendRemoteAux = friendRemotes.stream().filter(x -> x.getUid().equals(p.getUid())).findFirst().orElse(null);
                 if (friendRemoteAux != null) {
-                    p.setName(elem.getName());
-                    p.setPhoto(elem.getPhoto());
-                    p.setStatus(elem.getStatus());
+                    pAux.setName(friendRemoteAux.getName());
+                    pAux.setPhoto(friendRemoteAux.getPhoto());
+                    pAux.setStatus(friendRemoteAux.getStatus());
+                    pAux.setEmail(friendRemoteAux.getEmail());
                 }
                 realm.commitTransaction();
             }

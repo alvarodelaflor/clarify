@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import es.clarify.clarify.Objects.FriendLocal;
+import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -236,10 +237,6 @@ public class ShoppingCart extends AppCompatActivity {
                 .boxed()
                 .forEach(z -> updateCheck(z, !mData.get(z).getCheck()));
 
-        if (accessLocal.size()>1) {
-            Log.i("TAG", "updateData: ");
-        }
-
         IntStream
                 .range(0, accessLocal.size())
                 .filter(x -> myAccessList.stream().map(FriendLocal::getUid).noneMatch(y -> accessLocal.get(x).getUid().equals(y)))
@@ -253,7 +250,29 @@ public class ShoppingCart extends AppCompatActivity {
                 .sorted(Comparator.reverseOrder())
                 .forEach( x -> deleteAccessUser(x));
 
+        IntStream
+                .range(0, myAccessList.size())
+                .filter(x -> isDifferent(myAccessList.get(x), accessLocal.get(x)))
+                .boxed()
+                .forEach(x -> applyChangeToAccessFriend(x, accessLocal.get(x)));
+
         refresh(1000);
+    }
+
+    private Boolean isDifferent(FriendLocal friendLocalAux1, FriendLocal friendLocalAux2) {
+        Boolean res = false;
+        if (friendLocalAux1.getUid().equals(friendLocalAux2.getUid())) {
+            if (!friendLocalAux1.getStatus().equals(friendLocalAux2.getStatus())) {
+                res = true;
+            } else if (!friendLocalAux1.getPhoto().equals(friendLocalAux2.getPhoto())) {
+                res = true;
+            } else if (!friendLocalAux1.getName().equals(friendLocalAux2.getName())) {
+                res = true;
+            } else if (!friendLocalAux1.getEmail().equals(friendLocalAux2.getEmail())) {
+                res = true;
+            }
+        }
+        return res;
     }
 
     public void deleteItem(int position) {
@@ -268,23 +287,27 @@ public class ShoppingCart extends AppCompatActivity {
         recyclerViewAdapter.notifyItemInserted(position);
     }
 
-    public void updateCheck(int position, Boolean check) {
-        mData.get(position).setCheck(check);
-        recyclerViewAdapter.notifyDataSetChanged();
+    public void applyChangeToAccessFriend(int position, FriendLocal friendLocalToChange) {
+        myAccessList.remove(position);
+        myAccessList.add(position, friendLocalToChange);
+        myFriendAccessAdapter.notifyDataSetChanged();
     }
 
     public void insertAccessUser(int position, FriendLocal friendLocal) {
         myAccessList.add(position, friendLocal);
         myFriendAccessAdapter.notifyItemInserted(position);
-        myAccessListViewPager.requestTransform();
     }
 
     public void deleteAccessUser(int position) {
-        myFriendAccessAdapter.notifyItemRemoved(position);
         if (myAccessList.size() > position) {
             myAccessList.remove(position);
-            myAccessListViewPager.requestTransform();
+            myFriendAccessAdapter.notifyItemRemoved(position);
         }
+    }
+
+    public void updateCheck(int position, Boolean check) {
+        mData.get(position).setCheck(check);
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     public void updateVisibilityViewPager2() {
