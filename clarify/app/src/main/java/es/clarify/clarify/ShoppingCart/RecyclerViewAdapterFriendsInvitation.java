@@ -79,14 +79,20 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         acceptInvitation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Accept invitation
+                Boolean check = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? new Database().acceptInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition())) : false;
+                if (check) {
+                    notifyDataSetChanged();
+                    acceptInvitation.setVisibility(View.GONE);
+                    showFriendShoppingCartList.setVisibility(View.VISIBLE);
+                }
             }
         });
         Button deleteInvitation = dialog.findViewById(R.id.delete_invitation);
         deleteInvitation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean check = new Database().deleteInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition()));
+
+                Boolean check = mDataFriendsInvitation.size()> holder.getAdapterPosition() ? new Database().deleteInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition())) : false;
                 if (check) {
                     mDataFriendsInvitation.remove(holder.getAdapterPosition());
                     notifyItemRemoved(holder.getAdapterPosition());
