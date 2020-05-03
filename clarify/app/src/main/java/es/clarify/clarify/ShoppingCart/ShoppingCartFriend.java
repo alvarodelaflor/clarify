@@ -76,15 +76,17 @@ public class ShoppingCartFriend extends AppCompatActivity {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean check = true;
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                    if (shoppingCartRemote != null && shoppingCartRemote.getPurcharse() != null) {
-                        List<PurchaseRemote> purchaseRemoteFirebase = shoppingCartRemote.getPurcharse();
-                        purchaseRemoteFirebase.sort(Comparator.comparing(PurchaseRemote::getIdFirebase).reversed());
-                        checkDeletePurchases(purchaseRemoteFirebase);
-                        checkNewPurchases(purchaseRemoteFirebase);
-                        checkChangesPurchases(purchaseRemoteFirebase);
+                    if (check) {
+                        ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                        if (shoppingCartRemote != null) {
+                            List<PurchaseRemote> purchaseRemoteFirebase = shoppingCartRemote.getPurcharse() != null ? shoppingCartRemote.getPurcharse() : new ArrayList<>();
+                            purchaseRemoteFirebase.sort(Comparator.comparing(PurchaseRemote::getIdFirebase).reversed());
+                            check(purchaseRemoteFirebase);
+                        }
                     }
+                    check = false;
                 }
             }
 
@@ -95,12 +97,19 @@ public class ShoppingCartFriend extends AppCompatActivity {
         };
     }
 
+    private void check(List<PurchaseRemote> purchaseRemoteFirebase) {
+        checkDeletePurchases(purchaseRemoteFirebase);
+        checkNewPurchases(purchaseRemoteFirebase);
+        checkChangesPurchases(purchaseRemoteFirebase);
+    }
+
     private void checkChangesPurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
         if (purchaseRemoteFirebase != null && purchaseRemoteFirebase.size() > 1 && mPurchase != null && purchaseRemoteFirebase.size() > 1 && purchaseRemoteFirebase.size() == mPurchase.size()) {
-            IntStream.range(0, mPurchase.size())
-                    .filter(x -> purchaseRemoteFirebase.get(x).getCheck() != mPurchase.get(x).getCheck())
+            IntStream
+                    .range(0, mPurchase.size())
+                    .filter(x -> purchaseRemoteFirebase.stream().anyMatch(y -> y.getIdFirebase() == mPurchase.get(x).getIdFirebase() && y.getCheck() != mPurchase.get(x).getCheck()))
                     .boxed()
-                    .forEach(x -> applyChangeStatus(x, mPurchase.get(x).getCheck()));
+                    .forEach(z -> applyChangeStatus(z, !mPurchase.get(z).getCheck()));
         }
     }
 
@@ -111,29 +120,39 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
     private void checkNewPurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
         if (purchaseRemoteFirebase != null) {
-            purchaseRemoteFirebase.stream()
+            List<PurchaseRemote> toAdd = purchaseRemoteFirebase.stream()
                     .filter(x -> mPurchase.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
-                    .forEach(x -> addToRecycler(purchaseRemoteFirebase.indexOf(x), x));
+                    .collect(Collectors.toList());
+            toAdd.forEach(x -> addToRecycler(purchaseRemoteFirebase.indexOf(x), x));
         }
     }
 
     private void addToRecycler(int index, PurchaseRemote purchaseRemote) {
-        mPurchase.add(index, purchaseRemote);
-        adapter.notifyItemInserted(index);
+        if (!mPurchase.contains(purchaseRemote)) {
+            mPurchase.add(index, purchaseRemote);
+            adapter.notifyItemInserted(index);
+        }
     }
 
     private void checkDeletePurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
         if (purchaseRemoteFirebase != null) {
-            mPurchase.stream()
-                    .filter(x -> purchaseRemoteFirebase.stream().noneMatch(y -> y.getIdFirebase() == x.getIdFirebase()))
-                    .forEach(x -> deleteFromRecycler(x));
+            IntStream
+                    .range(0, mPurchase.size())
+                    .filter(x -> purchaseRemoteFirebase.stream().map(PurchaseRemote::getIdFirebase).noneMatch(y -> mPurchase.get(x).getIdFirebase() == y))
+                    .boxed()
+                    .sorted(Comparator.reverseOrder())
+                    .forEach( x -> deleteFromRecycler(x));
+
+        } else {
+            mPurchase.stream().forEach(x -> adapter.notifyItemRemoved(mPurchase.indexOf(x)));
+            mPurchase = new ArrayList<>();
         }
     }
 
-    private void deleteFromRecycler(PurchaseRemote x) {
-        Integer index = mPurchase.indexOf(x);
-        if (index != null) {
-            mPurchase.remove(index);
+    private void deleteFromRecycler(int index) {
+        PurchaseRemote purchaseRemote = mPurchase.size() > index ? mPurchase.get(index) : null;
+        if (purchaseRemote != null) {
+            mPurchase.remove(purchaseRemote);
             adapter.notifyItemRemoved(index);
         }
     }
