@@ -465,7 +465,8 @@ public class ShoppingCart extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                new Utilities().savePurchase(query, -1, ShoppingCart.this, false);
+                String uid = new GoogleUtilities().getCurrentUser().getUid();
+                new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
                 searchView.clearFocus();
                 itemAdd.collapseActionView();
                 itemShare.setVisible(true);

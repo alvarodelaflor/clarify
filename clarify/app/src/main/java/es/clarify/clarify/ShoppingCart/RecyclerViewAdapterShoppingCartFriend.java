@@ -59,10 +59,14 @@ public class RecyclerViewAdapterShoppingCartFriend extends RecyclerView.Adapter<
         linearLayoutAux.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PurchaseLocal purchaseLocal = new PurchaseLocal();
-                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false);
-                mData.remove(holder.getAdapterPosition());
-                notifyItemRemoved(holder.getAdapterPosition());
+                PurchaseRemote purchaseRemote = mData.get(holder.getAdapterPosition());
+                if (purchaseRemote != null) {
+                    PurchaseLocal purchaseLocal = new PurchaseLocal();
+                    purchaseLocal.setIdFirebase(purchaseRemote.getIdFirebase());
+                    new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false, purchaseRemote.getIdShoppingCart());
+                    mData.remove(holder.getAdapterPosition());
+                    notifyItemRemoved(holder.getAdapterPosition());
+                }
             }
         });
     }

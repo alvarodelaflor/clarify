@@ -685,7 +685,7 @@ public class Database {
             realm.commitTransaction();
             res = true;
             if (res) {
-                new GoogleUtilities().deletePurchaseFromRemote(null, true);
+                new GoogleUtilities().deletePurchaseFromRemote(null, true, idShoppingCart);
             }
         } catch (Exception e) {
             res = false;
@@ -707,7 +707,7 @@ public class Database {
             realm.close();
             res = true;
             if (res) {
-                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false);
+                new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false, purchaseLocal.getIdShoppingCart());
             }
         } catch (Exception e) {
             Log.e(TAG, "deletePurchaseFromLocal: ", e);

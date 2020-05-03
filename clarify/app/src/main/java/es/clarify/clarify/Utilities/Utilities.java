@@ -594,12 +594,12 @@ public class Utilities {
                 .addValueEventListener(valueEventListener);
     }
 
-    public void savePurchase(String query, int idScannedTag, Context context, Boolean check) {
+    public void savePurchase(String query, int idScannedTag, Context context, Boolean check, String uid) {
         try {
             int id = realmDatabase.calculateIndexPurchase();
             Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag, check);
             if (saveLocal) {
-                googleUtilities.savePurchase(query, id, idScannedTag, check);
+                googleUtilities.savePurchase(query, id, idScannedTag, check, uid);
             } else {
                 Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
             }

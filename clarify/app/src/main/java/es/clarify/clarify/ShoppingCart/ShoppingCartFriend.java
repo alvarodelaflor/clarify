@@ -2,6 +2,7 @@ package es.clarify.clarify.ShoppingCart;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -9,10 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +35,8 @@ import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class ShoppingCartFriend extends AppCompatActivity {
 
@@ -38,6 +46,10 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private RecyclerView recycler;
     private RecyclerViewAdapterShoppingCartFriend adapter;
     private LinearLayout lyNoPurchasesFriend;
+    private FloatingActionButton floatingActionButton;
+    private Button buttonInitial;
+    private Boolean hideFloatingButton;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +70,11 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
         uid = getIntent().getStringExtra("uid");
 
+        hideFloatingButton = true;
         lyNoPurchasesFriend = (LinearLayout) findViewById(R.id.ly_no_purchase_friend);
+        buttonInitial = (Button) findViewById(R.id.btn_add_purchase);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add_purchase);
+        floatingActionButton.hide();
 
         mPurchase = new ArrayList<>();
         recycler = (RecyclerView) findViewById(R.id.rv_sc_friend);
@@ -104,8 +120,16 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
     private void updateLayout() {
         if (mPurchase.size() < 1) {
+            if (hideFloatingButton) {
+                floatingActionButton.hide();
+            }
             lyNoPurchasesFriend.setVisibility(View.VISIBLE);
+            recycler.setVisibility(View.GONE);
         } else {
+            if (!hideFloatingButton) {
+                floatingActionButton.show();
+            }
+            recycler.setVisibility(View.VISIBLE);
             lyNoPurchasesFriend.setVisibility(View.GONE);
         }
     }
@@ -145,6 +169,9 @@ public class ShoppingCartFriend extends AppCompatActivity {
             mPurchase.add(index, purchaseRemote);
             adapter.notifyItemInserted(index);
         }
+        if (mPurchase.size() > 0) {
+            hideFloatingButton = false;
+        }
     }
 
     private void checkDeletePurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
@@ -160,6 +187,9 @@ public class ShoppingCartFriend extends AppCompatActivity {
             mPurchase.stream().forEach(x -> adapter.notifyItemRemoved(mPurchase.indexOf(x)));
             mPurchase = new ArrayList<>();
         }
+        if (mPurchase.size() < 1) {
+            hideFloatingButton = true;
+        }
     }
 
     private void deleteFromRecycler(int index) {
@@ -174,6 +204,55 @@ public class ShoppingCartFriend extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(), resourseColor));
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_shopping_cart, menu);
+        MenuItem itemAdd = menu.findItem(R.id.search_icon);
+        MenuItem itemShare = menu.findItem(R.id.share_list);
+        itemShare.setVisible(false);
+        searchView = (SearchView)itemAdd.getActionView();
+        searchView.setQueryHint("Nombre del producto");
+        itemAdd.setVisible(false);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                int id = 1000 + mPurchase.stream().map(PurchaseRemote::getIdFirebase).findFirst().orElse(0);
+                new GoogleUtilities().savePurchase(query, id, -1, false, uid);
+
+                searchView.clearFocus();
+                itemAdd.collapseActionView();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        buttonInitial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemAdd.expandActionView();
+                itemShare.setVisible(false);
+                hideFloatingButton = true;
+                floatingActionButton.hide();
+                buttonInitial.setVisibility(View.INVISIBLE);
+            }
+        });
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemAdd.expandActionView();
+                itemShare.setVisible(false);
+                hideFloatingButton = true;
+                floatingActionButton.hide();
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

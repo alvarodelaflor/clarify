@@ -236,8 +236,7 @@ public class GoogleUtilities {
                 .removeValue();
     }
 
-    public void deletePurchaseFromRemote(PurchaseLocal purchaseLocal, Boolean deleteAll) {
-        String uid = getCurrentUser().getUid();
+    public void deletePurchaseFromRemote(PurchaseLocal purchaseLocal, Boolean deleteAll, String uid) {
         DatabaseReference databaseReference = database.getReference("private");
         Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
 
@@ -278,8 +277,7 @@ public class GoogleUtilities {
         });
     }
 
-    public void savePurchase(String query, int idFirebase, int idScannedTag, Boolean check) {
-        String uid = new GoogleUtilities().getCurrentUser().getUid();
+    public void savePurchase(String query, int idFirebase, int idScannedTag, Boolean check, String uid) {
         DatabaseReference mReference = database.getReference("private")
                 .child(uid);
 
