@@ -46,6 +46,16 @@
     </LinearLayout>
 
         <Button
+            android:id="@+id/open_friend_shopping_cart"
+            android:padding="20dp"
+            android:textAlignment="textStart"
+            android:drawablePadding="20dp"
+            android:drawableLeft="@drawable/ic_shopping_cart_real_black_24dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:text="Mostrar lista de compra"/>
+        <Button
             android:id="@+id/accept_invitation"
             android:padding="20dp"
             android:textAlignment="textStart"
@@ -66,16 +76,6 @@
             android:layout_height="match_parent"
             android:background="@android:color/white"
             android:text="Eliminar inivitación"/>
-        <Button
-            android:id="@+id/open_friend_shopping_cart"
-            android:padding="20dp"
-            android:textAlignment="textStart"
-            android:drawablePadding="20dp"
-            android:drawableLeft="@drawable/ic_shopping_cart_real_black_24dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:text="Mostrar lista de compra"/>
 
     </LinearLayout>
 

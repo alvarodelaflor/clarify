@@ -17,7 +17,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,9 +33,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
+import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
@@ -43,6 +48,8 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private Toolbar toolbar;
     private String uid;
     private List<PurchaseRemote> mPurchase;
+    private UserData userData;
+    private List<FriendRemote> acessList;
     private RecyclerView recycler;
     private RecyclerViewAdapterShoppingCartFriend adapter;
     private LinearLayout lyNoPurchasesFriend;
@@ -50,6 +57,11 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private Button buttonInitial;
     private Boolean hideFloatingButton;
     private SearchView searchView;
+    private ValueEventListener listenerOwner;
+    private ValueEventListener listener;
+    private CircleImageView imgOwner;
+    private TextView ownerName;
+    private TextView sizeAllows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +89,52 @@ public class ShoppingCartFriend extends AppCompatActivity {
         floatingActionButton.hide();
 
         mPurchase = new ArrayList<>();
+        userData = new UserData("username", "user@mail.com", null, null, null);
+        ownerName = (TextView) findViewById(R.id.name_of_owner);
+        sizeAllows = (TextView) findViewById(R.id.size_allows);
+        acessList = new ArrayList<>();
+        listenerOwner = createValueEventListenerOwner();
+        enableListenerOwner(listenerOwner);
         recycler = (RecyclerView) findViewById(R.id.rv_sc_friend);
         adapter = new RecyclerViewAdapterShoppingCartFriend(this, mPurchase);
         recycler.setLayoutManager(new GridLayoutManager(getApplication(), 1));
         recycler.setAdapter(adapter);
-        ValueEventListener listener = createValueEventListener();
+
+        imgOwner = (CircleImageView) findViewById(R.id.owner_img);
+
+        listener = createValueEventListener();
         enableListener(listener);
+    }
+
+    private void enableListenerOwner(ValueEventListener listenerOwner) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = database.getReference().child(("private")).child(uid);
+        databaseReference
+                .addValueEventListener(listenerOwner);
+    }
+
+    private ValueEventListener createValueEventListenerOwner() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean check = true;
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    if (data.getKey().equals("user_profile")) {
+                        userData.setName(data.child("name").getValue(String.class).trim().split(" ")[0]);
+                        userData.setPhoto(data.child("photo").getValue(String.class));
+                        ownerName.setText(userData.getName());
+                        if (userData.getPhoto()!= null) {
+                            Glide.with(ShoppingCartFriend.this).load(userData.getPhoto()).into(imgOwner);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
     }
 
     private void enableListener(ValueEventListener listener) {
@@ -101,6 +153,9 @@ public class ShoppingCartFriend extends AppCompatActivity {
                     if (check) {
                         ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
                         if (shoppingCartRemote != null) {
+                            if (shoppingCartRemote.getAllowUsers() != null) {
+                                sizeAllows.setText(String.valueOf(shoppingCartRemote.getAllowUsers().size()));
+                            }
                             List<PurchaseRemote> purchaseRemoteFirebase = shoppingCartRemote.getPurcharse() != null ? shoppingCartRemote.getPurcharse() : new ArrayList<>();
                             purchaseRemoteFirebase.sort(Comparator.comparing(PurchaseRemote::getIdFirebase).reversed());
                             check(purchaseRemoteFirebase);
@@ -141,7 +196,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
     }
 
     private void checkChangesPurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
-        if (purchaseRemoteFirebase != null && mPurchase != null &&  purchaseRemoteFirebase.size() == mPurchase.size()) {
+        if (purchaseRemoteFirebase != null && mPurchase != null && purchaseRemoteFirebase.size() == mPurchase.size()) {
             IntStream
                     .range(0, mPurchase.size())
                     .filter(x -> purchaseRemoteFirebase.stream().anyMatch(y -> y.getIdFirebase() == mPurchase.get(x).getIdFirebase() && y.getCheck() != mPurchase.get(x).getCheck()))
@@ -181,7 +236,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
                     .filter(x -> purchaseRemoteFirebase.stream().map(PurchaseRemote::getIdFirebase).noneMatch(y -> mPurchase.get(x).getIdFirebase() == y))
                     .boxed()
                     .sorted(Comparator.reverseOrder())
-                    .forEach( x -> deleteFromRecycler(x));
+                    .forEach(x -> deleteFromRecycler(x));
 
         } else {
             mPurchase.stream().forEach(x -> adapter.notifyItemRemoved(mPurchase.indexOf(x)));
@@ -212,7 +267,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
         MenuItem itemAdd = menu.findItem(R.id.search_icon);
         MenuItem itemShare = menu.findItem(R.id.share_list);
         itemShare.setVisible(false);
-        searchView = (SearchView)itemAdd.getActionView();
+        searchView = (SearchView) itemAdd.getActionView();
         searchView.setQueryHint("Nombre del producto");
         itemAdd.setVisible(false);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -258,10 +313,10 @@ public class ShoppingCartFriend extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference1 = database.getReference().child(("private")).child(uid).child("listaCompra");
+        databaseReference1.removeEventListener(listener);
+        DatabaseReference databaseReference2 = database.getReference().child(("private")).child(uid);
+        databaseReference2.removeEventListener(listenerOwner);
     }
 }

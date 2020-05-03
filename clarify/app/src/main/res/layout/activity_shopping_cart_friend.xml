@@ -44,7 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tb_sc_friend"
                     android:background="@drawable/carview_gradient_shopping"
-                    android:gravity="center"
+                    android:gravity="center|bottom"
                     android:orientation="horizontal"
                     android:padding="11dp">
 
@@ -56,17 +56,30 @@
                         android:clickable="true"
                         android:gravity="center">
 
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:src="@drawable/bin"/>
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/owner_img"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/imagen_perfil"/>
+
+
+                        <TextView
+                            android:id="@+id/name_of_owner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Name of user"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Borrar todo"
+                            android:text="Propietario"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:alpha="0.7"
                             android:textColor="@color/white"
-                            android:textSize="20sp"/>
+                            android:textSize="15sp"/>
 
                     </LinearLayout>
                     <View
@@ -84,17 +97,32 @@
                         android:clickable="true"
                         android:gravity="center">
 
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:src="@drawable/smiles"/>
+
+                        <TextView
+                            android:id="@+id/size_allows"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:fontFamily="@font/roboto_bold"
+                            android:textColor="@color/white"
+                            android:textSize="30sp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Compartidas"
+                            android:text="usuarios con acceso"
+                            android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/white"
-                            android:textSize="20sp"/>
+                            android:textSize="15sp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Pulsa para ver más"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:alpha="0.7"
+                            android:textColor="@color/white"
+                            android:textSize="15sp"/>
 
                     </LinearLayout>
 
