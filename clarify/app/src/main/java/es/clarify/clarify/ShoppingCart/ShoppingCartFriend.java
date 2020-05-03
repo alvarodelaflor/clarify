@@ -141,7 +141,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
     }
 
     private void checkChangesPurchases(List<PurchaseRemote> purchaseRemoteFirebase) {
-        if (purchaseRemoteFirebase != null && purchaseRemoteFirebase.size() > 1 && mPurchase != null && purchaseRemoteFirebase.size() > 1 && purchaseRemoteFirebase.size() == mPurchase.size()) {
+        if (purchaseRemoteFirebase != null && mPurchase != null &&  purchaseRemoteFirebase.size() == mPurchase.size()) {
             IntStream
                     .range(0, mPurchase.size())
                     .filter(x -> purchaseRemoteFirebase.stream().anyMatch(y -> y.getIdFirebase() == mPurchase.get(x).getIdFirebase() && y.getCheck() != mPurchase.get(x).getCheck()))

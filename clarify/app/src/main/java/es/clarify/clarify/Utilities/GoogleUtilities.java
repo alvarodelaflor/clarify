@@ -311,8 +311,7 @@ public class GoogleUtilities {
                 });
     }
 
-    public void changeCheckStatusFromLocal(PurchaseLocal purchaseLocal, boolean checked) {
-        String uid = getCurrentUser().getUid();
+    public void changeCheckStatusFromLocal(PurchaseLocal purchaseLocal, boolean checked, String uid) {
         DatabaseReference databaseReference = database.getReference("private");
         Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
 

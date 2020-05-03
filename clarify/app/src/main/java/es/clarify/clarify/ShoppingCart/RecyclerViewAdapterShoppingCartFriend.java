@@ -52,7 +52,8 @@ public class RecyclerViewAdapterShoppingCartFriend extends RecyclerView.Adapter<
             public void onClick(View view) {
                 PurchaseLocal purchaseLocal = new PurchaseLocal();
                 purchaseLocal.setIdFirebase(mData.get(holder.getAdapterPosition()).getIdFirebase());
-                new GoogleUtilities().changeCheckStatusFromLocal(purchaseLocal, holder.checkBox.isChecked());
+                purchaseLocal.setIdShoppingCart(mData.get(holder.getAdapterPosition()).getIdShoppingCart());
+                new GoogleUtilities().changeCheckStatusFromLocal(purchaseLocal, holder.checkBox.isChecked(), purchaseLocal.getIdShoppingCart());
             }
         });
         LinearLayout linearLayoutAux = holder.linearLayoutDelete;

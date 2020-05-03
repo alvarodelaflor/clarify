@@ -758,7 +758,7 @@ public class Database {
                 res = true;
             }
             if (res) {
-                new GoogleUtilities().changeCheckStatusFromLocal(aux, checked);
+                new GoogleUtilities().changeCheckStatusFromLocal(aux, checked, uid);
             }
         } catch (Exception e) {
             res = false;
