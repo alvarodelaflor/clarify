@@ -2,6 +2,7 @@ package es.clarify.clarify.ShoppingCart;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Store.ShowStore;
 import es.clarify.clarify.Utilities.Database;
 
 public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<RecyclerViewAdapterFriendsInvitation.MyViewHolder> {
@@ -105,7 +107,16 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         showFriendShoppingCartList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO Show friend's shopping cart
+                FriendLocal aux = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
+                if (aux != null) {
+                    String uid = aux.getUid().replace("access", "").replace("invitation", "");
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, ShoppingCartFriend.class);
+                    intent.putExtra("uid", uid);
+                    context.startActivity(intent);
+                } else {
+                    Toast.makeText(mContext, "Se ha producido un error", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         Glide.with(mContext).load(mDataFriendsInvitation.get(holder.getAdapterPosition()).getPhoto()).into(imgDialog);
