@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +37,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private List<PurchaseRemote> mPurchase;
     private RecyclerView recycler;
     private RecyclerViewAdapterShoppingCartFriend adapter;
+    private LinearLayout lyNoPurchasesFriend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,8 @@ public class ShoppingCartFriend extends AppCompatActivity {
         changeColor(R.color.colorPrimary);
 
         uid = getIntent().getStringExtra("uid");
+
+        lyNoPurchasesFriend = (LinearLayout) findViewById(R.id.ly_no_purchase_friend);
 
         mPurchase = new ArrayList<>();
         recycler = (RecyclerView) findViewById(R.id.rv_sc_friend);
@@ -84,6 +88,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
                             List<PurchaseRemote> purchaseRemoteFirebase = shoppingCartRemote.getPurcharse() != null ? shoppingCartRemote.getPurcharse() : new ArrayList<>();
                             purchaseRemoteFirebase.sort(Comparator.comparing(PurchaseRemote::getIdFirebase).reversed());
                             check(purchaseRemoteFirebase);
+                            updateLayout();
                         }
                     }
                     check = false;
@@ -95,6 +100,14 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void updateLayout() {
+        if (mPurchase.size() < 1) {
+            lyNoPurchasesFriend.setVisibility(View.VISIBLE);
+        } else {
+            lyNoPurchasesFriend.setVisibility(View.GONE);
+        }
     }
 
     private void check(List<PurchaseRemote> purchaseRemoteFirebase) {
