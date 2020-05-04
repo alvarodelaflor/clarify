@@ -198,8 +198,13 @@ public class ShoppingCartFriend extends AppCompatActivity {
                         if (shoppingCartRemote != null) {
                             if (shoppingCartRemote.getAllowUsers() != null) {
                                 List<FriendRemote> allowUsers = shoppingCartRemote.getAllowUsers();
-                                Boolean checkAllow = allowUsers.stream().filter(x -> x.getUid().equals(new GoogleUtilities().getCurrentUser().getUid())).findFirst().orElse(null) != null ? true : false;
-                                if (check) {
+                                Boolean checkAllow = allowUsers.stream()
+                                        .filter(x -> x.getUid().equals(new GoogleUtilities().getCurrentUser().getUid() + "access"))
+                                        .findFirst()
+                                        .orElse(null) != null
+                                        ?
+                                        true : false;
+                                if (checkAllow) {
                                     sizeAllows.setText(String.valueOf(allowUsers.size()));
                                     checkAccessList(allowUsers);
                                 } else {
