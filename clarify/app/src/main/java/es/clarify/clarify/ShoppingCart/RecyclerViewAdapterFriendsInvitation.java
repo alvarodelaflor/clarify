@@ -114,6 +114,7 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
                     Intent intent = new Intent(context, ShoppingCartFriend.class);
                     intent.putExtra("uid", uid);
                     context.startActivity(intent);
+                    dialog.dismiss();
                 } else {
                     Toast.makeText(mContext, "Se ha producido un error", Toast.LENGTH_SHORT).show();
                 }

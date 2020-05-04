@@ -90,7 +90,7 @@
                         android:layout_marginRight="20dp"
                         android:background="@color/white"/>
                     <LinearLayout
-                        android:id="@+id/go_to_share"
+                        android:id="@+id/show_access"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

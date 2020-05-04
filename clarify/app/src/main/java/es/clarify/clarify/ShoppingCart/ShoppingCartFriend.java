@@ -7,16 +7,22 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
+import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -35,13 +41,11 @@ import java.util.stream.IntStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.FriendRemote;
-import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.GoogleUtilities;
-import es.clarify.clarify.Utilities.Utilities;
 
 public class ShoppingCartFriend extends AppCompatActivity {
 
@@ -62,6 +66,10 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private CircleImageView imgOwner;
     private TextView ownerName;
     private TextView sizeAllows;
+    private LinearLayout showAccess;
+    private Dialog dialog;
+    private ViewPager2 accessListViewPager;
+    private FriendAdapterRemote adapterFriend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +101,21 @@ public class ShoppingCartFriend extends AppCompatActivity {
         ownerName = (TextView) findViewById(R.id.name_of_owner);
         sizeAllows = (TextView) findViewById(R.id.size_allows);
         acessList = new ArrayList<>();
+        dialog = new Dialog(ShoppingCartFriend.this);
+        dialog.setContentView(R.layout.dialog_user_with_access);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow()
+                .setLayout(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+        showAccess = (LinearLayout) findViewById(R.id.show_access);
+        showAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
         listenerOwner = createValueEventListenerOwner();
         enableListenerOwner(listenerOwner);
         recycler = (RecyclerView) findViewById(R.id.rv_sc_friend);
@@ -104,6 +127,26 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
         listener = createValueEventListener();
         enableListener(listener);
+
+        adapterFriend = new FriendAdapterRemote(acessList, getApplication());
+        accessListViewPager = (ViewPager2) dialog.findViewById(R.id.vp2_user_with_access);
+        accessListViewPager.setAdapter(adapterFriend);
+        accessListViewPager.setClipToPadding(false);
+        accessListViewPager.setClipChildren(false);
+        accessListViewPager.setOffscreenPageLimit(3);
+        accessListViewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float r = 1 - Math.abs(position);
+                page.setScaleY(0.95f + r * 0.15f);
+                page.setScaleX(0.95f + r * 0.15f);
+            }
+        });
+        accessListViewPager.setPageTransformer(compositePageTransformer);
     }
 
     private void enableListenerOwner(ValueEventListener listenerOwner) {
@@ -154,7 +197,18 @@ public class ShoppingCartFriend extends AppCompatActivity {
                         ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
                         if (shoppingCartRemote != null) {
                             if (shoppingCartRemote.getAllowUsers() != null) {
-                                sizeAllows.setText(String.valueOf(shoppingCartRemote.getAllowUsers().size()));
+                                List<FriendRemote> allowUsers = shoppingCartRemote.getAllowUsers();
+                                Boolean checkAllow = allowUsers.stream().filter(x -> x.getUid().equals(new GoogleUtilities().getCurrentUser().getUid())).findFirst().orElse(null) != null ? true : false;
+                                if (check) {
+                                    sizeAllows.setText(String.valueOf(allowUsers.size()));
+                                    checkAccessList(allowUsers);
+                                } else {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            } else {
+                                dialog.dismiss();
+                                finish();
                             }
                             List<PurchaseRemote> purchaseRemoteFirebase = shoppingCartRemote.getPurcharse() != null ? shoppingCartRemote.getPurcharse() : new ArrayList<>();
                             purchaseRemoteFirebase.sort(Comparator.comparing(PurchaseRemote::getIdFirebase).reversed());
@@ -171,6 +225,57 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
             }
         };
+    }
+
+    private void checkAccessList(List<FriendRemote> allowUsers) {
+        checkNewUser(allowUsers);
+        checkRemoveUser(allowUsers);
+        checkEditUser(allowUsers);
+    }
+
+    private void checkEditUser(List<FriendRemote> allowUsers) {
+        if (acessList != null && allowUsers != null && acessList.size() == allowUsers.size()) {
+            IntStream.range(0, acessList.size())
+                    .filter(x -> !acessList.get(x).equals(allowUsers.get(x)))
+                    .boxed()
+                    .forEach(x -> updateUser(x, allowUsers.get(x)));
+        }
+    }
+
+    private void updateUser(Integer index, FriendRemote friendRemote) {
+        FriendRemote friendRemoteAux = acessList.stream().filter(x -> x.getUid().equals(friendRemote.getUid())).findFirst().orElse(null);
+        if (friendRemoteAux != null) {
+            acessList.remove(friendRemoteAux);
+            acessList.add(index, friendRemote);
+            adapterFriend.notifyDataSetChanged();
+        }
+    }
+
+    private void checkRemoveUser(List<FriendRemote> allowUsers) {
+        IntStream.range(0, acessList.size())
+                .filter(x -> allowUsers.stream().map(FriendRemote::getUid).noneMatch(y ->acessList.get(x).getUid().equals(y)))
+                .boxed()
+                .forEach(x -> removeUser(acessList.get(x)));
+    }
+
+    private void removeUser(FriendRemote friendRemote) {
+        Integer index = acessList.indexOf(friendRemote);
+        if (index != null) {
+            acessList.remove(friendRemote);
+            adapterFriend.notifyItemRemoved(index);
+        }
+    }
+
+    private void checkNewUser(List<FriendRemote> allowUsers) {
+        IntStream.range(0, allowUsers.size())
+                .filter(x -> acessList.stream().map(FriendRemote::getUid).noneMatch(y -> allowUsers.get(x).getUid().equals(y)))
+                .boxed()
+                .forEach(x -> addUser(x, allowUsers.get(x)));
+    }
+
+    private void addUser(Integer index, FriendRemote friendRemote) {
+        acessList.add(index, friendRemote);
+        adapterFriend.notifyItemInserted(index);
     }
 
     private void updateLayout() {
@@ -318,5 +423,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
         databaseReference1.removeEventListener(listener);
         DatabaseReference databaseReference2 = database.getReference().child(("private")).child(uid);
         databaseReference2.removeEventListener(listenerOwner);
+        finish();
     }
+
 }

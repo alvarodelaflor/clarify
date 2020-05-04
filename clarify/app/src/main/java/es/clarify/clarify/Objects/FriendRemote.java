@@ -1,5 +1,7 @@
 package es.clarify.clarify.Objects;
 
+import java.util.Objects;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -82,5 +84,23 @@ public class FriendRemote {
                 ", photo='" + photo + '\'' +
                 ", idShoppingCart='" + idShoppingCart + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FriendRemote that = (FriendRemote) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(uid, that.uid) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(photo, that.photo) &&
+                Objects.equals(idShoppingCart, that.idShoppingCart);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, email, uid, status, photo, idShoppingCart);
     }
 }
