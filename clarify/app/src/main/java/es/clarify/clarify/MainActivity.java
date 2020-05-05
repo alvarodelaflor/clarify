@@ -12,16 +12,12 @@ import com.google.android.material.tabs.TabLayout;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +28,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.clarify.clarify.Home.HomeFragment;
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
@@ -60,7 +55,6 @@ import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import io.realm.RealmList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
