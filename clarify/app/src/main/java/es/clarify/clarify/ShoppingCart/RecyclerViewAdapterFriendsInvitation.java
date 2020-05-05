@@ -81,11 +81,14 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         acceptInvitation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean check = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? new Database().acceptInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition())) : false;
+                Boolean check = holder.getAdapterPosition() >= 0 && mDataFriendsInvitation.size() > holder.getAdapterPosition() ? new Database().acceptInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition()), mContext) : false;
                 if (check) {
                     notifyDataSetChanged();
                     acceptInvitation.setVisibility(View.GONE);
                     showFriendShoppingCartList.setVisibility(View.VISIBLE);
+                } else {
+                    dialog.dismiss();
+                    Toast.makeText(mContext, "Parece que han borrado la invitatión", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -94,20 +97,21 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
             @Override
             public void onClick(View view) {
 
-                Boolean check = mDataFriendsInvitation.size()> holder.getAdapterPosition() ? new Database().deleteInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition())) : false;
+                Boolean check = holder.getAdapterPosition() >= 0 && mDataFriendsInvitation.size()> holder.getAdapterPosition() ? new Database().deleteInvitation(mDataFriendsInvitation.get(holder.getAdapterPosition()), mContext) : false;
                 if (check) {
                     mDataFriendsInvitation.remove(holder.getAdapterPosition());
                     notifyItemRemoved(holder.getAdapterPosition());
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(mContext, "Se ha producido un error", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    Toast.makeText(mContext, "Parece que ya no tienes acceso", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         showFriendShoppingCartList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendLocal aux = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
+                FriendLocal aux = holder.getAdapterPosition() >= 0 && mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
                 if (aux != null) {
                     String uid = aux.getUid().replace("access", "").replace("invitation", "");
                     Context context = view.getContext();
@@ -116,7 +120,8 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
                     context.startActivity(intent);
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(mContext, "Se ha producido un error", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    Toast.makeText(mContext, "Parece que ya no tienes acceso", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -124,7 +129,7 @@ public class RecyclerViewAdapterFriendsInvitation extends RecyclerView.Adapter<R
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendLocal aux = mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
+                FriendLocal aux = holder.getAdapterPosition() >= 0 && mDataFriendsInvitation.size() > holder.getAdapterPosition() ? mDataFriendsInvitation.get(holder.getAdapterPosition()) : null;
                 if (aux!= null) {
                     if (aux.getStatus()) {
                         acceptInvitation.setVisibility(View.GONE);

@@ -1,6 +1,7 @@
 package es.clarify.clarify.Utilities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -797,7 +798,7 @@ public class Database {
         return res;
     }
 
-    public Boolean deleteInvitation(FriendLocal friendLocal) {
+    public Boolean deleteInvitation(FriendLocal friendLocal, Context mContext) {
         Boolean res;
         try {
             Realm realm = Realm.getDefaultInstance();
@@ -808,7 +809,7 @@ public class Database {
             realm.close();
             res = true;
             if (res) {
-                new GoogleUtilities().deleteInvitation(friendLocal);
+                new GoogleUtilities().deleteInvitation(friendLocal, mContext);
             }
         } catch (Exception e) {
             Log.e(TAG, "changeStatusFriendList: ", e);
@@ -817,18 +818,22 @@ public class Database {
         return res;
     }
 
-    public Boolean acceptInvitation(FriendLocal friendLocal) {
+    public Boolean acceptInvitation(FriendLocal friendLocal, Context mContext) {
         Boolean res;
         try {
             Realm realm = Realm.getDefaultInstance();
             FriendLocal aux = realm.where(FriendLocal.class).equalTo("uid", friendLocal.getUid()).findFirst();
-            realm.beginTransaction();
-            aux.setStatus(true);
-            realm.commitTransaction();
-            realm.close();
-            res = true;
-            if (res) {
-                new GoogleUtilities().acceptInvitation(friendLocal);
+            if (aux != null) {
+                realm.beginTransaction();
+                aux.setStatus(true);
+                realm.commitTransaction();
+                realm.close();
+                res = true;
+                if (res) {
+                    new GoogleUtilities().acceptInvitation(friendLocal, mContext);
+                }
+            } else {
+                res = false;
             }
         } catch (Exception e) {
             Log.e(TAG, "changeStatusFriendList: ", e);

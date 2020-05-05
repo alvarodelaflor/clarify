@@ -19,9 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
-            <ImageView
-                android:id="@+id/close_dialog"
+            <LinearLayout
+                android:id="@+id/ly_close_dialog"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="20dp"
@@ -29,7 +28,15 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/cross"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/cross" />
+
+            </LinearLayout>
 
             <ImageView
                 android:id="@+id/img_intro_cardview"

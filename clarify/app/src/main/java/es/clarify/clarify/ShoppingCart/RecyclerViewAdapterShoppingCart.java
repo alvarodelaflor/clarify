@@ -3,6 +3,7 @@ package es.clarify.clarify.ShoppingCart;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,10 +41,22 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
         return vHolder;
     }
 
+    private void checkTextStatus(Integer position, TextView purchaseNameAux) {
+        if (mData.size() > position) {
+            Boolean checkData = mData.get(position).getCheck();
+            if (checkData) {
+                purchaseNameAux.setPaintFlags(purchaseNameAux.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                purchaseNameAux.setPaintFlags(purchaseNameAux.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            }
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.purchase_name.setText(mData.get(holder.getAdapterPosition()).getName());
         Boolean checkData = mData.get(holder.getAdapterPosition()).getCheck();
+        checkTextStatus(holder.getAdapterPosition(), holder.purchase_name);
         CheckBox checkBox = holder.checkBox;
         checkBox.setChecked(checkData);
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -56,9 +69,13 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
         linearLayoutAux.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Boolean check = new Database().deletePurchaseFromLocal(mData.get(holder.getAdapterPosition()));
-                mData.remove(holder.getAdapterPosition());
-                notifyItemRemoved(holder.getAdapterPosition());
+                if (holder.getAdapterPosition() >= 0) {
+                    Boolean check = new Database().deletePurchaseFromLocal(mData.get(holder.getAdapterPosition()));
+                    if (check) {
+                        mData.remove(holder.getAdapterPosition());
+                        notifyItemRemoved(holder.getAdapterPosition());
+                    }
+                }
             }
         });
     }

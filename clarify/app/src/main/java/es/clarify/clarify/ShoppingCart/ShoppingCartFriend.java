@@ -68,6 +68,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private TextView sizeAllows;
     private LinearLayout showAccess;
     private Dialog dialog;
+    private LinearLayout closeDialog;
     private ViewPager2 accessListViewPager;
     private FriendAdapterRemote adapterFriend;
 
@@ -129,6 +130,13 @@ public class ShoppingCartFriend extends AppCompatActivity {
         enableListener(listener);
 
         adapterFriend = new FriendAdapterRemote(acessList, getApplication());
+        closeDialog = dialog.findViewById(R.id.ly_close_dialog);
+        closeDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
         accessListViewPager = (ViewPager2) dialog.findViewById(R.id.vp2_user_with_access);
         accessListViewPager.setAdapter(adapterFriend);
         accessListViewPager.setClipToPadding(false);
