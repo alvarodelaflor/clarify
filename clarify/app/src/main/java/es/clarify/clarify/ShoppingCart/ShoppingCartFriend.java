@@ -257,9 +257,11 @@ public class ShoppingCartFriend extends AppCompatActivity {
     }
 
     private void checkRemoveUser(List<FriendRemote> allowUsers) {
-        IntStream.range(0, acessList.size())
-                .filter(x -> allowUsers.stream().map(FriendRemote::getUid).noneMatch(y ->acessList.get(x).getUid().equals(y)))
+        List<Integer> toDeleteIndex = IntStream.range(0, acessList.size())
+                .filter(x -> !allowUsers.contains(acessList.get(x)))
                 .boxed()
+                .collect(Collectors.toList());
+        toDeleteIndex
                 .forEach(x -> removeUser(acessList.get(x)));
     }
 
