@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.nfc.NfcAdapter;
@@ -20,6 +21,7 @@ import android.os.HandlerThread;
 import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +33,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -63,13 +67,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NfcAdapter nfcAdapter;
     private PendingIntent pendingIntent;
     private NfcUtility nfcUtility = new NfcUtility();
-    private BottomNavigationView bottomNavigationView;
     private TabLayout tabLayout;
-    public ViewPager viewPager;
-    private ViewPageAdapter viewPageAdapter;
+    public ViewPager2 viewPager;
+    public HomeFragment homeFragment;
+    public StoreFragment storeFragment;
     private NfcIdentifyFragment nfcIdentifyFragment;
-    private HomeFragment homeFragment;
-    private StoreFragment storeFragment;
     private Database database;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -78,11 +80,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView nameUser;
     private TextView emailUser;
     private FirebaseUser firebaseUser;
-    private Boolean identify = false;
     private Utilities utilities;
     public List<Thread> threads;
     private ValueEventListener valueEventListenerStores;
     private ValueEventListener valueEventListenerShoppingCart;
+    private ViewPageAdapter viewPageAdapter;
 
 
     @Override
@@ -172,47 +174,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imgHeader = (CircleImageView) headerView.findViewById(R.id.img_profile);
         Glide.with(this).load(firebaseUser.getPhotoUrl()).into(imgHeader);
 
-        // Set navBar
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) findViewById(R.id.mainFrame);
-        viewPageAdapter = new ViewPageAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager2) findViewById(R.id.mainFrame);
 
-        // Add fragment
         homeFragment = new HomeFragment();
-        storeFragment = new StoreFragment(this);
-        nfcIdentifyFragment = new NfcIdentifyFragment();
+        storeFragment = new StoreFragment(MainActivity.this);
+        nfcIdentifyFragment = new NfcIdentifyFragment(viewPager);
 
-        viewPageAdapter.addFragment(homeFragment, "");
-        viewPageAdapter.addFragment(storeFragment, "");
-        viewPageAdapter.addFragment(nfcIdentifyFragment, "");
 
+        // Set navBar
+        viewPageAdapter = new ViewPageAdapter(this, homeFragment, storeFragment, nfcIdentifyFragment);
         viewPager.setAdapter(viewPageAdapter);
-        tabLayout.setupWithViewPager(viewPager);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_home_black_24dp);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_folder_black_24dp);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_explore_black_24dp);
-
-        int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.white);
-        int tabIconColor2 = ContextCompat.getColor(getApplicationContext(), R.color.colorAccent);
-        tabLayout.getTabAt(0).getIcon().setColorFilter(tabIconColor2, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(1).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-        tabLayout.getTabAt(2).getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-
-        tabLayout.setOnTabSelectedListener(
-                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        super.onTabSelected(tab);
-                        if (tab.getPosition() == 2) {
-                            identify = true;
-                        } else {
-                            identify = false;
-                        }
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(
+                tabLayout, viewPager, new TabLayoutMediator.OnConfigureTabCallback() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                switch (position) {
+                    case 0: {
+                        tab.setIcon(R.drawable.ic_home_black_24dp);
+                        tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
+                        break;
+                    } case 1: {
+                        tab.setIcon(R.drawable.ic_folder_black_24dp);
+                        tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
+                        break;
+                    } case 2: {
+                        tab.setIcon(R.drawable.ic_explore_black_24dp);
+                        tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
+                        break;
                     }
                 }
+            }
+        }
         );
+        tabLayoutMediator.attach();
+        tabLayout.setBackgroundResource(R.drawable.bg_home);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setElevation(0);
@@ -300,9 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (identify) {
-            nfcIdentifyFragment.resolveIntent(intent);
-        }
+        nfcIdentifyFragment.resolveIntent(intent);
 
     }
 

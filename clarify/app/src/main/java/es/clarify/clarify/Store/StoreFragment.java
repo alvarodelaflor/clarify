@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.R;
@@ -91,6 +92,10 @@ public class StoreFragment extends Fragment {
         listStoreLocal = database.getAllStoreLocal();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
     public void updateData() {
         int lastSize = listStoreLocal.size()-1;

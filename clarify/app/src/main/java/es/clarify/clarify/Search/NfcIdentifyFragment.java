@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
@@ -52,6 +54,11 @@ public class NfcIdentifyFragment extends Fragment {
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
     private Database database = new Database();
+    private ViewPager2 viewPager;
+
+    public NfcIdentifyFragment(ViewPager2 viewPager) {
+        this.viewPager = viewPager;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +68,7 @@ public class NfcIdentifyFragment extends Fragment {
 
         GifImageView gifImageView = (GifImageView) v.findViewById(R.id.GifImageView);
         gifImageView.setGifImageResource(R.drawable.nfc_3);
+        nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
 
         mydialog = new Dialog(getContext());
         myDialog_info = new Dialog(getContext());
@@ -88,43 +96,23 @@ public class NfcIdentifyFragment extends Fragment {
         buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDialog_info.show();
+                if (nfcAdapter == null) {
+                    Toast.makeText(getContext(), "Necesitas NFC para usarlo", Toast.LENGTH_LONG).show();
+                } else if (viewPager.getCurrentItem() == 2){
+                    myDialog_info.show();
+                }
             }
         });
+
 
         return v;
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    if (getUserVisibleHint()) {
-                        myDialog_info.show();
-                    }
-                }
-            }, 1000);
-        } else {
-            if (!getUserVisibleHint() && myDialog_info != null) {
-                myDialog_info.dismiss();
-            }
-        }
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // NFC instances
-        nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
 
-        if (nfcAdapter == null) {
-            Toast.makeText(getContext(), "Dispositivo incompatible", Toast.LENGTH_LONG).show();
-            return;
-        }
 
     }
 
