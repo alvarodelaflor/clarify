@@ -385,8 +385,6 @@ public class ShoppingCartFriend extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_shopping_cart, menu);
         MenuItem itemAdd = menu.findItem(R.id.search_icon);
-        MenuItem itemShare = menu.findItem(R.id.share_list);
-        itemShare.setVisible(false);
         searchView = (SearchView) itemAdd.getActionView();
         searchView.setQueryHint("Nombre del producto");
         itemAdd.setVisible(false);
@@ -411,7 +409,6 @@ public class ShoppingCartFriend extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 itemAdd.expandActionView();
-                itemShare.setVisible(false);
                 hideFloatingButton = true;
                 floatingActionButton.hide();
                 buttonInitial.setVisibility(View.INVISIBLE);
@@ -421,7 +418,6 @@ public class ShoppingCartFriend extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 itemAdd.expandActionView();
-                itemShare.setVisible(false);
                 hideFloatingButton = true;
                 floatingActionButton.hide();
             }

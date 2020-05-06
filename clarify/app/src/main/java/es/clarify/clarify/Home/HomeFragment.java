@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment {
         Integer dbCheckSize = purchaseLocals.stream().filter(x -> x.getCheck().equals(true)).collect(Collectors.toList()).size();
         ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", new GoogleUtilities().getCurrentUser().getUid()).findFirst();
         ShoppingCartLocal shoppingCartLocal = shoppingCartLocalAux != null ? realm.copyFromRealm(shoppingCartLocalAux) : null;
-        Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getAllowUsers() != null ? shoppingCartLocal.getAllowUsers().size() : 0;
+        Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getFriendInvitation() != null ? shoppingCartLocal.getFriendInvitation().size() : 0;
         List<Integer> util = Arrays.asList(dbPuchaseSize, dbCheckSize, dbInvitationSize);
         IntStream.range(0, util.size())
                 .filter(x -> util.get(x) != Integer.getInteger(params.get(x).getText().toString()))

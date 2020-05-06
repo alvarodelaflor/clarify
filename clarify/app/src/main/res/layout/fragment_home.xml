@@ -14,30 +14,30 @@
             android:background="@drawable/carview_1"
             android:orientation="horizontal"
             android:paddingBottom="70dp"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txt_home_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
             android:fontFamily="@font/roboto_condensed_bold_italic"
             android:text="Estos son"
             android:textColor="@color/white"
-            android:layout_marginStart="20dp"
+            android:textSize="35sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:textSize="35sp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_name_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:alpha="0.7"
             android:fontFamily="@font/roboto_bold"
             android:text="tus datos, name"
             android:textColor="@color/white"
-            android:alpha="0.7"
             android:textSize="30sp"
             app:layout_constraintTop_toBottomOf="@id/txt_home_1" />
 
@@ -45,10 +45,10 @@
             android:id="@+id/card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardCornerRadius="30dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
+            app:cardCornerRadius="30dp"
             app:layout_constraintTop_toBottomOf="@id/tv_name_user">
 
             <LinearLayout
@@ -59,8 +59,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
                     android:gravity="center">
 
@@ -68,7 +68,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="5dp"
-                        android:src="@drawable/shoppingcart1"/>
+                        android:src="@drawable/shoppingcart1" />
 
                     <TextView
                         android:id="@+id/hello_msg_3"
@@ -83,11 +83,11 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -99,20 +99,21 @@
                             android:id="@+id/purchase_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:textSize="30sp"
-                            android:textColor="#757575"
                             android:fontFamily="@font/roboto_bold"
-                            android:text="0"/>
+                            android:text="0"
+                            android:textAlignment="center"
+                            android:textColor="#757575"
+                            android:textSize="30sp" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:alpha="0.7"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:text="Productos"
                             android:textAlignment="center"
                             android:textColor="#757575"
-                            android:alpha="0.7"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/roboto_condensed_bold_italic"
-                            android:text="Productos"/>
+                            android:textSize="17sp" />
 
                     </LinearLayout>
 
@@ -122,7 +123,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:background="@color/put_tag"/>
+                        android:background="@color/put_tag" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -134,20 +135,21 @@
                             android:id="@+id/check_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:textSize="30sp"
-                            android:textColor="#757575"
                             android:fontFamily="@font/roboto_bold"
-                            android:text="0"/>
+                            android:text="0"
+                            android:textAlignment="center"
+                            android:textColor="#757575"
+                            android:textSize="30sp" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:alpha="0.7"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:text="Marcados"
                             android:textAlignment="center"
                             android:textColor="#757575"
-                            android:alpha="0.7"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/roboto_condensed_bold_italic"
-                            android:text="Marcados"/>
+                            android:textSize="17sp" />
 
                     </LinearLayout>
 
@@ -156,7 +158,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:background="@color/put_tag"/>
+                        android:background="@color/put_tag" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -168,20 +170,21 @@
                             android:id="@+id/invitation_number"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textAlignment="center"
-                            android:textSize="30sp"
-                            android:textColor="#757575"
                             android:fontFamily="@font/roboto_bold"
-                            android:text="0"/>
+                            android:text="0"
+                            android:textAlignment="center"
+                            android:textColor="#757575"
+                            android:textSize="30sp" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:alpha="0.7"
+                            android:fontFamily="@font/roboto_condensed_bold_italic"
+                            android:text="Invitaciones"
                             android:textAlignment="center"
                             android:textColor="#757575"
-                            android:alpha="0.7"
-                            android:textSize="17sp"
-                            android:fontFamily="@font/roboto_condensed_bold_italic"
-                            android:text="Invitaciones"/>
+                            android:textSize="17sp" />
 
                     </LinearLayout>
 
@@ -192,19 +195,19 @@
                     android:layout_height="match_parent">
 
                     <Button
-                        android:layout_alignParentBottom="true"
                         android:id="@+id/open_shopping_cart"
                         android:layout_width="match_parent"
                         android:layout_height="35dp"
+                        android:layout_alignParentBottom="true"
                         android:layout_gravity="bottom"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="20dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="5dp"
                         android:layout_marginRight="20dp"
+                        android:layout_marginBottom="20dp"
                         android:background="@drawable/btn_dos"
                         android:text="Abrir carrito"
-                        android:textColor="@color/white"
                         android:textAllCaps="false"
+                        android:textColor="@color/white"
                         android:textSize="18sp" />
 
                 </RelativeLayout>
@@ -216,11 +219,11 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="5dp"
-            app:cardCornerRadius="30dp"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
+            app:cardCornerRadius="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/card_view">
 
@@ -232,8 +235,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
                     android:gravity="center">
 
@@ -241,7 +244,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_marginEnd="5dp"
-                        android:src="@drawable/alert_2"/>
+                        android:src="@drawable/alert_2" />
 
                     <TextView
                         android:id="@+id/hello_msg_4"
@@ -263,12 +266,12 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:alpha="0.7"
+                        android:fontFamily="@font/roboto_condensed_bold_italic"
+                        android:text="POR HACER"
                         android:textAlignment="center"
                         android:textColor="#757575"
-                        android:alpha="0.7"
-                        android:textSize="17sp"
-                        android:fontFamily="@font/roboto_condensed_bold_italic"
-                        android:text="POR HACER"/>
+                        android:textSize="17sp" />
 
                 </LinearLayout>
 
