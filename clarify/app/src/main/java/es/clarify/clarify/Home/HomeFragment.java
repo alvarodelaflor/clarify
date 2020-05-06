@@ -102,12 +102,13 @@ public class HomeFragment extends Fragment {
     private void updateData() {
         List<TextView> params = Arrays.asList(purchaseNumber, checkNumber, invitationNumber);
         Realm realm = Realm.getDefaultInstance();
-        List<PurchaseLocal> purchaseLocalsAux = realm.where(PurchaseLocal.class).findAll();
-        List<PurchaseLocal> purchaseLocals = purchaseLocalsAux != null ? realm.copyFromRealm(purchaseLocalsAux) : new ArrayList<>();
+        String uid = new GoogleUtilities().getCurrentUser().getUid();
+        ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", uid).findFirst();
+        ShoppingCartLocal shoppingCartLocal = shoppingCartLocalAux != null ? realm.copyFromRealm(shoppingCartLocalAux) : null;
+        List<PurchaseLocal> purchaseLocals = shoppingCartLocal != null && shoppingCartLocal.getPurcharse() != null ?
+                shoppingCartLocal.getPurcharse() : new ArrayList<>();
         Integer dbPuchaseSize = purchaseLocals.size();
         Integer dbCheckSize = purchaseLocals.stream().filter(x -> x.getCheck().equals(true)).collect(Collectors.toList()).size();
-        ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", new GoogleUtilities().getCurrentUser().getUid()).findFirst();
-        ShoppingCartLocal shoppingCartLocal = shoppingCartLocalAux != null ? realm.copyFromRealm(shoppingCartLocalAux) : null;
         Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getFriendInvitation() != null ? shoppingCartLocal.getFriendInvitation().size() : 0;
         Integer nPending = shoppingCartLocal != null ? shoppingCartLocal.getFriendInvitation().stream().filter(x -> x.getStatus().equals(false)).collect(Collectors.toList()).size() : 0;
         if (nPending > 0) {

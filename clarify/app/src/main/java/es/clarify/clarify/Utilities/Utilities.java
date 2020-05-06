@@ -571,7 +571,7 @@ public class Utilities {
                         shoppingCartLocal = realm.where(ShoppingCartLocal.class).equalTo("id", shoppingCartRemote.getIdFirebase()).findFirst();
                         if (shoppingCartLocal == null) {
                             realmDatabase.synchronizeShoppingCart(shoppingCartRemote);
-                        } else if (shoppingCartLocal != null && shoppingCartLocal.getLastUpdate() != null && realm.copyFromRealm(shoppingCartLocal).getLastUpdate().before(shoppingCartRemote.getLastUpdate())) {
+                        } else if (shoppingCartLocal != null && shoppingCartLocal.getLastUpdate() != null && !realm.copyFromRealm(shoppingCartLocal).getLastUpdate().equals(shoppingCartRemote.getLastUpdate())) {
                             ShoppingCartLocal shoppingCartLocalCopy = realm.copyFromRealm(shoppingCartLocal);
                             realmDatabase.updateShoppingCartLocal(shoppingCartLocalCopy, shoppingCartRemote);
                         }
