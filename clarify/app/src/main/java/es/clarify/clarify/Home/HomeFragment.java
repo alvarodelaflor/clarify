@@ -38,17 +38,17 @@ public class HomeFragment extends Fragment {
     private LinearLayout showInvitation;
     private LinearLayout checkPurchase;
     private LinearLayout purchaseLy;
+    private LinearLayout pendingInvitation;
+    private TextView numberPending;
 
     public HomeFragment() {
 
     }
 
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_home, container, false);
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
         openShoppingCart = (Button) v.findViewById(R.id.open_shopping_cart);
         openShoppingCart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +85,9 @@ public class HomeFragment extends Fragment {
                 initShoppingCard(v, false);
             }
         });
+        pendingInvitation = v.findViewById(R.id.pending_invitation);
+        pendingInvitation.setVisibility(View.GONE);
+        numberPending = v.findViewById(R.id.pending_invitation_txt);
         updateData();
         return v;
     }
@@ -106,6 +109,14 @@ public class HomeFragment extends Fragment {
         ShoppingCartLocal shoppingCartLocalAux = realm.where(ShoppingCartLocal.class).equalTo("id", new GoogleUtilities().getCurrentUser().getUid()).findFirst();
         ShoppingCartLocal shoppingCartLocal = shoppingCartLocalAux != null ? realm.copyFromRealm(shoppingCartLocalAux) : null;
         Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getFriendInvitation() != null ? shoppingCartLocal.getFriendInvitation().size() : 0;
+        Integer nPending = shoppingCartLocal != null ? shoppingCartLocal.getFriendInvitation().stream().filter(x -> x.getStatus().equals(false)).collect(Collectors.toList()).size() : 0;
+        if (nPending > 0) {
+            pendingInvitation.setVisibility(View.VISIBLE);
+            String number = nPending > 99 ? "+99" : nPending.toString();
+            numberPending.setText(number + " nuevas");
+        } else {
+            pendingInvitation.setVisibility(View.GONE);
+        }
         List<Integer> util = Arrays.asList(dbPuchaseSize, dbCheckSize, dbInvitationSize);
         IntStream.range(0, util.size())
                 .filter(x -> util.get(x) != Integer.getInteger(params.get(x).getText().toString()))

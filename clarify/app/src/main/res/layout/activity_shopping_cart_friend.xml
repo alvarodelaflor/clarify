@@ -145,8 +145,8 @@
 
                         <ImageView
                             android:id="@+id/image_view_shopping"
-                            android:layout_width="270dp"
-                            android:layout_height="270dp"
+                            android:layout_width="250dp"
+                            android:layout_height="250dp"
                             android:src="@drawable/shopping" />
 
                         <TextView
