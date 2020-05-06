@@ -90,6 +90,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/purchase_ly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -126,6 +127,7 @@
                         android:background="@color/put_tag" />
 
                     <LinearLayout
+                        android:id="@+id/check_purchase"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -161,6 +163,7 @@
                         android:background="@color/put_tag" />
 
                     <LinearLayout
+                        android:id="@+id/show_invitation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"

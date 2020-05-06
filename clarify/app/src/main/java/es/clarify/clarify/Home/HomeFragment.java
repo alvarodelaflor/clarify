@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,14 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.ShoppingCartLocal;
-import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
-import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import io.realm.Realm;
 
@@ -38,6 +35,9 @@ public class HomeFragment extends Fragment {
     private TextView purchaseNumber;
     private TextView checkNumber;
     private TextView invitationNumber;
+    private LinearLayout showInvitation;
+    private LinearLayout checkPurchase;
+    private LinearLayout purchaseLy;
 
     public HomeFragment() {
 
@@ -64,8 +64,36 @@ public class HomeFragment extends Fragment {
         purchaseNumber = v.findViewById(R.id.purchase_number);
         checkNumber = v.findViewById(R.id.check_number);
         invitationNumber = v.findViewById(R.id.invitation_number);
+        showInvitation = v.findViewById(R.id.show_invitation);
+        showInvitation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initShoppingCard(v, true);
+            }
+        });
+        checkPurchase = v.findViewById(R.id.check_purchase);
+        checkPurchase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initShoppingCard(v, false);
+            }
+        });
+        purchaseLy = v.findViewById(R.id.purchase_ly);
+        purchaseLy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initShoppingCard(v, false);
+            }
+        });
         updateData();
         return v;
+    }
+
+    private void initShoppingCard(View v, Boolean shareView) {
+        Context context = v.getContext();
+        Intent intent = new Intent(context, ShoppingCart.class);
+        intent.putExtra("goToShare", shareView);
+        context.startActivity(intent);
     }
 
     private void updateData() {

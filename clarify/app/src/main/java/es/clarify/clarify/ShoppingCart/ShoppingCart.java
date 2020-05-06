@@ -89,11 +89,14 @@ public class ShoppingCart extends AppCompatActivity {
     private List<FriendLocal> mDataFriendsInvitation;
     private RecyclerViewAdapterFriendsInvitation recyclerViewAdapterFriendsInvitation;
     private LinearLayout shareList;
+    private Boolean goToShare = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_cart);
+
+        goToShare = getIntent().getBooleanExtra("goToShare", false);
 
         scrollViewShare = (ScrollView) findViewById(R.id.card_view_list_share_carts);
         scrollViewPersonal = (ScrollView) findViewById(R.id.card_view_list_stores);
@@ -218,6 +221,10 @@ public class ShoppingCart extends AppCompatActivity {
                 changeScrollViewMode(true);
             }
         });
+
+        if (goToShare) {
+            changeScrollViewMode(true);
+        }
 
         shareList.setOnClickListener(new View.OnClickListener() {
             @Override
