@@ -129,7 +129,7 @@ public class Database {
         Date res = null;
         Realm realm = Realm.getDefaultInstance();
         StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", store).findFirst();
-        if (store != null) {
+        if (storeLocal != null) {
             res = storeLocal.getLastUpdate();
         }
         return res;
@@ -153,7 +153,7 @@ public class Database {
         try {
             Realm realm = Realm.getDefaultInstance();
             ScannedTagLocal scannedTagLocalFromRealm = realm.where(ScannedTagLocal.class).equalTo("id", scannedTagLocal.getId()).findFirst();
-            if (scannedTagLocalFromRealm == null && scannedTagLocal.getStorageDate() == null) {
+            if (scannedTagLocalFromRealm!= null && realm.copyFromRealm(scannedTagLocalFromRealm).getStorageDate() == null) {
                 StoreLocal storeLocal = realm.where(StoreLocal.class).equalTo("name", scannedTagLocal.getStore()).findFirst();
                 realm.beginTransaction();
                 scannedTagLocal.setStorageDate(new Date());
@@ -165,6 +165,7 @@ public class Database {
                     storeLocalToSave.setScannedTagLocals(res);
                 } else {
                     storeLocal.addNewScannedTagLocal(scannedTagLocal);
+                    storeLocal.setLastUpdate(new Date());
                 }
                 realm.commitTransaction();
             }
@@ -225,6 +226,7 @@ public class Database {
             realmScannedTagLocal.setReference(scannedTag.getReference());
             realmScannedTagLocal.setImage(scannedTag.getImage());
             realmScannedTagLocal.setStore(scannedTag.getStore());
+            realmScannedTagLocal.setPrice(scannedTag.getPrice());
             realm.commitTransaction();
             realm.close();
         } catch (Error e) {
@@ -294,7 +296,7 @@ public class Database {
     }
 
     public ScannedTag getScannedTagFromLocal(ScannedTagLocal scannedTagLocal) {
-        return new ScannedTag(scannedTagLocal.getIdFirebase(), scannedTagLocal.getBrand(), scannedTagLocal.getModel(), scannedTagLocal.getLote(), scannedTagLocal.getColor(), scannedTagLocal.getExpiration_date(), scannedTagLocal.getReference(), scannedTagLocal.getImage(), scannedTagLocal.getStore());
+        return new ScannedTag(scannedTagLocal.getIdFirebase(), scannedTagLocal.getBrand(), scannedTagLocal.getModel(), scannedTagLocal.getLote(), scannedTagLocal.getColor(), scannedTagLocal.getExpiration_date(), scannedTagLocal.getReference(), scannedTagLocal.getImage(), scannedTagLocal.getStore(), scannedTagLocal.getPrice());
     }
 
     public ShoppingCartLocal synchronizeShoppingCart(ShoppingCartRemote shoppingCartRemote) {

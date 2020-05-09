@@ -47,6 +47,7 @@ import es.clarify.clarify.Objects.ScannedTagRemote;
 import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
+import es.clarify.clarify.R;
 import es.clarify.clarify.Store.MyAdapter;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -132,6 +133,7 @@ public class Utilities {
                         new Database().addLastScannedTagLocalToChache(scannedTag);
                     }
                 } else {
+                    Picasso.get().load(R.drawable.no_image).into(imgToChange);
                     text_company.setText("Etiqueta no encontrada");
                     text_model.setText("Intentalo de nuevo");
                 }

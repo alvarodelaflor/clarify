@@ -19,6 +19,7 @@ public class ScannedTagRemote {
     private String reference;
     private String image;
     private String store;
+    private Double price;
 
     public ScannedTagRemote() {
     }
@@ -35,6 +36,7 @@ public class ScannedTagRemote {
         this.reference = scannedTagLocal.getReference();
         this.image = scannedTagLocal.getImage();
         this.store = scannedTagLocal.getStore();
+        this.price = scannedTagLocal.getPrice();
     }
 
     public int getId() {
@@ -120,4 +122,12 @@ public class ScannedTagRemote {
     public String getStore() { return store; }
 
     public void setStore(String store) { this.store = store; }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

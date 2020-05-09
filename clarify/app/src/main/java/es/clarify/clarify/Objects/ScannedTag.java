@@ -10,11 +10,12 @@ public class ScannedTag {
     String reference;
     String image;
     String store;
+    Double price;
 
     public ScannedTag() {
     }
 
-    public ScannedTag(String id, String brand, String model, Boolean lote, String color, String expiration_date, String reference, String image, String store) {
+    public ScannedTag(String id, String brand, String model, Boolean lote, String color, String expiration_date, String reference, String image, String store, Double price) {
         this.id = id;
         this.brand = brand;
         this.model = model;
@@ -24,6 +25,7 @@ public class ScannedTag {
         this.reference = reference;
         this.image = image;
         this.store = store;
+        this.price = price;
     }
 
     public String getId() {
@@ -93,4 +95,12 @@ public class ScannedTag {
     public String getStore() { return store; }
 
     public void setStore(String store) { this.store = store; }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

@@ -9,7 +9,7 @@ public class ScannedTagLocal extends RealmObject {
     private int id;
     private Date storageDate;
     private String store;
-
+    private Double price;
     private String idFirebase;
     private String brand;
     private String model;
@@ -102,4 +102,12 @@ public class ScannedTagLocal extends RealmObject {
     public String getStore() { return store; }
 
     public void setStore(String store) { this.store = store; }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 }

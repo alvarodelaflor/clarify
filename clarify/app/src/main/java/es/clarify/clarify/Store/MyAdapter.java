@@ -47,6 +47,8 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
     public TextView name;
     public TextView brand;
     public ImageView img;
+    public TextView price;
+    public TextView expirationDate;
     public Dialog mydialog;
     TextView dialog_name;
     TextView dialog_brand;
@@ -59,6 +61,9 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
         name = (TextView) itemView.findViewById(R.id.model_product_item_rom);
         brand = (TextView) itemView.findViewById(R.id.brand_product_item_rom);
         img = (ImageView) itemView.findViewById(R.id.img_profile_product_show);
+        price = (TextView) itemView.findViewById(R.id.price_product);
+        expirationDate = (TextView) itemView.findViewById(R.id.expiration_date);
+
         mydialog = new Dialog(context);
         mydialog.setContentView(R.layout.dialog_product);
         mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -233,6 +238,8 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             viewHoder.name.setText(res.getModel());
             viewHoder.brand.setText(res.getBrand());
             Picasso.get().load(res.getImage()).into(viewHoder.img);
+            viewHoder.price.setText(res.getPrice().toString() + " €");
+            viewHoder.expirationDate.setText(res.getExpiration_date());
 
             viewHoder.itemView.setOnClickListener(new View.OnClickListener() {
 
