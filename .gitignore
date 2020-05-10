@@ -87,3 +87,5 @@ lint/tmp/
 scrapping_mercadona/.idea/
 
 scrapping_mercadona/venv/
+
+.idea/
