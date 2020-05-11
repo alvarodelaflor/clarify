@@ -10,18 +10,22 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.RecognizerIntent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -41,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Home.HomeFragment;
@@ -50,6 +55,7 @@ import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
@@ -80,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ValueEventListener valueEventListenerStores;
     private ValueEventListener valueEventListenerShoppingCart;
     private ViewPageAdapter viewPageAdapter;
+    private ImageView voiceControl;
 
 
     @Override
@@ -190,11 +197,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         tab.setIcon(R.drawable.ic_home_black_24dp);
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
-                    } case 1: {
+                    }
+                    case 1: {
                         tab.setIcon(R.drawable.ic_folder_black_24dp);
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
-                    } case 2: {
+                    }
+                    case 2: {
                         tab.setIcon(R.drawable.ic_explore_black_24dp);
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
@@ -214,6 +223,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+        voiceControl = (ImageView) findViewById(R.id.voice_control_toolbar_main);
+        voiceControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                voiceAutomationMenu();
+            }
+        });
 
     }
 
@@ -291,14 +308,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        setIntent(intent);
-        nfcIdentifyFragment.resolveIntent(intent);
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            setIntent(intent);
+            nfcIdentifyFragment.resolveIntent(intent);
+        } else {
+            // TODO
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            checkVoiceControlMenu(requestCode, requestCode, data);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    public void voiceAutomationMenu() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Habla ahora");
+        startActivityForResult(intent, 1);
+    }
+
+    public void checkVoiceControlMenu(int requestCode, int resultCode, @Nullable Intent data) {
+        List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        String firstResult = results.get(0).toLowerCase();
+        if (checkContains(firstResult, Arrays.asList("almacén", "almacen"))) {
+            viewPager.setCurrentItem(1);
+        } else if (checkContains(firstResult, Arrays.asList("compra", "carrito", "cesta"))) {
+            Context context = MainActivity.this;
+            Intent intent = new Intent(context, ShoppingCart.class);
+            intent.putExtra("goToShare", false);
+            context.startActivity(intent);
+        } else if (checkContains(firstResult, Arrays.asList("invitado", "invitaciones", "invitación", "pendiente", "pendientes", "amigos"))) {
+            Context context = MainActivity.this;
+            Intent intent = new Intent(context, ShoppingCart.class);
+            intent.putExtra("goToShare", true);
+            context.startActivity(intent);
+        } else if (checkContains(firstResult, Arrays.asList("buscar", "identificar", "nfc", "etiqueta"))) {
+            viewPager.setCurrentItem(2);
+        } else if (checkContains(firstResult, Arrays.asList("home", "pantalla inicial", "inicio"))) {
+            viewPager.setCurrentItem(0);
+        }
+    }
+
+    public Boolean checkContains(String result, List<String> candidates) {
+        Boolean res = false;
+        for (String elem : candidates) {
+            if (result.contains(elem)) {
+                res = true;
+                break;
+            }
+        }
+        return res;
     }
 
     public void populate() {
