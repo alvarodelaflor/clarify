@@ -1,6 +1,7 @@
 package es.clarify.clarify.ShoppingCart;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -13,13 +14,16 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +46,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -513,6 +518,17 @@ public class ShoppingCart extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.microphone:
+                voiceAutomationMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void shareList(View view) {
         try {
             String emailAux = email.getText().toString().trim();
@@ -538,6 +554,110 @@ public class ShoppingCart extends AppCompatActivity {
             Toast.makeText(ShoppingCart.this, "Se ha producido un error", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void voiceAutomationMenu() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Habla ahora");
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+            checkVoiceControlMenu(requestCode, requestCode, data);
+        }
+    }
+
+    public void checkVoiceControlMenu(int requestCode, int resultCode, @Nullable Intent data) {
+        Boolean check = false;
+        List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        String firstResult = results.get(0).toLowerCase();
+        if (!check) {
+            if (checkContains(firstResult, Arrays.asList("añád", "añad", "inserta", "mete", "méte"))) {
+                String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
+                if (query.length() > 0) {
+                    String uid = new GoogleUtilities().getCurrentUser().getUid();
+                    new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
+                    Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit"))) {
+                if (mData!= null && mData.size() > 0) {
+                    List<PurchaseLocal> toDeletePurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
+                            toDeletePurchases.add(mData.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
+                        toDeletePurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    Database realmDatabase = new Database();
+                    for (PurchaseLocal elem: toDeletePurchases) {
+                        String name = elem.getName();
+                        realmDatabase.deletePurchaseFromLocal(elem);
+                        Toast.makeText(this, name + " se ha eliminado", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede borrar nada", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private Integer getNumber(String firstResult) {
+        Integer res = null;
+        List<String> aux = Arrays.stream(firstResult.split(" ")).collect(Collectors.toList());
+        Boolean isNumber = false;
+        for (String elem : aux) {
+            try {
+                res = Integer.parseInt(elem);
+                isNumber = true;
+            } catch (NumberFormatException e) {
+                isNumber = false;
+            }
+            if (isNumber) {
+                break;
+            }
+        }
+        return res;
+    }
+
+    public String getProduct(String command, List<String> toDelete) {
+        String res = command;
+        List<String> aux = Arrays.stream(command.split(" ")).filter(x -> checkContains(x, toDelete)).collect(Collectors.toList());
+        for (String elem : aux) {
+            res = res.replace(elem, "");
+        }
+        List<String> toDeleteAux = toDelete.stream().filter(x -> x.split(" ").length > 0).collect(Collectors.toList());
+        for (String elem : toDeleteAux) {
+            res = res.replace(elem, "");
+        }
+        res = res.trim();
+        return res;
+    }
+
+    public Boolean checkContains(String result, List<String> candidates) {
+        Boolean res = false;
+        for (String elem : candidates) {
+            if (result.contains(elem)) {
+                res = true;
+                break;
+            }
+        }
+        return res;
+    }
+
 
     public void populate() {
         String uid = new GoogleUtilities().getCurrentUser().getUid();
