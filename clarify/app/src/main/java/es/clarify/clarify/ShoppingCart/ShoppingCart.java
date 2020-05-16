@@ -586,7 +586,7 @@ public class ShoppingCart extends AppCompatActivity {
                     Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
                 }
             } else if (checkContains(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit"))) {
-                if (mData!= null && mData.size() > 0) {
+                if (mData != null && mData.size() > 0) {
                     List<PurchaseLocal> toDeletePurchases = new ArrayList<>();
                     if (checkContains(firstResult, Arrays.asList("posición"))) {
                         Integer number = getNumber(firstResult);
@@ -601,13 +601,69 @@ public class ShoppingCart extends AppCompatActivity {
                     }
 
                     Database realmDatabase = new Database();
-                    for (PurchaseLocal elem: toDeletePurchases) {
+                    for (PurchaseLocal elem : toDeletePurchases) {
                         String name = elem.getName();
                         realmDatabase.deletePurchaseFromLocal(elem);
                         Toast.makeText(this, name + " se ha eliminado", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(this, "Su lista está vacía, no puede borrar nada", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("deselecciona", "desmarca"))) {
+                if (mData != null && mData.size() > 0) {
+                    List<PurchaseLocal> toCheckPurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
+                            toCheckPurchases.add(mData.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("desselecciona", "desmarca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
+                        toCheckPurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    Database realmDatabase = new Database();
+                    for (PurchaseLocal elem : toCheckPurchases) {
+                        String name = elem.getName();
+                        if (!elem.getCheck()) {
+                            Toast.makeText(this, "¡" + name + " ya estaba desmarcado!", Toast.LENGTH_LONG).show();
+                        } else {
+                            realmDatabase.changeCheckStatusFromLocal(elem, !elem.getCheck());
+                            Toast.makeText(this, name + " se ha desmarcado como seleccionado", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede desmarcar nada", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("selecciona", "marca"))) {
+                if (mData != null && mData.size() > 0) {
+                    List<PurchaseLocal> toCheckPurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
+                            toCheckPurchases.add(mData.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("selecciona", "marca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
+                        toCheckPurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    Database realmDatabase = new Database();
+                    for (PurchaseLocal elem : toCheckPurchases) {
+                        String name = elem.getName();
+                        if (elem.getCheck()) {
+                            Toast.makeText(this, "¡" + name + " ya estaba marcado!", Toast.LENGTH_LONG).show();
+                        } else {
+                            realmDatabase.changeCheckStatusFromLocal(elem, !elem.getCheck());
+                            Toast.makeText(this, name + " se ha marcado como seleccionado", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede marcar nada", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
