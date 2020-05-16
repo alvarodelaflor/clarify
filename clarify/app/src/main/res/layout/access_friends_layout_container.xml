@@ -9,7 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:importantForAccessibility="yes">
 
         <ImageView
             android:layout_width="match_parent"
@@ -32,6 +34,7 @@
             android:paddingTop="2dp"
             android:paddingEnd="8dp"
             android:paddingBottom="2dp"
+            android:contentDescription="Usuario pendiente de aceptar la invitación"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -56,6 +59,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:scaleType="centerCrop"
+            android:contentDescription="Eliminar este usuario"
             android:src="@drawable/button_delete_from_cart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -73,7 +77,6 @@
             android:layout_width="12dp"
             android:layout_height="12dp"
             android:layout_marginStart="20dp"
-            android:contentDescription="@string/app_name"
             android:src="@drawable/ic_email_black_24dp"
             app:layout_constraintBottom_toBottomOf="@id/text_email_user"
             app:layout_constraintStart_toStartOf="parent"
