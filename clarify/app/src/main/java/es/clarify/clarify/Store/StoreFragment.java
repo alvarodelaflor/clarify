@@ -32,7 +32,7 @@ public class StoreFragment extends Fragment {
 
     View v;
     private RecyclerView myRecyclerView;
-    private List<StoreLocal> listStoreLocal;
+    public List<StoreLocal> listStoreLocal;
     private TextView textViewPrincipal;
     private Database database;
     RecyclerViewAdapter recyclerViewAdapter;

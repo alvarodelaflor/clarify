@@ -180,6 +180,7 @@
             android:layout_margin="20dp"
             android:backgroundTint="@color/colorPrimary"
             android:scaleType="center"
+            android:contentDescription="Abrir carrito"
             android:src="@drawable/ic_shopping_cart_black_24dp"
             app:borderWidth="0dp"
             app:fabSize="auto" />

@@ -49,7 +49,7 @@ public class NfcIdentifyFragment extends Fragment {
     private Button buttonAdd;
     private Button buttonCancel;
     private Button buttonScan;
-    private Dialog myDialog_info;
+    public Dialog myDialog_info;
     private Dialog mydialog;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();

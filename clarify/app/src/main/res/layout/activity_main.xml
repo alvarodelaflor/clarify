@@ -30,6 +30,7 @@
                     android:layout_centerVertical="true"
                     android:layout_height="35dp"
                     android:clickable="true"
+                    android:contentDescription="Mi perfil"
                     android:src="@drawable/ic_account_circle_black_24dp" />
 <!--                <ImageView-->
 <!--                    android:layout_width="40dp"-->
@@ -39,8 +40,9 @@
 <!--                    android:src="@drawable/risketos" />-->
 
                 <TextView
+                    android:gravity="center"
                     android:layout_width="80dp"
-                    android:layout_height="30dp"
+                    android:layout_height="56dp"
                     android:fontFamily="@font/roboto_condensed_bold_italic"
                     android:text="Clarify"
                     android:layout_centerVertical="true"
@@ -49,17 +51,25 @@
                     android:textColor="@color/white"
                     android:textSize="25sp" />
 
+                <LinearLayout
+                    android:id="@+id/start_voice_command"
+                    android:layout_width="90dp"
+                    android:layout_height="56dp"
+                    android:gravity="end"
+                    android:contentDescription="Activar comandos de voz"
+                    android:layout_alignParentRight="true">
 
-                <ImageView
-                    android:id="@+id/voice_control_toolbar_main"
-                    android:layout_marginRight="15dp"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:tint="@color/colorAccent"
-                    android:contentDescription="@string/app_name"
-                    android:src="@drawable/ic_mic_black_24dp" />
+                    <ImageView
+                        android:id="@+id/voice_control_toolbar_main"
+                        android:layout_marginRight="15dp"
+                        android:layout_width="30dp"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:tint="@color/colorAccent"
+                        android:src="@drawable/ic_mic_black_24dp" />
+
+                </LinearLayout>
 
             </RelativeLayout>
 

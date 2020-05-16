@@ -149,6 +149,7 @@
                         android:id="@+id/img_to_rotate"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
+                        android:contentDescription="Pulsa para ver tus productos"
                         android:src="@drawable/ic_arrow_drop_down_circle_black_24dp"/>
 
                     <TextView

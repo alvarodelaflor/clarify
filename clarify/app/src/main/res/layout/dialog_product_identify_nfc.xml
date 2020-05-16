@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
-                android:text="Acerca tu disposito al producto"
+                android:text="Acerca tu dispositivo al producto"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="18sp" />
 
@@ -60,6 +60,7 @@
                 android:layout_marginBottom="40dp"
                 android:background="@drawable/btn_uno"
                 android:textColor="@color/put_tag"
+                android:contentDescription="Cerrar escáner"
                 android:text="Cancelar"
                 android:textAllCaps="false"
                 android:textSize="18sp" />

@@ -23,6 +23,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -239,7 +243,15 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             viewHoder.brand.setText(res.getBrand());
             Picasso.get().load(res.getImage()).into(viewHoder.img);
             viewHoder.price.setText(res.getPrice().toString() + " €");
-            viewHoder.expirationDate.setText(res.getExpiration_date());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+            String date = "";
+            try {
+                LocalDate dateAux = LocalDate.parse(res.getExpiration_date(), formatter);
+                date = dateAux.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (Exception e) {
+                Log.e("Parsing date", "onBindViewHolder: ", e);
+            }
+            viewHoder.expirationDate.setText(date);
 
             viewHoder.itemView.setOnClickListener(new View.OnClickListener() {
 

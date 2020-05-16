@@ -40,7 +40,7 @@
             android:layout_marginStart="20dp"
             android:alpha="0.7"
             android:fontFamily="@font/roboto_bold"
-            android:text="Pega tu teléfono a un producto con una etiqueta NCF compatible para identificarlo"
+            android:text="Pega tu teléfono a un producto con una etiqueta NFC compatible para identificarlo"
             android:textColor="@color/white"
             android:textSize="19sp"
             app:layout_constraintTop_toBottomOf="@id/txt_home_1" />
@@ -71,6 +71,7 @@
             android:layout_marginRight="20dp"
             android:layout_marginBottom="30dp"
             android:background="@drawable/btn_dos"
+            android:contentDescription="Abrir escáner."
             android:text="Escanear"
             android:textAllCaps="false"
             android:textColor="@color/white"

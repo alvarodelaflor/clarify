@@ -21,6 +21,7 @@ import android.speech.RecognizerIntent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Home.HomeFragment;
@@ -53,9 +55,11 @@ import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
+import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
+import es.clarify.clarify.Store.ShowStore;
 import es.clarify.clarify.Store.StoreFragment;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
@@ -86,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ValueEventListener valueEventListenerStores;
     private ValueEventListener valueEventListenerShoppingCart;
     private ViewPageAdapter viewPageAdapter;
-    private ImageView voiceControl;
+    private LinearLayout voiceControl;
 
 
     @Override
@@ -195,16 +199,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 switch (position) {
                     case 0: {
                         tab.setIcon(R.drawable.ic_home_black_24dp);
+                        tab.setContentDescription("Inicio");
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
                     }
                     case 1: {
                         tab.setIcon(R.drawable.ic_folder_black_24dp);
+                        tab.setContentDescription("Almacenes");
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
                     }
                     case 2: {
                         tab.setIcon(R.drawable.ic_explore_black_24dp);
+                        tab.setContentDescription("Identificador");
                         tab.getIcon().setTint(Color.parseColor("#FFFFFF"));
                         break;
                     }
@@ -224,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Intent(this, this.getClass())
                         .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        voiceControl = (ImageView) findViewById(R.id.voice_control_toolbar_main);
+        voiceControl = (LinearLayout) findViewById(R.id.start_voice_command);
         voiceControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -341,25 +348,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void checkVoiceControlMenu(int requestCode, int resultCode, @Nullable Intent data) {
+        Boolean check = false;
         List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         String firstResult = results.get(0).toLowerCase();
-        if (checkContains(firstResult, Arrays.asList("almacén", "almacen"))) {
-            viewPager.setCurrentItem(1);
-        } else if (checkContains(firstResult, Arrays.asList("compra", "carrito", "cesta"))) {
-            Context context = MainActivity.this;
-            Intent intent = new Intent(context, ShoppingCart.class);
-            intent.putExtra("goToShare", false);
-            context.startActivity(intent);
-        } else if (checkContains(firstResult, Arrays.asList("invitado", "invitaciones", "invitación", "pendiente", "pendientes", "amigos"))) {
-            Context context = MainActivity.this;
-            Intent intent = new Intent(context, ShoppingCart.class);
-            intent.putExtra("goToShare", true);
-            context.startActivity(intent);
-        } else if (checkContains(firstResult, Arrays.asList("buscar", "identificar", "nfc", "etiqueta"))) {
-            viewPager.setCurrentItem(2);
-        } else if (checkContains(firstResult, Arrays.asList("home", "pantalla inicial", "inicio"))) {
-            viewPager.setCurrentItem(0);
+        if (viewPager.getCurrentItem() == 1) {
+            check = checkStore(firstResult);
+        } else if (viewPager.getCurrentItem() == 2) {
+            check = checkFind(firstResult);
         }
+        if (!check) {
+            if (checkContains(firstResult, Arrays.asList("almacén", "almacen"))) {
+                viewPager.setCurrentItem(1);
+            } else if (checkContains(firstResult, Arrays.asList("compra", "carrito", "carro", "cesta", "marcado", "seleccionado", "check"))) {
+                Context context = MainActivity.this;
+                Intent intent = new Intent(context, ShoppingCart.class);
+                intent.putExtra("goToShare", false);
+                context.startActivity(intent);
+            } else if (checkContains(firstResult, Arrays.asList("invitado", "invitaciones", "invitación", "pendiente", "pendientes", "amigos"))) {
+                Context context = MainActivity.this;
+                Intent intent = new Intent(context, ShoppingCart.class);
+                intent.putExtra("goToShare", true);
+                context.startActivity(intent);
+            } else if (checkContains(firstResult, Arrays.asList("buscar", "identificar", "identificame", "qué es", "que es", "que estoy viendo", "que tengo", "nfc", "etiqueta"))) {
+                viewPager.setCurrentItem(2);
+            } else if (checkContains(firstResult, Arrays.asList("home", "pantalla inicial", "inicio"))) {
+                viewPager.setCurrentItem(0);
+            } else {
+                Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private Boolean checkFind(String firstResult) {
+        Boolean res = false;
+        if (nfcIdentifyFragment != null && nfcIdentifyFragment.myDialog_info != null) {
+            if (checkContains(firstResult, Arrays.asList("abrir", "escanea", "escaner", "identificar", "qué es", "indentifica")) && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
+                nfcIdentifyFragment.myDialog_info.show();
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    private Boolean checkStore(String firstResult) {
+        Boolean res = false;
+        if (firstResult.contains("abrir") && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
+            if (storeFragment != null && storeFragment.listStoreLocal != null && storeFragment.listStoreLocal.size() > 0) {
+                List<String> almacenes = storeFragment.listStoreLocal.stream().map(StoreLocal::getName).collect(Collectors.toList());
+                Boolean open = false;
+                for (String name : almacenes) {
+                    if (firstResult.contains(name.toLowerCase())) {
+                        Toast.makeText(this, "¡" + name + " abierta!", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(this, ShowStore.class);
+                        intent.putExtra("store_name", name);
+                        this.startActivity(intent);
+                        open = true;
+                        break;
+                    }
+                }
+                if (!open) {
+                    String almacen = firstResult.replace("abrir", "").trim().split(" ")[0];
+                    Toast.makeText(this, "Vaya, no tienes ningún almacén con el nombre " + almacen, Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Vaya, no tienes ningún almacén", Toast.LENGTH_LONG).show();
+            }
+            res = true;
+        }
+        return res;
     }
 
     public Boolean checkContains(String result, List<String> candidates) {
