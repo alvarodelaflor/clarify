@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == 2000 && resultCode == RESULT_OK && data != null) {
             checkVoiceControlMenu(requestCode, requestCode, data);
         }
     }
@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Habla ahora");
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, 2000);
     }
 
     public void checkVoiceControlMenu(int requestCode, int resultCode, @Nullable Intent data) {

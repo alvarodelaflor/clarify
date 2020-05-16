@@ -1,6 +1,7 @@
 package es.clarify.clarify.ShoppingCart;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -12,10 +13,13 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,19 +38,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.FriendRemote;
+import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class ShoppingCartFriend extends AppCompatActivity {
 
@@ -71,6 +82,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
     private LinearLayout closeDialog;
     private ViewPager2 accessListViewPager;
     private FriendAdapterRemote adapterFriend;
+    private Boolean voiceControl = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -383,7 +395,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_shopping_cart, menu);
+        getMenuInflater().inflate(R.menu.menu_shopping_cart_2, menu);
         MenuItem itemAdd = menu.findItem(R.id.search_icon);
         searchView = (SearchView) itemAdd.getActionView();
         searchView.setQueryHint("Nombre del producto");
@@ -427,14 +439,193 @@ public class ShoppingCartFriend extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.microphone_2:
+                voiceAutomationMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference1 = database.getReference().child(("private")).child(uid).child("listaCompra");
-        databaseReference1.removeEventListener(listener);
-        DatabaseReference databaseReference2 = database.getReference().child(("private")).child(uid);
-        databaseReference2.removeEventListener(listenerOwner);
-        finish();
+        if (!voiceControl) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference1 = database.getReference().child(("private")).child(uid).child("listaCompra");
+            databaseReference1.removeEventListener(listener);
+            DatabaseReference databaseReference2 = database.getReference().child(("private")).child(uid);
+            databaseReference2.removeEventListener(listenerOwner);
+            finish();
+        }
+    }
+
+    public void voiceAutomationMenu() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Habla ahora para añadir");
+        voiceControl = true;
+        this.startActivityForResult(intent, 50000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        voiceControl = false;
+        if (requestCode == 50000 && resultCode == RESULT_OK && data != null) {
+            checkVoiceControlMenu(requestCode, requestCode, data);
+        }
+    }
+
+    public void checkVoiceControlMenu(int requestCode, int resultCode, @Nullable Intent data) {
+        Boolean check = false;
+        List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+        String firstResult = results.get(0).toLowerCase();
+        if (!check) {
+            if (checkContains(firstResult, Arrays.asList("añád", "añad", "inserta", "mete", "méte"))) {
+                String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
+                if (query.length() > 0) {
+                    int id = 1000 + mPurchase.stream().map(PurchaseRemote::getIdFirebase).findFirst().orElse(0);
+                    new GoogleUtilities().savePurchase(query, id, -1, false, uid);
+                    Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit"))) {
+                if (mPurchase != null && mPurchase.size() > 0) {
+                    List<PurchaseRemote> toDeletePurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mPurchase.size() > (number - 1) && mPurchase.get(number - 1) != null) {
+                            toDeletePurchases.add(mPurchase.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
+                        toDeletePurchases = mPurchase.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    for (PurchaseRemote elem : toDeletePurchases) {
+                        String name = elem.getName();
+                        PurchaseLocal purchaseLocal = new PurchaseLocal();
+                        purchaseLocal.setIdFirebase(elem.getIdFirebase());
+                        new GoogleUtilities().deletePurchaseFromRemote(purchaseLocal, false, elem.getIdShoppingCart());
+                        Toast.makeText(this, name + " se ha eliminado", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede borrar nada", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("deselecciona", "desmarca"))) {
+                if (mPurchase != null && mPurchase.size() > 0) {
+                    List<PurchaseRemote> toCheckPurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mPurchase.size() > (number - 1) && mPurchase.get(number - 1) != null) {
+                            toCheckPurchases.add(mPurchase.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("desselecciona", "desmarca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
+                        toCheckPurchases = mPurchase.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    for (PurchaseRemote elem : toCheckPurchases) {
+                        String name = elem.getName();
+                        if (!elem.getCheck()) {
+                            Toast.makeText(this, "¡" + name + " ya estaba desmarcado!", Toast.LENGTH_LONG).show();
+                        } else {
+                            PurchaseLocal purchaseLocal = new PurchaseLocal();
+                            purchaseLocal.setIdFirebase(elem.getIdFirebase());
+                            purchaseLocal.setIdShoppingCart(elem.getIdShoppingCart());
+                            new GoogleUtilities().changeCheckStatusFromLocal(purchaseLocal, false, purchaseLocal.getIdShoppingCart());
+                            Toast.makeText(this, name + " se ha desmarcado como seleccionado", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede desmarcar nada", Toast.LENGTH_LONG).show();
+                }
+            } else if (checkContains(firstResult, Arrays.asList("selecciona", "marca"))) {
+                if (mPurchase != null && mPurchase.size() > 0) {
+                    List<PurchaseRemote> toCheckPurchases = new ArrayList<>();
+                    if (checkContains(firstResult, Arrays.asList("posición"))) {
+                        Integer number = getNumber(firstResult);
+                        if (number != null && number > 0 && mPurchase.size() > (number - 1) && mPurchase.get(number - 1) != null) {
+                            toCheckPurchases.add(mPurchase.get(number - 1));
+                        } else {
+                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("selecciona", "marca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
+                        toCheckPurchases = mPurchase.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                    }
+
+                    for (PurchaseRemote elem : toCheckPurchases) {
+                        String name = elem.getName();
+                        if (elem.getCheck()) {
+                            Toast.makeText(this, "¡" + name + " ya estaba marcado!", Toast.LENGTH_LONG).show();
+                        } else {
+                            PurchaseLocal purchaseLocal = new PurchaseLocal();
+                            purchaseLocal.setIdFirebase(elem.getIdFirebase());
+                            purchaseLocal.setIdShoppingCart(elem.getIdShoppingCart());
+                            new GoogleUtilities().changeCheckStatusFromLocal(purchaseLocal, true, purchaseLocal.getIdShoppingCart());
+                            Toast.makeText(this, name + " se ha marcado como seleccionado", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Su lista está vacía, no puede marcar nada", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private Integer getNumber(String firstResult) {
+        Integer res = null;
+        List<String> aux = Arrays.stream(firstResult.split(" ")).collect(Collectors.toList());
+        Boolean isNumber = false;
+        for (String elem : aux) {
+            try {
+                res = Integer.parseInt(elem);
+                isNumber = true;
+            } catch (NumberFormatException e) {
+                isNumber = false;
+            }
+            if (isNumber) {
+                break;
+            }
+        }
+        return res;
+    }
+
+    public String getProduct(String command, List<String> toDelete) {
+        String res = command;
+        List<String> aux = Arrays.stream(command.split(" ")).filter(x -> checkContains(x, toDelete)).collect(Collectors.toList());
+        for (String elem : aux) {
+            res = res.replace(elem, "");
+        }
+        List<String> toDeleteAux = toDelete.stream().filter(x -> x.split(" ").length > 0).collect(Collectors.toList());
+        for (String elem : toDeleteAux) {
+            res = res.replace(elem, "");
+        }
+        res = res.trim();
+        return res;
+    }
+
+    public Boolean checkContains(String result, List<String> candidates) {
+        Boolean res = false;
+        for (String elem : candidates) {
+            if (result.contains(elem)) {
+                res = true;
+                break;
+            }
+        }
+        return res;
     }
 
 }

@@ -27,6 +27,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityWindowInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -575,6 +578,17 @@ public class ShoppingCart extends AppCompatActivity {
         Boolean check = false;
         List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         String firstResult = results.get(0).toLowerCase();
+        if (checkContains(firstResult, Arrays.asList("borra", "bórra", "elimin", "elimín")) && checkContains(firstResult, Arrays.asList("todo"))) {
+            realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
+            check = true;
+        } else if ((checkContains(firstResult, Arrays.asList("borra", "bórra", "elimin", "elimín","añád", "añad", "inserta", "mete", "méte")) && checkContains(firstResult, Arrays.asList("amigo"))) || checkContains(firstResult, Arrays.asList("compart"))) {
+            dialogShareOption.show();
+            check = true;
+        } else if (checkContains(firstResult, Arrays.asList("amigo")) && checkContains(firstResult, Arrays.asList("mi"))) {
+            changeScrollViewMode(true);
+            Toast.makeText(this, "Ahora se muestran las listas que han compartido tus amigos contigo", Toast.LENGTH_LONG).show();
+            check = true;
+        }
         if (!check) {
             if (checkContains(firstResult, Arrays.asList("añád", "añad", "inserta", "mete", "méte"))) {
                 String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
