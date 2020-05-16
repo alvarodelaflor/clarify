@@ -14,6 +14,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -588,10 +589,50 @@ public class ShoppingCart extends AppCompatActivity {
             changeScrollViewMode(true);
             Toast.makeText(this, "Ahora se muestran las listas que han compartido tus amigos contigo", Toast.LENGTH_LONG).show();
             check = true;
+        } else if (checkContains(firstResult, Arrays.asList("personal"))) {
+            changeScrollViewMode(false);
+            Toast.makeText(this, "Ahora se muestra tu lista peronal", Toast.LENGTH_LONG).show();
+            check = true;
+        } else if (checkContains(firstResult, Arrays.asList("ir", "abr", "ábr"))) {
+            if (checkContains(firstResult, Arrays.asList("posición"))) {
+                Integer number = getNumber(firstResult);
+                if (number != null && number > 0 && mDataFriendsInvitation.size() > (number - 1) && mDataFriendsInvitation.get(number - 1) != null) {
+                    FriendLocal aux = mDataFriendsInvitation.get(number-1);
+                    if (aux.getStatus()) {
+                        String uid = aux.getUid().replace("access", "").replace("invitation", "");
+                        Context context = view.getContext();
+                        Intent intent = new Intent(context, ShoppingCartFriend.class);
+                        intent.putExtra("uid", uid);
+                        context.startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Primero debes aceptar la invitación de " + aux.getName(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "No hay ningún amigo en esa posición", Toast.LENGTH_LONG).show();
+                }
+                check = true;
+            } else {
+                FriendLocal friendLocal = lookForUser(firstResult);
+                if (friendLocal != null) {
+                    FriendLocal aux = friendLocal;
+                    if (aux.getStatus()) {
+                        String uid = aux.getUid().replace("access", "").replace("invitation", "");
+                        Context context = view.getContext();
+                        Intent intent = new Intent(context, ShoppingCartFriend.class);
+                        intent.putExtra("uid", uid);
+                        context.startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "Primero debes aceptar la invitación" + aux.getName(), Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(this, "No se ha encontrado ese usuario", Toast.LENGTH_LONG).show();
+                }
+                check = true;
+            }
         }
         if (!check) {
             if (checkContains(firstResult, Arrays.asList("añád", "añad", "inserta", "mete", "méte"))) {
-                String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
+                String query = getProduct(firstResult, Arrays.asList("quiero", "añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
                 if (query.length() > 0) {
                     String uid = new GoogleUtilities().getCurrentUser().getUid();
                     new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
@@ -610,7 +651,7 @@ public class ShoppingCart extends AppCompatActivity {
                             Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        String queryPurchase = getProduct(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("quiero", "borr", "borrá", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
                         toDeletePurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
                     }
 
@@ -683,6 +724,13 @@ public class ShoppingCart extends AppCompatActivity {
                 Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private FriendLocal lookForUser(String firstResult) {
+        List<FriendLocal> aux = new ArrayList<>();
+        aux.addAll(mDataFriendsInvitation.stream().filter(x -> firstResult.contains(x.getName().toLowerCase())).collect(Collectors.toList()));
+        FriendLocal res = aux.size() > 0 ? res = aux.get(0) : null;
+        return res;
     }
 
     private Integer getNumber(String firstResult) {

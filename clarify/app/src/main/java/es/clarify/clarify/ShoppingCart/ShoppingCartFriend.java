@@ -309,6 +309,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
         if (mPurchase.size() < 1) {
             if (hideFloatingButton) {
                 floatingActionButton.hide();
+                buttonInitial.setVisibility(View.VISIBLE);
             }
             lyNoPurchasesFriend.setVisibility(View.VISIBLE);
             recycler.setVisibility(View.GONE);
@@ -316,6 +317,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
             if (!hideFloatingButton) {
                 floatingActionButton.show();
             }
+            buttonInitial.setVisibility(View.GONE);
             recycler.setVisibility(View.VISIBLE);
             lyNoPurchasesFriend.setVisibility(View.GONE);
         }
@@ -484,6 +486,16 @@ public class ShoppingCartFriend extends AppCompatActivity {
         Boolean check = false;
         List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         String firstResult = results.get(0).toLowerCase();
+        if (checkContains(firstResult, Arrays.asList("propietari", "dueñ", "creador"))) {
+            Toast.makeText(this, "El dueño de esta lista es " + userData.getName(), Toast.LENGTH_LONG).show();
+            check = true;
+        }else if (checkContains(firstResult, Arrays.asList("número", "cuant", "cuánt")) && checkContains(firstResult, Arrays.asList("acceso", "persona", "usuario"))) {
+            Toast.makeText(this, "El número de personas que tienen acceso a esta lista es " + sizeAllows.getText(), Toast.LENGTH_LONG).show();
+            check = true;
+        } else if (checkContains(firstResult, Arrays.asList("ver", "quien", "quién")) && checkContains(firstResult, Arrays.asList("usuario", "persona", "acceso", "permiso"))) {
+            dialog.show();
+            check = true;
+        }
         if (!check) {
             if (checkContains(firstResult, Arrays.asList("añád", "añad", "inserta", "mete", "méte"))) {
                 String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));

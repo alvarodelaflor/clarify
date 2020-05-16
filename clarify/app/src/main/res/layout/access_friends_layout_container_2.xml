@@ -9,7 +9,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:importantForAccessibility="yes">
 
         <ImageView
             android:layout_width="match_parent"
@@ -33,6 +35,7 @@
             android:paddingEnd="8dp"
             android:paddingBottom="2dp"
             app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="Usuario pendiente de aceptar la invitación"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
@@ -61,7 +64,6 @@
             android:layout_width="12dp"
             android:layout_height="12dp"
             android:layout_marginStart="20dp"
-            android:contentDescription="@string/app_name"
             android:src="@drawable/ic_email_black_24dp"
             app:layout_constraintBottom_toBottomOf="@id/text_email_user"
             app:layout_constraintStart_toStartOf="parent"
