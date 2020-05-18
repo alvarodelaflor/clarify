@@ -31,6 +31,7 @@ import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
+import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 
 public class HomeFragment extends Fragment {
@@ -53,7 +54,10 @@ public class HomeFragment extends Fragment {
     private Dialog deleteAllPurchaseDialog;
     private Button confirmDelete;
     private Button cancelDelete;
+    private Button confirmDeleteAccess;
+    private Button cancelDeleteAccess;
     private Dialog deleteAllAccessDialog;
+    private LinearLayout empty;
 
     public HomeFragment() {
 
@@ -65,6 +69,7 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         realmDatabase = new Database();
         openShoppingCart = (Button) v.findViewById(R.id.open_shopping_cart);
+        empty = (LinearLayout) v.findViewById(R.id.empty);
         openShoppingCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,6 +88,19 @@ public class HomeFragment extends Fragment {
                 );
         confirmDelete = deleteAllPurchaseDialog.findViewById(R.id.button_cancel_delete_all);
         cancelDelete = deleteAllPurchaseDialog.findViewById(R.id.no_accept);
+
+        deleteAllAccessDialog = new Dialog(getContext());
+        deleteAllAccessDialog.setContentView(R.layout.dialog_alert_delete_2);
+        deleteAllAccessDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        deleteAllAccessDialog.getWindow()
+                .setLayout(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+        confirmDeleteAccess = deleteAllAccessDialog.findViewById(R.id.button_cancel_delete_all_access);
+        cancelDeleteAccess = deleteAllAccessDialog.findViewById(R.id.no_accept_access);
+
+
         userName = (TextView) v.findViewById(R.id.tv_name_user);
         String userNameFirebase = new GoogleUtilities().getCurrentUser().getDisplayName().trim().split(" ")[0];
         userName.setText("tus datos, " + userNameFirebase);
@@ -141,23 +159,41 @@ public class HomeFragment extends Fragment {
                 deleteAllPurchaseDialog.dismiss();
             }
         });
+        cancelDeleteAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteAllAccessDialog.dismiss();
+            }
+        });
         confirmDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteAllPurchaseDialog.dismiss();
                 Boolean check = realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
                 if (check) {
                     Toast.makeText(getContext(), "Se han borrado todos los productos", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Ha ocurrido un error borrando los productos", Toast.LENGTH_SHORT).show();
                 }
-                deleteAllPurchaseDialog.dismiss();
+            }
+        });
+        confirmDeleteAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Boolean check = new Utilities().deleteAllAccessFriendFromLocal();
+                deleteAllAccessDialog.dismiss();
+                if (check) {
+                    Toast.makeText(getContext(), "Nadie tiene acceso a tu lista ahora", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Ha ocurrido un error borrando los accesos", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         cancelAccess = v.findViewById(R.id.delete_all_friend);
         cancelAccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                deleteAllAccessDialog.show();
             }
         });
         updateData();
@@ -194,12 +230,38 @@ public class HomeFragment extends Fragment {
         Integer dbCheckSize = purchaseLocals.stream().filter(x -> x.getCheck().equals(true)).collect(Collectors.toList()).size();
         Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getFriendInvitation() != null ? shoppingCartLocal.getFriendInvitation().size() : 0;
         Integer nPending = shoppingCartLocal != null ? shoppingCartLocal.getFriendInvitation().stream().filter(x -> x.getStatus().equals(false)).collect(Collectors.toList()).size() : 0;
+        if (purchaseLocals.size() > 0) {
+            deleteAll.setVisibility(View.VISIBLE);
+            checkAll.setVisibility(View.VISIBLE);
+            uncheckAll.setVisibility(View.VISIBLE);
+        } else {
+            deleteAll.setVisibility(View.GONE);
+            checkAll.setVisibility(View.GONE);
+            uncheckAll.setVisibility(View.GONE);
+        }
         if (nPending > 0) {
             pendingInvitation.setVisibility(View.VISIBLE);
             String number = nPending > 99 ? "+99" : nPending.toString();
             numberPending.setText(number + " nuevas");
         } else {
             pendingInvitation.setVisibility(View.GONE);
+        }
+        if (purchaseLocals.size() > 0 && dbCheckSize.equals(purchaseLocals.size())) {
+            checkAll.setVisibility(View.GONE);
+            uncheckAll.setVisibility(View.VISIBLE);
+        } else if (purchaseLocals.size() > 0 && dbCheckSize.equals(0)) {
+            checkAll.setVisibility(View.VISIBLE);
+            uncheckAll.setVisibility(View.GONE);
+        }
+        if (shoppingCartLocal != null && shoppingCartLocal.getAllowUsers().size() > 0) {
+            cancelAccess.setVisibility(View.VISIBLE);
+        } else {
+            cancelAccess.setVisibility(View.GONE);
+        }
+        if (purchaseLocals.size() <= 0 && (shoppingCartLocal == null || shoppingCartLocal.getAllowUsers().size() <= 0)) {
+            empty.setVisibility(View.VISIBLE);
+        } else {
+            empty.setVisibility(View.GONE);
         }
         List<Integer> util = Arrays.asList(dbPuchaseSize, dbCheckSize, dbInvitationSize);
         IntStream.range(0, util.size())

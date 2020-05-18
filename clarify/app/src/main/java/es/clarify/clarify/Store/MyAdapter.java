@@ -30,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -236,8 +237,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemViewHoder) {
+            Realm realm = Realm.getDefaultInstance();
             ItemViewHoder viewHoder = (ItemViewHoder) holder;
-            ScannedTagLocal res = items.get(position);
+            ScannedTagLocal resAux = items.get(position);
+            ScannedTagLocal res = realm.copyFromRealm(resAux);
             String idFirebase = res.getIdFirebase();
             viewHoder.name.setText(res.getModel());
             viewHoder.brand.setText(res.getBrand());

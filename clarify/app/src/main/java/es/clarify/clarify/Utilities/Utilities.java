@@ -237,6 +237,7 @@ public class Utilities {
                                             scannedTagLocal.setReference(scannedTag.getReference());
                                             scannedTagLocal.setImage(scannedTag.getImage());
                                             scannedTagLocal.setStore(scannedTag.getStore());
+                                            scannedTagLocal.setPrice(scannedTag.getPrice());
                                             scannedTagLocals.add(scannedTagLocal);
                                         }
                                     } else {
@@ -451,6 +452,7 @@ public class Utilities {
                             scannedTagLocal.setReference(scannedTag.getReference());
                             scannedTagLocal.setImage(scannedTag.getImage());
                             scannedTagLocal.setStore(scannedTag.getStore());
+                            scannedTagLocal.setPrice(scannedTag.getPrice());
                             scannedTagLocals.add(scannedTagLocal);
                         }
 
@@ -532,6 +534,7 @@ public class Utilities {
                             scannedTagLocal.setReference(elem.getReference());
                             scannedTagLocal.setImage(elem.getImage());
                             scannedTagLocal.setStore(elem.getStore());
+                            scannedTagLocal.setPrice(elem.getPrice());
                             realm.commitTransaction();
                             toSaveInStore.add(scannedTagLocal);
                             adapter.addItem(scannedTagLocal);
@@ -630,6 +633,34 @@ public class Utilities {
         } catch (Exception e) {
             res = false;
             Log.e("Utilities", "deleteAccessFriendFromLocal: ", e);
+        }
+        return res;
+    }
+
+    public Boolean deleteAllAccessFriendFromLocal() {
+        Boolean res;
+        try {
+            String uid = googleUtilities.getCurrentUser().getUid();
+            Realm realm = Realm.getDefaultInstance();
+            ShoppingCartLocal auxRealm = realm.where(ShoppingCartLocal.class).equalTo("id", uid).findFirst();
+            if (auxRealm != null) {
+                ShoppingCartLocal aux = realm.copyFromRealm(auxRealm);
+                RealmList<FriendLocal> friendLocals = aux.getAllowUsers();
+                if (friendLocals.size() > 0) {
+                    for (FriendLocal elem : friendLocals) {
+                        Boolean check = new Utilities().deleteAccessFriendFromLocal(elem);
+                        if (!check) {
+                            res = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            realm.close();
+            res = true;
+        } catch (Exception e) {
+            Log.e("Utilities", "deleteAllAccessFriendFromLocal: ", e);
+            res = false;
         }
         return res;
     }
