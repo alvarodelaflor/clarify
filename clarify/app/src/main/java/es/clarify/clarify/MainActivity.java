@@ -351,6 +351,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Boolean check = false;
         List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         String firstResult = results.get(0).toLowerCase();
+        if (viewPager.getCurrentItem() == 0) {
+            check = checkHome(firstResult);
+        }
         if (viewPager.getCurrentItem() == 1) {
             check = checkStore(firstResult);
         } else if (viewPager.getCurrentItem() == 2) {
@@ -379,6 +382,62 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private Boolean checkHome(String firstResult) {
+        Boolean res = false;
+        if (checkContains(firstResult, Arrays.asList("tod", "lista", "cesta")) && checkContains(firstResult, Arrays.asList("bórr", "borr", "elimin", "elimín", "quit"))) {
+            if (homeFragment.dbPuchaseSize > 0) {
+                Boolean check = database.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
+                if (check) {
+                    Toast.makeText(getApplicationContext(), "Se han borrado todos los productos", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Ha ocurrido un error borrando los productos", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "No puedes borrar, no hay nada en tu lista", Toast.LENGTH_SHORT).show();
+            }
+            res = true;
+        } else if (checkContains(firstResult, Arrays.asList("desmár", "desmar", "deselec")) && checkContains(firstResult, Arrays.asList("tod"))) {
+
+            if (homeFragment.dbPuchaseSize > 0) {
+                if (homeFragment.dbCheckSize > 0) {
+                    homeFragment.changeStatusAllPurchase(false);
+                    Toast.makeText(getApplicationContext(), "Toda la lista ha sido desmarcada", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "No puedes desmarcar, no había nada marcado", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "No puedes desmarcar, no hay nada en tu lista", Toast.LENGTH_SHORT).show();
+            }
+            res = true;
+        } else if (checkContains(firstResult, Arrays.asList("már", "mar", "selec")) && checkContains(firstResult, Arrays.asList("tod"))) {
+
+            if (homeFragment.dbPuchaseSize > 0) {
+                if (homeFragment.dbCheckSize < homeFragment.dbPuchaseSize) {
+                    homeFragment.changeStatusAllPurchase(true);
+                    Toast.makeText(getApplicationContext(), "Toda la lista ha sido marcada", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Ya estaba todo marcado", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "No puedes marcar, no hay nada en tu lista", Toast.LENGTH_SHORT).show();
+            }
+            res = true;
+        } else if (checkContains(firstResult, Arrays.asList("cancel", "cáncel", "quít", "quit", "retír", "retir")) && checkContains(firstResult, Arrays.asList("acceso", "permiso"))) {
+            if (homeFragment.numberAllow > 0) {
+                Boolean check = new Utilities().deleteAllAccessFriendFromLocal();
+                if (check) {
+                    Toast.makeText(this, "Nadie tiene acceso a tu lista ahora", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Ha ocurrido un error borrando los accesos", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getApplicationContext(), "Nadie tenía acceso a la lista", Toast.LENGTH_SHORT).show();
+            }
+            res = true;
+        }
+        return res;
+    }
+
     private Boolean checkFind(String firstResult) {
         Boolean res = false;
         if (nfcIdentifyFragment != null && nfcIdentifyFragment.myDialog_info != null) {
@@ -392,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Boolean checkStore(String firstResult) {
         Boolean res = false;
-        if (firstResult.contains("abrir") && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
+        if (checkContains(firstResult, Arrays.asList("abr", "ábr")) && !checkContains(firstResult, Arrays.asList("carrito", "cesta", "compra"))) {
             if (storeFragment != null && storeFragment.listStoreLocal != null && storeFragment.listStoreLocal.size() > 0) {
                 List<String> almacenes = storeFragment.listStoreLocal.stream().map(StoreLocal::getName).collect(Collectors.toList());
                 Boolean open = false;

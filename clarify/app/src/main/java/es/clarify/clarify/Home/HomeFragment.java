@@ -58,6 +58,10 @@ public class HomeFragment extends Fragment {
     private Button cancelDeleteAccess;
     private Dialog deleteAllAccessDialog;
     private LinearLayout empty;
+    public Integer dbPuchaseSize = 0;
+    public Integer dbCheckSize = 0;
+    public Integer nPending = 0;
+    public Integer numberAllow = 0;
 
     public HomeFragment() {
 
@@ -200,7 +204,7 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
-    private void changeStatusAllPurchase(Boolean status) {
+    public void changeStatusAllPurchase(Boolean status) {
         String aux = status ? "marcardo" : "desmarcardo";
         Boolean check = realmDatabase.changeStatusAllPurchaseOwner(status);
         if (check) {
@@ -226,10 +230,10 @@ public class HomeFragment extends Fragment {
         ShoppingCartLocal shoppingCartLocal = shoppingCartLocalAux != null ? realm.copyFromRealm(shoppingCartLocalAux) : null;
         List<PurchaseLocal> purchaseLocals = shoppingCartLocal != null && shoppingCartLocal.getPurcharse() != null ?
                 shoppingCartLocal.getPurcharse() : new ArrayList<>();
-        Integer dbPuchaseSize = purchaseLocals.size();
-        Integer dbCheckSize = purchaseLocals.stream().filter(x -> x.getCheck().equals(true)).collect(Collectors.toList()).size();
+        dbPuchaseSize = purchaseLocals.size();
+        dbCheckSize = purchaseLocals.stream().filter(x -> x.getCheck().equals(true)).collect(Collectors.toList()).size();
         Integer dbInvitationSize = shoppingCartLocal != null && shoppingCartLocal.getFriendInvitation() != null ? shoppingCartLocal.getFriendInvitation().size() : 0;
-        Integer nPending = shoppingCartLocal != null ? shoppingCartLocal.getFriendInvitation().stream().filter(x -> x.getStatus().equals(false)).collect(Collectors.toList()).size() : 0;
+        nPending = shoppingCartLocal != null ? shoppingCartLocal.getFriendInvitation().stream().filter(x -> x.getStatus().equals(false)).collect(Collectors.toList()).size() : 0;
         if (purchaseLocals.size() > 0) {
             deleteAll.setVisibility(View.VISIBLE);
             checkAll.setVisibility(View.VISIBLE);
@@ -258,6 +262,7 @@ public class HomeFragment extends Fragment {
         } else {
             cancelAccess.setVisibility(View.GONE);
         }
+        numberAllow = shoppingCartLocal != null && shoppingCartLocal.getAllowUsers() != null ? shoppingCartLocal.getAllowUsers().size() : null;
         if (purchaseLocals.size() <= 0 && (shoppingCartLocal == null || shoppingCartLocal.getAllowUsers().size() <= 0)) {
             empty.setVisibility(View.VISIBLE);
         } else {
