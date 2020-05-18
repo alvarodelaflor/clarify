@@ -362,20 +362,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!check) {
             if (checkContains(firstResult, Arrays.asList("almacén", "almacen"))) {
                 viewPager.setCurrentItem(1);
-            } else if (checkContains(firstResult, Arrays.asList("compra", "carrito", "carro", "cesta", "marcado", "seleccionado", "check"))) {
+                Toast.makeText(this, "Ahora se muestran todos tus almacenes", Toast.LENGTH_SHORT).show();
+            } else if (checkContains(firstResult, Arrays.asList("producto", "compra", "carrito", "carro", "cesta", "marcado", "seleccionado", "check"))) {
                 Context context = MainActivity.this;
                 Intent intent = new Intent(context, ShoppingCart.class);
                 intent.putExtra("goToShare", false);
                 context.startActivity(intent);
+                Toast.makeText(this, "Se ha abierto la cesta de la compra", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("invitado", "invitaciones", "invitación", "pendiente", "pendientes", "amigos"))) {
                 Context context = MainActivity.this;
                 Intent intent = new Intent(context, ShoppingCart.class);
                 intent.putExtra("goToShare", true);
                 context.startActivity(intent);
+                Toast.makeText(this, "Ahora se muestran las listas que han compartido contigo", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("buscar", "identificar", "identificame", "qué es", "que es", "que estoy viendo", "que tengo", "nfc", "etiqueta"))) {
                 viewPager.setCurrentItem(2);
+                Toast.makeText(this, "Pulsa en el botón escanear para escanear", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("home", "pantalla inicial", "inicio"))) {
                 viewPager.setCurrentItem(0);
+                Toast.makeText(this, "Ahora se encuentra en la pantalla de inicio", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
             }
