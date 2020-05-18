@@ -99,6 +99,7 @@ public class ShoppingCart extends AppCompatActivity {
     private RecyclerViewAdapterFriendsInvitation recyclerViewAdapterFriendsInvitation;
     private LinearLayout shareList;
     private Boolean goToShare = false;
+    private Button cancelDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +203,7 @@ public class ShoppingCart extends AppCompatActivity {
         myAccessListViewPager.setPageTransformer(compositePageTransformer);
 
         confirmDelete = (Button)dialog.findViewById(R.id.button_cancel_delete_all);
+        cancelDelete = dialog.findViewById(R.id.no_accept);
         email = (EditText)dialogShareOption.findViewById(R.id.email);
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,6 +216,13 @@ public class ShoppingCart extends AppCompatActivity {
             public void onClick(View view) {
                 dialog.dismiss();
                 Boolean check = realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
+            }
+        });
+
+        cancelDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
 

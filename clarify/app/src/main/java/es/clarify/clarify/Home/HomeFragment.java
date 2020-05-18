@@ -1,7 +1,10 @@
 package es.clarify.clarify.Home;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -47,6 +50,10 @@ public class HomeFragment extends Fragment {
     private LinearLayout deleteAll;
     private LinearLayout cancelAccess;
     private Database realmDatabase;
+    private Dialog deleteAllPurchaseDialog;
+    private Button confirmDelete;
+    private Button cancelDelete;
+    private Dialog deleteAllAccessDialog;
 
     public HomeFragment() {
 
@@ -66,6 +73,16 @@ public class HomeFragment extends Fragment {
                 context.startActivity(intent);
             }
         });
+        deleteAllPurchaseDialog = new Dialog(getContext());
+        deleteAllPurchaseDialog.setContentView(R.layout.dialog_alert_delete);
+        deleteAllPurchaseDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        deleteAllPurchaseDialog.getWindow()
+                .setLayout(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+        confirmDelete = deleteAllPurchaseDialog.findViewById(R.id.button_cancel_delete_all);
+        cancelDelete = deleteAllPurchaseDialog.findViewById(R.id.no_accept);
         userName = (TextView) v.findViewById(R.id.tv_name_user);
         String userNameFirebase = new GoogleUtilities().getCurrentUser().getDisplayName().trim().split(" ")[0];
         userName.setText("tus datos, " + userNameFirebase);
@@ -115,7 +132,25 @@ public class HomeFragment extends Fragment {
         deleteAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                deleteAllPurchaseDialog.show();
+            }
+        });
+        cancelDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteAllPurchaseDialog.dismiss();
+            }
+        });
+        confirmDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Boolean check = realmDatabase.deleteAllPurchaseFromLocal(new GoogleUtilities().getCurrentUser().getUid());
+                if (check) {
+                    Toast.makeText(getContext(), "Se han borrado todos los productos", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Ha ocurrido un error borrando los productos", Toast.LENGTH_SHORT).show();
+                }
+                deleteAllPurchaseDialog.dismiss();
             }
         });
         cancelAccess = v.findViewById(R.id.delete_all_friend);
@@ -130,7 +165,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void changeStatusAllPurchase(Boolean status) {
-        String aux = status ? "marcar" : "desmarcar";
+        String aux = status ? "marcardo" : "desmarcardo";
         Boolean check = realmDatabase.changeStatusAllPurchaseOwner(status);
         if (check) {
             Toast.makeText(getContext(), String.format("Se han %s todas", aux), Toast.LENGTH_SHORT).show();

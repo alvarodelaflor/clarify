@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="390dp"
+    android:layout_height="490dp"
     android:layout_gravity="center"
     android:orientation="vertical">
 
@@ -56,11 +56,25 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/btn_uno"
                 android:textColor="@color/put_tag"
                 android:textAlignment="center"
                 android:text="Sí, borrar toda la lista"
+                android:textAllCaps="false"
+                android:textSize="18sp" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/no_accept"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="40dp"
+                android:background="@drawable/btn_uno"
+                android:textColor="@color/put_tag"
+                android:textAlignment="center"
+                android:text="No, cancelar"
                 android:textAllCaps="false"
                 android:textSize="18sp" />
         </LinearLayout>
