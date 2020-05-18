@@ -843,4 +843,32 @@ public class Database {
         }
         return res;
     }
+
+    public Boolean changeStatusAllPurchaseOwner(Boolean status) {
+        Boolean res;
+        try {
+            String uid = new GoogleUtilities().getCurrentUser().getUid();
+            Realm realm = Realm.getDefaultInstance();
+            ShoppingCartLocal shoppingCartLocalRealm = realm.where(ShoppingCartLocal.class).equalTo("id", uid).findFirst();
+            if (shoppingCartLocalRealm != null) {
+                ShoppingCartLocal shoppingCartLocal = realm.copyFromRealm(shoppingCartLocalRealm);
+                RealmList<PurchaseLocal> purchaseLocals = shoppingCartLocal.getPurcharse();
+                if (purchaseLocals.size() > 0) {
+                    for (PurchaseLocal elem : purchaseLocals) {
+                        Boolean check = changeCheckStatusFromLocal(elem, status);
+                        if (!check) {
+                            res = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            realm.close();
+            res = true;
+        } catch (Exception e ){
+            Log.e(TAG, "changeStatusAllPurchaseOwner: ", e);
+            res = false;
+        }
+        return res;
+    }
 }

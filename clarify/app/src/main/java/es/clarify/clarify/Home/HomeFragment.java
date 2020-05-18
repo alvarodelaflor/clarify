@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +26,7 @@ import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
+import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import io.realm.Realm;
 
@@ -40,6 +42,11 @@ public class HomeFragment extends Fragment {
     private LinearLayout purchaseLy;
     private LinearLayout pendingInvitation;
     private TextView numberPending;
+    private LinearLayout checkAll;
+    private LinearLayout uncheckAll;
+    private LinearLayout deleteAll;
+    private LinearLayout cancelAccess;
+    private Database realmDatabase;
 
     public HomeFragment() {
 
@@ -49,6 +56,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
+        realmDatabase = new Database();
         openShoppingCart = (Button) v.findViewById(R.id.open_shopping_cart);
         openShoppingCart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,8 +96,48 @@ public class HomeFragment extends Fragment {
         pendingInvitation = v.findViewById(R.id.pending_invitation);
         pendingInvitation.setVisibility(View.GONE);
         numberPending = v.findViewById(R.id.pending_invitation_txt);
+
+        checkAll = (LinearLayout) v.findViewById(R.id.check_all);
+        checkAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeStatusAllPurchase(true);
+            }
+        });
+        uncheckAll = (LinearLayout) v.findViewById(R.id.uncheck_all);
+        uncheckAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeStatusAllPurchase(false);
+            }
+        });
+        deleteAll = (LinearLayout) v.findViewById(R.id.fast_delete_all);
+        deleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        cancelAccess = v.findViewById(R.id.delete_all_friend);
+        cancelAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         updateData();
         return v;
+    }
+
+    private void changeStatusAllPurchase(Boolean status) {
+        String aux = status ? "marcar" : "desmarcar";
+        Boolean check = realmDatabase.changeStatusAllPurchaseOwner(status);
+        if (check) {
+            Toast.makeText(getContext(), String.format("Se han %s todas", aux), Toast.LENGTH_SHORT).show();
+            new GoogleUtilities().changeStatusAllPurchaseFromUserLogin(status);
+        } else {
+            Toast.makeText(getContext(), String.format("No se han podido %s todas", aux), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initShoppingCard(View v, Boolean shareView) {

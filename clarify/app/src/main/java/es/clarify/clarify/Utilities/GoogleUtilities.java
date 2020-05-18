@@ -349,6 +349,55 @@ public class GoogleUtilities {
         });
     }
 
+    public void removeAllPurchaseFromUserLogin() {
+        String uid = getCurrentUser().getUid();
+        DatabaseReference databaseReference = database.getReference("private");
+        Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null && shoppingCartRemote.getPurcharse() != null) {
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(new ArrayList<>());
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void changeStatusAllPurchaseFromUserLogin(Boolean status) {
+        String uid = getCurrentUser().getUid();
+        DatabaseReference databaseReference = database.getReference("private");
+        Query query = databaseReference.child(uid).child("listaCompra").orderByChild("idFirebase").equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                    if (shoppingCartRemote != null && shoppingCartRemote.getPurcharse() != null) {
+                        List<PurchaseRemote> purchaseRemotes = shoppingCartRemote.getPurcharse();
+                        purchaseRemotes.stream().forEach(x -> x.setCheck(status));
+                        shoppingCartRemote.setPurcharse(purchaseRemotes);
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("purcharse").setValue(shoppingCartRemote.getPurcharse());
+                        databaseReference.child(uid).child("listaCompra").child(data.getKey()).child("lastUpdate").setValue(shoppingCartRemote.getLastUpdate());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void shareShoppingCart(String emailAux, Activity activity) {
         try {
             DatabaseReference databaseReference = database.getReference("private");
