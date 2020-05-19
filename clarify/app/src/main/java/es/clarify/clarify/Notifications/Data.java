@@ -6,16 +6,18 @@ public class Data {
     private String body;
     private String title;
     private String sented;
+    private String photo;
 
     public Data() {
     }
 
-    public Data(String user, int icon, String body, String title, String sented, Class classToUse, String putExtra) {
+    public Data(String user, int icon, String body, String title, String sented, Class classToUse, String putExtra, String photo) {
         this.user = user;
         this.icon = icon;
         this.body = body;
         this.title = title;
         this.sented = sented;
+        this.photo = photo;
     }
 
     public String getUser() {
@@ -56,5 +58,13 @@ public class Data {
 
     public void setSented(String sented) {
         this.sented = sented;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

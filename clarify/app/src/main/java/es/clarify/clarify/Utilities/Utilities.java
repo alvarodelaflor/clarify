@@ -673,10 +673,10 @@ public class Utilities {
         return res;
     }
 
-    public void sendNotificationAux(String token, String uidReceiver, String message, String title, Class classToUse, String putExtra) {
+    public void sendNotificationAux(String token, String uidReceiver, String message, String title, Class classToUse, String putExtra, String photo) {
         FirebaseUser firebaseUser = new GoogleUtilities().getCurrentUser();
         Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher,
-                message, title, uidReceiver, classToUse, putExtra);
+                message, title, uidReceiver, classToUse, putExtra, photo);
 
         Sender sender = new Sender(data, token);
         APIService apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);

@@ -451,8 +451,8 @@ public class GoogleUtilities {
                                     saveNewAllowUser(friendRemote, activity);
                                     try {
                                         String title = "¡Nueva invitación!";
-                                        String message = getCurrentUser().getDisplayName() + "te ha invitado a su lista";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare");
+                                        String message = getCurrentUser().getDisplayName() + " te ha invitado a su lista";
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare",getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
@@ -464,8 +464,8 @@ public class GoogleUtilities {
                                     saveNewAllowUser(friendRemote, activity);
                                     try {
                                         String title = "¡Nueva invitación!";
-                                        String message = getCurrentUser() + "te ha invitado a su lita";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare");
+                                        String message = getCurrentUser().getDisplayName() + " te ha invitado a su lita";
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
@@ -575,24 +575,39 @@ public class GoogleUtilities {
         uidFriend = uidFriend.replace("invitation", "");
         uidFriend = uidFriend.replace("access", "");
         final String uidFriendToFind = uidFriend;
-        Query query2 = databaseReference.child(uidFriend).child("listaCompra").orderByChild("idFirebase").equalTo(uidFriend);
+        Query query2 = databaseReference.child(uidFriend);
         query2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot data : dataSnapshot.getChildren()) {
-                    ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
-                    if (shoppingCartRemote != null) {
-                        List<FriendRemote> aux = shoppingCartRemote.getFriendInvitation();
-                        if (aux == null) {
-                            aux = new ArrayList<>();
-                        }
-                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"invitation")).findFirst().orElse(null);
-                        if (friendRemote != null) {
-                            aux.remove(friendRemote);
-                            DatabaseReference friendInvitations = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("friendInvitation");
-                            friendInvitations.setValue(aux);
-                            DatabaseReference date = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("lastUpdate");
-                            date.setValue(new Date());
+                if (dataSnapshot.exists()) {
+                    String token = null;
+                    String name = null;
+                    try {
+                        token = dataSnapshot.child("user_profile").child("token").getValue(String.class);
+                        name = dataSnapshot.child("user_profile").child("name").getValue(String.class);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onDataChange: no token found", e);
+                    }
+                    for (DataSnapshot data : dataSnapshot.child("listaCompra").getChildren()) {
+                        ShoppingCartRemote shoppingCartRemote = data.getValue(ShoppingCartRemote.class);
+                        if (shoppingCartRemote != null) {
+                            List<FriendRemote> aux = shoppingCartRemote.getFriendInvitation();
+                            if (aux == null) {
+                                aux = new ArrayList<>();
+                            }
+                            FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"invitation")).findFirst().orElse(null);
+                            if (friendRemote != null) {
+                                aux.remove(friendRemote);
+                                DatabaseReference friendInvitations = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("friendInvitation");
+                                friendInvitations.setValue(aux);
+                                DatabaseReference date = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("lastUpdate");
+                                date.setValue(new Date());
+                                if (token != null) {
+                                    String message = name + " te ha eliminado el acceso a su lista";
+                                    String title = "Invitación retirada";
+                                    new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                                }
+                            }
                         }
                     }
                 }
