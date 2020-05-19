@@ -133,7 +133,7 @@ public class Login extends AppCompatActivity {
                             Log.d(TAG_AUTH, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             signIn();
-                            googleUtilities.updateFirebaseAccount();
+                            googleUtilities.updateFirebaseAccount(Login.this);
                             realmDatabase.updateLastUserLogin();
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         } else {

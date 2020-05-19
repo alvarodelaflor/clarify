@@ -38,6 +38,11 @@ import java.util.stream.Collectors;
 import es.clarify.clarify.NFC.NdefMessageParser;
 import es.clarify.clarify.NFC.NfcUtility;
 import es.clarify.clarify.NFC.ParsedNdefRecord;
+import es.clarify.clarify.Notifications.APIService;
+import es.clarify.clarify.Notifications.Client;
+import es.clarify.clarify.Notifications.Data;
+import es.clarify.clarify.Notifications.MyResponse;
+import es.clarify.clarify.Notifications.Sender;
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
@@ -52,6 +57,9 @@ import es.clarify.clarify.Store.MyAdapter;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Utilities {
 
@@ -663,5 +671,30 @@ public class Utilities {
             res = false;
         }
         return res;
+    }
+
+    public void sendNotificationAux(String token, String uidReceiver, String message, String title, Class classToUse, String putExtra) {
+        FirebaseUser firebaseUser = new GoogleUtilities().getCurrentUser();
+        Data data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher,
+                message, title, uidReceiver, classToUse, putExtra);
+
+        Sender sender = new Sender(data, token);
+        APIService apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+        apiService.sendNotification(sender)
+                .enqueue(new Callback<MyResponse>() {
+                    @Override
+                    public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                        if (response.code() == 200){
+                            if (response.body().success != 1){
+                                Log.i("Utilities", "onResponse: error notification");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                    }
+                });
     }
 }

@@ -110,7 +110,7 @@ public class ShoppingCartFriend extends AppCompatActivity {
         floatingActionButton.hide();
 
         mPurchase = new ArrayList<>();
-        userData = new UserData("username", "user@mail.com", null, null, null);
+        userData = new UserData("username", "user@mail.com", null, null, null, "");
         ownerName = (TextView) findViewById(R.id.name_of_owner);
         sizeAllows = (TextView) findViewById(R.id.size_allows);
         acessList = new ArrayList<>();

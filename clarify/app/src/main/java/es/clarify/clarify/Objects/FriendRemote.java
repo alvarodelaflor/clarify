@@ -14,6 +14,7 @@ public class FriendRemote {
     private String photo;
     private String idShoppingCart;
 
+
     public FriendRemote() {
     }
 

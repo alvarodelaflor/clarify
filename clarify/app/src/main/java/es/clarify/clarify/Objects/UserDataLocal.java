@@ -12,12 +12,14 @@ public class UserDataLocal extends RealmObject {
     private String photo;
     private String uid;
     private String phoneNumber;
+    private String token;
 
-    public UserDataLocal(String name, String email, String photo, String uid) {
+    public UserDataLocal(String name, String email, String photo, String uid, String token) {
         this.name = name;
         this.email = email;
         this.photo = photo;
         this.uid = uid;
+        this.token = token;
     }
 
     public UserDataLocal() {
@@ -63,4 +65,19 @@ public class UserDataLocal extends RealmObject {
         this.uid = uid;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

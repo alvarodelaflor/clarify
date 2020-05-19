@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.clarify.clarify.Notifications.APIService;
+import es.clarify.clarify.Notifications.Client;
+import es.clarify.clarify.Notifications.Data;
+import es.clarify.clarify.Notifications.MyFirebaseIdService;
+import es.clarify.clarify.Notifications.MyResponse;
+import es.clarify.clarify.Notifications.Sender;
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
@@ -37,6 +44,9 @@ import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.UserData;
 import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GoogleUtilities {
 
@@ -67,9 +77,10 @@ public class GoogleUtilities {
         return getFirebaseAuth().getCurrentUser();
     }
 
-    public void updateFirebaseAccount() {
+    public void updateFirebaseAccount(Context context) {
         FirebaseUser currentUser = getCurrentUser();
-        UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber());
+        String token = FirebaseInstanceId.getInstance().getToken();
+        UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
         ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -438,12 +449,26 @@ public class GoogleUtilities {
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
                                     saveNewAllowUser(friendRemote, activity);
+                                    try {
+                                        String title = "¡Nueva invitación!";
+                                        String message = getCurrentUser().getDisplayName() + "te ha invitado a su lista";
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare");
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "onDataChange: ", e);
+                                    }
                                 } else if (key != null &&  check == null) {
                                     myFriends.add(friendRemoteMe);
                                     shoppingCartRemote.setFriendInvitation(myFriends);
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("lastUpdate").setValue(new Date());
                                     saveNewAllowUser(friendRemote, activity);
+                                    try {
+                                        String title = "¡Nueva invitación!";
+                                        String message = getCurrentUser() + "te ha invitado a su lita";
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare");
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "onDataChange: ", e);
+                                    }
                                 } else {
                                     Toast.makeText(activity, "¡Ya le has enviado una invitación a este correo!", Toast.LENGTH_LONG).show();
                                 }

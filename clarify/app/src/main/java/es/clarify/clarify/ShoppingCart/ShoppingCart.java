@@ -54,6 +54,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import es.clarify.clarify.Notifications.APIService;
+import es.clarify.clarify.Notifications.Client;
 import es.clarify.clarify.Objects.FriendLocal;
 import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;

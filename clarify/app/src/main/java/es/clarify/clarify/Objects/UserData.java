@@ -7,13 +7,15 @@ public class UserData {
     private String photo;
     private String uid;
     private String phoneNumber;
+    private String token;
 
-    public UserData(String name, String email, String photo, String uid, String phoneNumber) {
+    public UserData(String name, String email, String photo, String uid, String phoneNumber, String token) {
         this.name = name;
         this.email = email;
         this.photo = photo;
         this.uid = uid;
         this.phoneNumber = phoneNumber;
+        this.token = token;
     }
 
     public String getName() {
@@ -46,6 +48,14 @@ public class UserData {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPhoneNumber() {
