@@ -31,6 +31,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
@@ -122,7 +123,9 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         Glide.with(this).clear(futureTarget);
 
-        notificationManager.notify(1,builder.build());
+        Integer number = ThreadLocalRandom.current().nextInt(1, 999999999);
+
+        notificationManager.notify(number,builder.build());
     }
 
     private Bitmap getCircleBitmap(Bitmap bitmap) {
