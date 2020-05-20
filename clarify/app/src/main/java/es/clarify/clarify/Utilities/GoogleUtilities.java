@@ -471,7 +471,7 @@ public class GoogleUtilities {
                                     try {
                                         String title = "¡Nueva invitación!";
                                         String message = getCurrentUser().getDisplayName() + " te ha invitado a su lista";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, "ShoppingCart.class-true", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
@@ -484,7 +484,7 @@ public class GoogleUtilities {
                                     try {
                                         String title = "¡Nueva invitación!";
                                         String message = getCurrentUser().getDisplayName() + " te ha invitado a su lita";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, "ShoppingCart.class-true", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
@@ -625,7 +625,7 @@ public class GoogleUtilities {
                                 if (token != null) {
                                     String message = getCurrentUser().getDisplayName() + " te ha eliminado el acceso a su lista";
                                     String title = "Invitación retirada";
-                                    new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                                    new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, "ShoppingCart.class-true", getCurrentUser().getPhotoUrl().toString());
                                 }
                             }
                         }
@@ -666,7 +666,7 @@ public class GoogleUtilities {
                             date.setValue(new Date());
                             String message = getCurrentUser().getDisplayName() + " ha borrado la invitación a tu lista";
                             String title = "Invitación eleminada";
-                            searchUserAndSendNotification(uidFriend, message, title, ShoppingCartLocal.class, "");
+                            searchUserAndSendNotification(uidFriend, message, title, "ShoppingCart.class-false");
                         } else {
                             Toast.makeText(context, "Vaya, habían retirado la invitación", Toast.LENGTH_LONG).show();
                         }
@@ -715,7 +715,7 @@ public class GoogleUtilities {
         });
     }
 
-    private void searchUserAndSendNotification(String uidFriendToFind, String message, String title, Class<ShoppingCartLocal> shoppingCartLocalClass, String goToShare) {
+    private void searchUserAndSendNotification(String uidFriendToFind, String message, String title, String classAndPutExtra) {
         DatabaseReference databaseReference = database.getReference("private");
         Query query2 = databaseReference.child(uidFriendToFind);
         query2.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -726,7 +726,7 @@ public class GoogleUtilities {
                     try {
                         token = dataSnapshot.child("user_profile").child("token").getValue(String.class);
                         if (token != null) {
-                            new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                            new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, classAndPutExtra, getCurrentUser().getPhotoUrl().toString());
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "onDataChange: ", e);
@@ -796,7 +796,7 @@ public class GoogleUtilities {
                                                     date.setValue(new Date());
                                                     String message = getCurrentUser().getDisplayName() + " ha aceptado la invitación a tu lista";
                                                     String title = "Invitación aceptada";
-                                                    searchUserAndSendNotification(uidFriend, message, title, ShoppingCartLocal.class, "");
+                                                    searchUserAndSendNotification(uidFriend, message, title, "ShoppingCart.class-false");
                                                 }
                                             }
                                         }

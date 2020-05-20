@@ -32,6 +32,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.concurrent.ExecutionException;
 
+import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
 import es.clarify.clarify.ShoppingCart.ShoppingCart;
 
@@ -63,10 +64,19 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String title = remoteMessage.getData().get("title");
         String body = remoteMessage.getData().get("body");
         String photo = remoteMessage.getData().get("photo");
+        String putExtra = remoteMessage.getData().get("putExtra");
 
-        Intent intent = new Intent(this, ShoppingCart.class);
-        intent.putExtra("goToShare", true);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        String putExtraAux1 = putExtra.split("-")[0];
+        Intent intent;
+        if (putExtraAux1.equals("ShoppingCart.class")) {
+            Boolean putExtraAux2 = Boolean.valueOf(putExtra.split("-")[1]);
+            intent = new Intent(this, ShoppingCart.class);
+            intent.putExtra("goToShare", putExtraAux2);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        } else {
+            intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
