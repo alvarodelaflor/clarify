@@ -15,10 +15,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.GoogleUtilities;
 
 public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<RecyclerViewAdapterShoppingCart.MyViewHolder> {
 
@@ -78,6 +84,13 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
                 }
             }
         });
+        if (mData.get(holder.getAdapterPosition()).getLastUpdate() != null && !mData.get(holder.getAdapterPosition()).getLastUpdate().getName().equals(new GoogleUtilities().getCurrentUser().getDisplayName())) {
+            holder.lastUpdate.setVisibility(View.VISIBLE);
+            holder.nameFriend.setText(mData.get(holder.getAdapterPosition()).getLastUpdate().getName());
+            Glide.with(mContext).load(mData.get(holder.getAdapterPosition()).getLastUpdate().getPhoto()).into(holder.photoFriend);
+        } else {
+            holder.lastUpdate.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -91,6 +104,9 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
         private CheckBox checkBox;
         private LinearLayout linearLayoutDelete;
         private CardView cardView;
+        private LinearLayout lastUpdate;
+        private CircleImageView photoFriend;
+        private TextView nameFriend;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -99,6 +115,9 @@ public class RecyclerViewAdapterShoppingCart extends RecyclerView.Adapter<Recycl
             checkBox = (CheckBox) itemView.findViewById(R.id.checkbox_product);
             linearLayoutDelete = (LinearLayout) itemView.findViewById(R.id.linear_layout_delete);
             cardView = (CardView) itemView.findViewById(R.id.card_view_stores);
+            lastUpdate = (LinearLayout) itemView.findViewById(R.id.user_friend);
+            photoFriend = (CircleImageView) itemView.findViewById(R.id.id_friend);
+            nameFriend = (TextView) itemView.findViewById(R.id.id_add_friend);
         }
     }
 }

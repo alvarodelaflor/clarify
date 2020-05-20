@@ -1,5 +1,7 @@
 package es.clarify.clarify.Objects;
 
+import java.util.List;
+
 public class PurchaseRemote {
 
     private Integer idFirebase;
@@ -7,17 +9,19 @@ public class PurchaseRemote {
     private String idShoppingCart;
     private String name;
     private Boolean check;
+    private FriendRemote lastUpdate;
 
     public PurchaseRemote() {
     }
 
-    public PurchaseRemote(int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check) {
+    public PurchaseRemote(int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check, FriendRemote lastUpdate) {
 
         this.idFirebase = idFirebase;
         this.idScannedTag = idScannedTag;
         this.idShoppingCart = idShoppingCart;
         this.name = name;
         this.check = check;
+        this.lastUpdate = lastUpdate;
     }
 
     public int getIdFirebase() {
@@ -59,4 +63,13 @@ public class PurchaseRemote {
     public void setCheck(Boolean check) {
         this.check = check;
     }
+
+    public FriendRemote getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(FriendRemote lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
 }
+

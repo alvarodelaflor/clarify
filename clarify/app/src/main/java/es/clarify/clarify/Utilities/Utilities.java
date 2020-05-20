@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import es.clarify.clarify.Notifications.Data;
 import es.clarify.clarify.Notifications.MyResponse;
 import es.clarify.clarify.Notifications.Sender;
 import es.clarify.clarify.Objects.FriendLocal;
+import es.clarify.clarify.Objects.FriendRemote;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
@@ -612,7 +614,10 @@ public class Utilities {
             int id = realmDatabase.calculateIndexPurchase();
             Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag, check);
             if (saveLocal) {
-                googleUtilities.savePurchase(query, id, idScannedTag, check, uid);
+                FriendRemote friendRemote = new FriendRemote();
+                friendRemote.setName(googleUtilities.getCurrentUser().getDisplayName());
+                friendRemote.setPhoto(googleUtilities.getCurrentUser().getPhotoUrl().toString());
+                googleUtilities.savePurchase(query, id, idScannedTag, check, uid, friendRemote);
             } else {
                 Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
             }

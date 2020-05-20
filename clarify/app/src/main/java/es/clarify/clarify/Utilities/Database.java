@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -383,6 +384,10 @@ public class Database {
                     purchaseLocal.setIdShoppingCart(idShoppingCart);
                     purchaseLocal.setName(name);
                     purchaseLocal.setCheck(check);
+                    FriendLocal friendLocal = realm.createObject(FriendLocal.class, String.valueOf(ThreadLocalRandom.current().nextInt(1, 999999999)));
+                    friendLocal.setPhoto(elem.getLastUpdate().getPhoto());
+                    friendLocal.setName(elem.getLastUpdate().getName());
+                    purchaseLocal.setLastUpdate(friendLocal);
 
                     res.add(realm.copyFromRealm(purchaseLocal));
                 }
@@ -450,6 +455,9 @@ public class Database {
             String idShoppingCart = elem.getIdShoppingCart();
             String name = elem.getName();
             Boolean checkAtribute = elem.getCheck();
+            FriendLocal friendLocal = realm.createObject(FriendLocal.class, String.valueOf(ThreadLocalRandom.current().nextInt(1, 999999999)));
+            friendLocal.setName(elem.getLastUpdate().getName());
+            friendLocal.setPhoto(elem.getLastUpdate().getPhoto().toString());
 
             PurchaseLocal purchaseLocal = realm.createObject(PurchaseLocal.class, id);
             purchaseLocal.setIdFirebase(idFirebase);
@@ -457,6 +465,7 @@ public class Database {
             purchaseLocal.setIdShoppingCart(idShoppingCart);
             purchaseLocal.setName(name);
             purchaseLocal.setCheck(checkAtribute);
+            purchaseLocal.setLastUpdate(friendLocal);
             realm.commitTransaction();
 
             realm.beginTransaction();

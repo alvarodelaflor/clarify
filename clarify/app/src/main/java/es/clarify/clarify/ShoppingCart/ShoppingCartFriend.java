@@ -408,7 +408,11 @@ public class ShoppingCartFriend extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 int id = 1000 + mPurchase.stream().map(PurchaseRemote::getIdFirebase).findFirst().orElse(0);
                 GoogleUtilities googleUtilities = new GoogleUtilities();
-                googleUtilities.savePurchase(query, id, -1, false, uid);
+                List<String> lastUpdate = Arrays.asList(googleUtilities.getCurrentUser().getPhotoUrl().toString(), googleUtilities.getCurrentUser().getDisplayName());
+                FriendRemote friendRemote = new FriendRemote();
+                friendRemote.setPhoto(googleUtilities.getCurrentUser().getPhotoUrl().toString());
+                friendRemote.setName(googleUtilities.getCurrentUser().getDisplayName());
+                googleUtilities.savePurchase(query, id, -1, false, uid, friendRemote);
                 googleUtilities.searchUserAndSendNotification(uid, googleUtilities.getCurrentUser().getDisplayName() + " ha añadido " + query, "Nuevo producto", "ShoppingCart.class-false");
 
                 searchView.clearFocus();
@@ -503,7 +507,11 @@ public class ShoppingCartFriend extends AppCompatActivity {
                 String query = getProduct(firstResult, Arrays.asList("añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
                 if (query.length() > 0) {
                     int id = 1000 + mPurchase.stream().map(PurchaseRemote::getIdFirebase).findFirst().orElse(0);
-                    new GoogleUtilities().savePurchase(query, id, -1, false, uid);
+                    GoogleUtilities googleUtilities = new GoogleUtilities();
+                    FriendRemote friendRemote = new FriendRemote();
+                    friendRemote.setName(googleUtilities.getCurrentUser().getDisplayName());
+                    friendRemote.setPhoto(googleUtilities.getCurrentUser().getPhotoUrl().toString());
+                    new GoogleUtilities().savePurchase(query, id, -1, false, uid, friendRemote);
                     Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();

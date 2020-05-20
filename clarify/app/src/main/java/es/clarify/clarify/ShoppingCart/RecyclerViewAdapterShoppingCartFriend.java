@@ -16,8 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.PurchaseLocal;
 import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.R;
@@ -88,6 +91,13 @@ public class RecyclerViewAdapterShoppingCartFriend extends RecyclerView.Adapter<
             }
         });
         holder.purchase_name.setText(mData.get(holder.getAdapterPosition()).getName());
+        if (!mData.get(holder.getAdapterPosition()).getLastUpdate().getName().equals(new GoogleUtilities().getCurrentUser().getDisplayName())) {
+            holder.lastUpdate.setVisibility(View.VISIBLE);
+            holder.nameFriend.setText(mData.get(holder.getAdapterPosition()).getLastUpdate().getName());
+            Glide.with(mContext).load(mData.get(holder.getAdapterPosition()).getLastUpdate().getPhoto()).into(holder.photoFriend);
+        } else {
+            holder.lastUpdate.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -102,6 +112,9 @@ public class RecyclerViewAdapterShoppingCartFriend extends RecyclerView.Adapter<
         private LinearLayout linearLayoutDelete;
         private LinearLayout linearLayoutCard;
         private CardView cardView;
+        private LinearLayout lastUpdate;
+        private CircleImageView photoFriend;
+        private TextView nameFriend;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,6 +124,9 @@ public class RecyclerViewAdapterShoppingCartFriend extends RecyclerView.Adapter<
             linearLayoutDelete = (LinearLayout) itemView.findViewById(R.id.linear_layout_delete);
             linearLayoutCard = (LinearLayout) itemView.findViewById(R.id.linear_layout_stores_2);
             cardView = (CardView) itemView.findViewById(R.id.card_view_stores);
+            lastUpdate = (LinearLayout) itemView.findViewById(R.id.user_friend);
+            photoFriend = (CircleImageView) itemView.findViewById(R.id.id_friend);
+            nameFriend = (TextView) itemView.findViewById(R.id.id_add_friend);
         }
     }
 }

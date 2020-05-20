@@ -31,42 +31,91 @@
             <LinearLayout
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:orientation="vertical">
 
-                <CheckBox
-                    android:layout_marginRight="15dp"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/checkbox_product"
-                    android:layout_gravity="center"/>
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_gravity="center"
-                    android:id="@+id/shopping_card_item_txt"
-                    android:layout_width="match_parent"
+                    <CheckBox
+                        android:layout_marginRight="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/checkbox_product"
+                        android:layout_gravity="center"/>
+
+                    <TextView
+                        android:layout_gravity="center"
+                        android:id="@+id/shopping_card_item_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#6f6f6f"
+                        android:textSize="18sp"
+                        android:text="Product name"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/user_friend"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#6f6f6f"
-                    android:textSize="18sp"
-                    android:text="Product name"/>
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_condensed_bold_italic"
+                        android:alpha="0.8"
+                        android:text="Añadido por: "/>
+
+                    <LinearLayout
+                        android:layout_marginTop="5dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/id_friend"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:src="@drawable/imagen_perfil"/>
+
+                        <TextView
+                            android:id="@+id/id_add_friend"
+                            android:layout_marginStart="10dp"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#6f6f6f"
+                            android:textSize="16sp"
+                            android:text="Name of user"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/linear_layout_delete"
-                android:gravity="right"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="32dp"
+                android:gravity="center|right">
 
                 <ImageView
-                    android:layout_marginRight="15dp"
-                    android:layout_gravity="center"
                     android:id="@+id/shopping_card_item_img"
-                    android:src="@drawable/cross"
                     android:layout_width="20dp"
-                    android:layout_height="20dp"/>
+                    android:layout_height="20dp"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/cross" />
             </LinearLayout>
 
 
         </LinearLayout>
+
     </androidx.cardview.widget.CardView>
 
 </GridLayout>

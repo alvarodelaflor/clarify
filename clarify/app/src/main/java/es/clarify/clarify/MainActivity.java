@@ -97,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        new GoogleUtilities().updateFirebaseAccount(this);
+
 //        populate();
 
         setContentView(R.layout.activity_main);

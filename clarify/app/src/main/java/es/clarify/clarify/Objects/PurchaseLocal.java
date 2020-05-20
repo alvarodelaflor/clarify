@@ -1,5 +1,6 @@
 package es.clarify.clarify.Objects;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -12,17 +13,19 @@ public class PurchaseLocal extends RealmObject {
     private String idShoppingCart;
     private String name;
     private Boolean check;
+    private FriendLocal lastUpdate;
 
     public PurchaseLocal() {
     }
 
-    public PurchaseLocal(int id, int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check) {
+    public PurchaseLocal(int id, int idFirebase, int idScannedTag, String idShoppingCart, String name, Boolean check, FriendLocal lastUpdate) {
         this.id = id;
         this.idFirebase = idFirebase;
         this.idScannedTag = idScannedTag;
         this.idShoppingCart = idShoppingCart;
         this.name = name;
         this.check = check;
+        this.lastUpdate = lastUpdate;
     }
 
     public int getId() {
@@ -75,5 +78,17 @@ public class PurchaseLocal extends RealmObject {
 
     public void setCheck(Boolean check) {
         this.check = check;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public FriendLocal getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(FriendLocal lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }
