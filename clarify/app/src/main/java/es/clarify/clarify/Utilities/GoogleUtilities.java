@@ -94,7 +94,7 @@ public class GoogleUtilities {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
-        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(), new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
     }
 
@@ -102,7 +102,7 @@ public class GoogleUtilities {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
-        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(), new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
     }
 
@@ -130,7 +130,7 @@ public class GoogleUtilities {
 
                 if (dataSnapshot.exists()) {
                     Log.i(TAG, "Push to Firebase: object already exist");
-                    if (activity!=null) {
+                    if (activity != null) {
                         Toast.makeText(activity, "¡Ya lo tenías guardado!", Toast.LENGTH_LONG).show();
                     }
                 } else {
@@ -450,7 +450,7 @@ public class GoogleUtilities {
                             FriendRemote friendRemoteMe = new FriendRemote(
                                     getCurrentUser().getDisplayName(),
                                     getCurrentUser().getEmail(),
-                                    getCurrentUser().getUid()+"invitation",
+                                    getCurrentUser().getUid() + "invitation",
                                     false,
                                     getCurrentUser().getPhotoUrl().toString(),
                                     getCurrentUser().getUid());
@@ -471,11 +471,11 @@ public class GoogleUtilities {
                                     try {
                                         String title = "¡Nueva invitación!";
                                         String message = getCurrentUser().getDisplayName() + " te ha invitado a su lista";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare",getCurrentUser().getPhotoUrl().toString());
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
-                                } else if (key != null &&  check == null) {
+                                } else if (key != null && check == null) {
                                     myFriends.add(friendRemoteMe);
                                     shoppingCartRemote.setFriendInvitation(myFriends);
                                     databaseReference2.child(uidFriend).child("listaCompra").child(key).child("friendInvitation").setValue(shoppingCartRemote.getFriendInvitation());
@@ -484,7 +484,7 @@ public class GoogleUtilities {
                                     try {
                                         String title = "¡Nueva invitación!";
                                         String message = getCurrentUser().getDisplayName() + " te ha invitado a su lita";
-                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message,title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                                        new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);
                                     }
@@ -532,7 +532,7 @@ public class GoogleUtilities {
                                         aux = new ArrayList<>();
                                     }
                                     String uidFriend = friendRemote.getUid();
-                                    friendRemote.setUid(uidFriend+"access");
+                                    friendRemote.setUid(uidFriend + "access");
                                     aux.add(friendRemote);
                                     DatabaseReference allowUsers = mReference.child(dataSnapshot.getKey()).child(data.getKey()).child("allowUsers");
                                     allowUsers.setValue(aux);
@@ -615,7 +615,7 @@ public class GoogleUtilities {
                             if (aux == null) {
                                 aux = new ArrayList<>();
                             }
-                            FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"invitation")).findFirst().orElse(null);
+                            FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe + "invitation")).findFirst().orElse(null);
                             if (friendRemote != null) {
                                 aux.remove(friendRemote);
                                 DatabaseReference friendInvitations = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("friendInvitation");
@@ -664,6 +664,9 @@ public class GoogleUtilities {
                             allowUsers.setValue(aux);
                             DatabaseReference date = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("lastUpdate");
                             date.setValue(new Date());
+                            String message = getCurrentUser().getDisplayName() + " ha borrado la invitación a tu lista";
+                            String title = "Invitación eleminada";
+                            searchUserAndSendNotification(uidFriend, message, title, ShoppingCartLocal.class, "");
                         } else {
                             Toast.makeText(context, "Vaya, habían retirado la invitación", Toast.LENGTH_LONG).show();
                         }
@@ -691,7 +694,7 @@ public class GoogleUtilities {
                         if (aux == null) {
                             aux = new ArrayList<>();
                         }
-                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"access")).findFirst().orElse(null);
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe + "access")).findFirst().orElse(null);
                         if (friendRemote != null) {
                             aux.remove(friendRemote);
                             DatabaseReference access = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("allowUsers");
@@ -712,11 +715,36 @@ public class GoogleUtilities {
         });
     }
 
+    private void searchUserAndSendNotification(String uidFriendToFind, String message, String title, Class<ShoppingCartLocal> shoppingCartLocalClass, String goToShare) {
+        DatabaseReference databaseReference = database.getReference("private");
+        Query query2 = databaseReference.child(uidFriendToFind);
+        query2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String token = null;
+                    try {
+                        token = dataSnapshot.child("user_profile").child("token").getValue(String.class);
+                        if (token != null) {
+                            new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "onDataChange: ", e);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void acceptInvitation(FriendLocal friendLocal, Context context) {
         String uidMe = getCurrentUser().getUid();
         String uidFriend = friendLocal.getUid().replace("invitation", "").replace("access", "");
         DatabaseReference databaseReference = database.getReference("private");
-
 
 
         final String uidFriendToFind = friendLocal.getUid().replaceAll("access", "").replaceAll("invitation", "");
@@ -731,7 +759,7 @@ public class GoogleUtilities {
                         if (aux == null) {
                             aux = new ArrayList<>();
                         }
-                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe+"access")).findFirst().orElse(null);
+                        FriendRemote friendRemote = aux.stream().filter(x -> x.getUid().equals(uidMe + "access")).findFirst().orElse(null);
                         if (friendRemote != null) {
                             Integer index = aux.indexOf(friendRemote);
                             if (index != null) {
@@ -766,6 +794,9 @@ public class GoogleUtilities {
                                                     allowUsers.setValue(aux);
                                                     DatabaseReference date = databaseReference.child(uidMe).child("listaCompra").child(data.getKey()).child("lastUpdate");
                                                     date.setValue(new Date());
+                                                    String message = getCurrentUser().getDisplayName() + " ha aceptado la invitación a tu lista";
+                                                    String title = "Invitación aceptada";
+                                                    searchUserAndSendNotification(uidFriend, message, title, ShoppingCartLocal.class, "");
                                                 }
                                             }
                                         }
