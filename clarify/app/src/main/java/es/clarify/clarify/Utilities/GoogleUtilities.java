@@ -715,7 +715,7 @@ public class GoogleUtilities {
         });
     }
 
-    private void searchUserAndSendNotification(String uidFriendToFind, String message, String title, String classAndPutExtra) {
+    public void searchUserAndSendNotification(String uidFriendToFind, String message, String title, String classAndPutExtra) {
         DatabaseReference databaseReference = database.getReference("private");
         Query query2 = databaseReference.child(uidFriendToFind);
         query2.addListenerForSingleValueEvent(new ValueEventListener() {

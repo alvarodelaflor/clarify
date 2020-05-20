@@ -407,7 +407,9 @@ public class ShoppingCartFriend extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 int id = 1000 + mPurchase.stream().map(PurchaseRemote::getIdFirebase).findFirst().orElse(0);
-                new GoogleUtilities().savePurchase(query, id, -1, false, uid);
+                GoogleUtilities googleUtilities = new GoogleUtilities();
+                googleUtilities.savePurchase(query, id, -1, false, uid);
+                googleUtilities.searchUserAndSendNotification(uid, googleUtilities.getCurrentUser().getDisplayName() + " ha añadido " + query, "Nuevo producto", "ShoppingCart.class-false");
 
                 searchView.clearFocus();
                 itemAdd.collapseActionView();

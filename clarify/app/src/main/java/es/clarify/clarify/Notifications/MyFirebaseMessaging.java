@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -14,11 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -81,7 +76,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,this.getPackageName())
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, this.getPackageName())
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(R.drawable.ic_prueba_2)
@@ -106,7 +101,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             channel.enableVibration(true);
-            channel.setVibrationPattern(new long[] { 400, 200, 400, 100 });
+            channel.setVibrationPattern(new long[]{400, 200, 400, 100});
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
@@ -125,7 +120,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
         Integer number = ThreadLocalRandom.current().nextInt(1, 999999999);
 
-        notificationManager.notify(number,builder.build());
+        notificationManager.notify(number, builder.build());
     }
 
     private Bitmap getCircleBitmap(Bitmap bitmap) {
