@@ -70,7 +70,7 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,this.getPackageName())
                 .setContentTitle(title)
                 .setContentText(body)
                 .setSmallIcon(R.drawable.ic_prueba_2)
@@ -94,6 +94,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
                     "Clarify",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
+            channel.enableVibration(true);
+            channel.setVibrationPattern(new long[] { 400, 200, 400, 100 });
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }

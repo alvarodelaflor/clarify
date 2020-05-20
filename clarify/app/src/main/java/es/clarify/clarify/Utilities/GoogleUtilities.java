@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Notifications.APIService;
 import es.clarify.clarify.Notifications.Client;
 import es.clarify.clarify.Notifications.Data;
@@ -79,7 +82,23 @@ public class GoogleUtilities {
 
     public void updateFirebaseAccount(Context context) {
         FirebaseUser currentUser = getCurrentUser();
-        String token = FirebaseInstanceId.getInstance().getToken();
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener((Activity) context, new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String token = instanceIdResult.getToken();
+                Log.i("FCM Token", token);
+                saveToken(token, currentUser);
+            }
+        });
+        String token = "";
+        UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
+//        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
+        pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(),new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
+    }
+
+    private void saveToken(String token, FirebaseUser currentUser) {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
@@ -538,6 +557,7 @@ public class GoogleUtilities {
     public void deleteAccessFriendFromRemote(FriendLocal friendLocal) {
         String uidMe = getCurrentUser().getUid();
         String uidFriend = friendLocal.getUid();
+        String nameFriend = friendLocal.getName();
         DatabaseReference databaseReference = database.getReference("private");
 
         // First we delete the access from our list
@@ -603,7 +623,7 @@ public class GoogleUtilities {
                                 DatabaseReference date = databaseReference.child(uidFriendToFind).child("listaCompra").child(data.getKey()).child("lastUpdate");
                                 date.setValue(new Date());
                                 if (token != null) {
-                                    String message = name + " te ha eliminado el acceso a su lista";
+                                    String message = getCurrentUser().getDisplayName() + " te ha eliminado el acceso a su lista";
                                     String title = "Invitación retirada";
                                     new Utilities().sendNotificationAux(token, uidFriendToFind, message, title, ShoppingCartLocal.class, "goToShare", getCurrentUser().getPhotoUrl().toString());
                                 }
