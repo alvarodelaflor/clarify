@@ -12,9 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.os.CountDownTimer;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,34 +24,30 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-import es.clarify.clarify.NFC.NfcUtility;
-import es.clarify.clarify.Objects.ScannedTag;
-import es.clarify.clarify.Objects.ScannedTagLocal;
-import es.clarify.clarify.Objects.ScannedTagRemote;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GifImageView;
 import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
-import io.realm.Realm;
 
 
 public class NfcIdentifyFragment extends Fragment {
 
     private NfcAdapter nfcAdapter;
-    private TextView text_company;
-    private TextView text_model;
-    private ImageView img;
-    private Button buttonAdd;
+    public static TextView text_company;
+    public static TextView text_model;
+    public static ImageView img;
+    public static Button buttonAdd;
     private Button buttonCancel;
     private Button buttonScan;
-    public Dialog myDialog_info;
-    private Dialog mydialog;
+    public static Dialog myDialogInfo;
+    public static Dialog myDialog;
     private Utilities utilities = new Utilities();
     private GoogleUtilities googleUtilities = new GoogleUtilities();
     private Database database = new Database();
     private ViewPager2 viewPager;
+    public static Button addShoppingCart;
+    public static Button anotherTry;
 
     public NfcIdentifyFragment(ViewPager2 viewPager) {
         this.viewPager = viewPager;
@@ -70,26 +63,28 @@ public class NfcIdentifyFragment extends Fragment {
         gifImageView.setGifImageResource(R.drawable.nfc_3);
         nfcAdapter = NfcAdapter.getDefaultAdapter(getContext());
 
-        mydialog = new Dialog(getContext());
-        myDialog_info = new Dialog(getContext());
-        myDialog_info.setContentView(R.layout.dialog_product_identify_nfc);
-        myDialog_info.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        Window window = myDialog_info.getWindow();
+        myDialog = new Dialog(getContext());
+        myDialogInfo = new Dialog(getContext());
+        myDialogInfo.setContentView(R.layout.dialog_product_identify_nfc);
+        myDialogInfo.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = myDialogInfo.getWindow();
         window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         window.setGravity(Gravity.BOTTOM);
-        mydialog.setContentView(R.layout.dialog_identify_product);
-        mydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        text_company = (TextView) mydialog.findViewById(R.id.text_company);
-        text_model = (TextView) mydialog.findViewById(R.id.text_model);
-        img = (ImageView) mydialog.findViewById(R.id.image_product);
-        buttonAdd = (Button) mydialog.findViewById(R.id.buttonAdd);
-        buttonCancel = (Button) myDialog_info.findViewById(R.id.button_cancel_identify);
+        myDialog.setContentView(R.layout.dialog_identify_product);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        text_company = (TextView) myDialog.findViewById(R.id.text_company);
+        text_model = (TextView) myDialog.findViewById(R.id.text_model);
+        img = (ImageView) myDialog.findViewById(R.id.image_product);
+        buttonAdd = (Button) myDialog.findViewById(R.id.buttonAdd);
+        buttonCancel = (Button) myDialogInfo.findViewById(R.id.button_cancel_identify);
         buttonScan = (Button) v.findViewById(R.id.button_scan);
+        addShoppingCart = (Button) myDialog.findViewById(R.id.dialog_add_shopping_cart);
+        anotherTry = (Button) myDialog.findViewById(R.id.another_try);
 
         buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myDialog_info.dismiss();
+                myDialogInfo.dismiss();
             }
         });
 
@@ -99,7 +94,7 @@ public class NfcIdentifyFragment extends Fragment {
                 if (nfcAdapter == null) {
                     Toast.makeText(getContext(), "Necesitas NFC para usarlo", Toast.LENGTH_LONG).show();
                 } else if (viewPager.getCurrentItem() == 2){
-                    myDialog_info.show();
+                    myDialogInfo.show();
                 }
             }
         });
@@ -123,9 +118,9 @@ public class NfcIdentifyFragment extends Fragment {
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 
-            if ((myDialog_info != null && myDialog_info.isShowing()) || (mydialog != null && mydialog.isShowing())) {
+            if ((myDialogInfo != null && myDialogInfo.isShowing()) || (myDialog != null && myDialog.isShowing())) {
                 NdefMessage[] msgs = utilities.getTagInfo(intent);
-                utilities.printInfo(getActivity(), msgs, img, Arrays.asList(text_company, text_model), mydialog, myDialog_info, buttonAdd);
+                utilities.printInfo(getActivity(), msgs);
             }
         }
     }

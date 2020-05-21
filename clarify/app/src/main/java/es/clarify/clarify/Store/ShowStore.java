@@ -124,7 +124,7 @@ public class ShowStore extends AppCompatActivity {
         lastUpdate.setText(dateString);
 
         lastUpdate_time = (TextView)findViewById(R.id.last_update_time);
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat format2 = new SimpleDateFormat("HH:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);

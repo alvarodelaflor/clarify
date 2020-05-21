@@ -55,6 +55,8 @@ import es.clarify.clarify.Objects.ShoppingCartLocal;
 import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Search.NfcIdentifyFragment;
+import es.clarify.clarify.ShoppingCart.ShoppingCart;
 import es.clarify.clarify.Store.MyAdapter;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -99,10 +101,8 @@ public class Utilities {
         return msgs;
     }
 
-    public void printInfo(Activity activity, NdefMessage[] msgs, final ImageView img, List<TextView> textViews, Dialog myDialog, Dialog myDialog_info, Button buttonAdd) {
-
-        final List<TextView> params = new ArrayList<>(textViews);
-
+    public void printInfo(Activity activity, NdefMessage[] msgs) {
+        Context context = activity.getApplicationContext();
         if (msgs == null || msgs.length == 0)
             return;
 
@@ -121,52 +121,64 @@ public class Utilities {
         String toSearch = builder.toString().replaceAll("\n", "");
         Query query = databaseReference.child("tags").orderByChild("id").equalTo(toSearch);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
-
-            // Add here all TextView to modify in the NfcIdentifyFragment.java
-            TextView text_company = params.get(0);
-            TextView text_model = params.get(1);
-            ImageView imgToChange = img;
-            Dialog myDialogAux = myDialog;
-            Dialog myDialogInfoAux = myDialog_info;
-            Button buttonAddAux = buttonAdd;
-            Activity activityAux = activity;
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // dataSnapshot is the "issue" node with all children with id 0
+                    NfcIdentifyFragment.addShoppingCart.setVisibility(View.VISIBLE);
+                    NfcIdentifyFragment.buttonAdd.setVisibility(View.VISIBLE);
+                    NfcIdentifyFragment.anotherTry.setVisibility(View.GONE);
                     for (DataSnapshot scannedTagFirebase : dataSnapshot.getChildren()) {
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
-                        this.text_company.setText(scannedTag.getBrand());
-                        this.text_model.setText(scannedTag.getModel());
-                        Picasso.get().load(scannedTag.getImage()).into(imgToChange);
+                        NfcIdentifyFragment.text_company.setText(scannedTag.getBrand());
+                        NfcIdentifyFragment.text_model.setText(scannedTag.getModel());
+                        Picasso.get().load(scannedTag.getImage()).into(NfcIdentifyFragment.img);
                         new Database().addLastScannedTagLocalToChache(scannedTag);
+                        NfcIdentifyFragment.addShoppingCart.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String product = scannedTag.getModel() + " " + scannedTag.getBrand();
+                                Boolean check = new Utilities().savePurchase(product, Integer.parseInt(scannedTag.getId()), context, false, new GoogleUtilities().getCurrentUser().getUid());
+                                if (check) {
+                                    NfcIdentifyFragment.myDialog.dismiss();
+                                    Toast.makeText(context, product + " se ha añadido", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
                     }
                 } else {
-                    Picasso.get().load(R.drawable.no_image).into(imgToChange);
-                    text_company.setText("Etiqueta no encontrada");
-                    text_model.setText("Intentalo de nuevo");
+                    Picasso.get().load(R.drawable.no_image).into(NfcIdentifyFragment.img);
+                    NfcIdentifyFragment.addShoppingCart.setVisibility(View.GONE);
+                    NfcIdentifyFragment.buttonAdd.setVisibility(View.GONE);
+                    NfcIdentifyFragment.text_company.setText("ID inválido o inexistente");
+                    NfcIdentifyFragment.text_model.setText("Producto no encontrado");
+                    NfcIdentifyFragment.anotherTry.setVisibility(View.VISIBLE);
+                    NfcIdentifyFragment.anotherTry.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            NfcIdentifyFragment.myDialog.dismiss();
+                        }
+                    });
                 }
-                myDialogInfoAux.dismiss();
-                myDialogAux.show();
-                buttonAddAux.setOnClickListener(new View.OnClickListener() {
+                NfcIdentifyFragment.myDialogInfo.dismiss();
+                NfcIdentifyFragment.myDialog.show();
+                NfcIdentifyFragment.buttonAdd.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         ScannedTagLocal scannedTagLocal = new Database().getLastScannedTag();
                         if (scannedTagLocal != null) {
-                            Boolean result = addItemToPrivateStrore(scannedTagLocal, activityAux);
+                            Boolean result = addItemToPrivateStrore(scannedTagLocal, activity);
                             if (!result) {
-                                Toast.makeText(activityAux, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(activity, "¡No se pudo guardar!", Toast.LENGTH_LONG).show();
                             } else {
-                                myDialogAux.dismiss();
+                                NfcIdentifyFragment.myDialog.dismiss();
                             }
                         }
                     }
                 });
-                myDialogAux.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                NfcIdentifyFragment.myDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(final DialogInterface arg0) {
-                        myDialog_info.show();
+                        NfcIdentifyFragment.myDialogInfo.show();
                     }
                 });
             }
@@ -609,7 +621,8 @@ public class Utilities {
                 .addValueEventListener(valueEventListener);
     }
 
-    public void savePurchase(String query, int idScannedTag, Context context, Boolean check, String uid) {
+    public Boolean savePurchase(String query, int idScannedTag, Context context, Boolean check, String uid) {
+        Boolean res = false;
         try {
             int id = realmDatabase.calculateIndexPurchase();
             Boolean saveLocal = realmDatabase.savePurchase(query, id, idScannedTag, check);
@@ -618,13 +631,16 @@ public class Utilities {
                 friendRemote.setName(googleUtilities.getCurrentUser().getDisplayName());
                 friendRemote.setPhoto(googleUtilities.getCurrentUser().getPhotoUrl().toString());
                 googleUtilities.savePurchase(query, id, idScannedTag, check, uid, friendRemote);
+                res = true;
             } else {
                 Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
+            res = false;
             Log.e("Utilities", "savePurchase: ", e);
             Toast.makeText(context, "Se ha producido un error al guardar", Toast.LENGTH_SHORT).show();
         }
+        return res;
     }
 
     public Boolean deleteAccessFriendFromLocal(FriendLocal friendLocal) {

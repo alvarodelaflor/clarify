@@ -23,17 +23,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import es.clarify.clarify.Objects.ScannedTag;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.Utilities.Database;
+import es.clarify.clarify.Utilities.GoogleUtilities;
 import es.clarify.clarify.Utilities.Utilities;
 import io.realm.Realm;
 
@@ -58,7 +57,7 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
     TextView dialog_name;
     TextView dialog_brand;
     Button dialog_btn_delete;
-    Button dialog_btn_info;
+    Button dialog_btn_add_shopping;
     ImageView dialog_img;
 
     public ItemViewHoder(View itemView, Context context) {
@@ -75,7 +74,7 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
         dialog_name = (TextView) mydialog.findViewById(R.id.dialog_name);
         dialog_brand = (TextView) mydialog.findViewById(R.id.dialog_brand);
         dialog_btn_delete = (Button) mydialog.findViewById(R.id.dialog_btn_delete);
-        dialog_btn_info = (Button) mydialog.findViewById(R.id.dialog_bnt_info);
+        dialog_btn_add_shopping = (Button) mydialog.findViewById(R.id.dialog_add_shopping_cart);
         dialog_img = (ImageView) mydialog.findViewById(R.id.dialog_img);
     }
 }
@@ -183,7 +182,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lastUpdate.setText(dateString);
 
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat format2 = new SimpleDateFormat("HH:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);
@@ -220,7 +219,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         lastUpdate.setText(dateString);
 
-        SimpleDateFormat format2 = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat format2 = new SimpleDateFormat("HH:mm:ss");
         String dateString2 = "";
         try {
             dateString2 = format2.format(lastUpdateAux);
@@ -265,7 +264,17 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     viewHoder.dialog_brand.setText(res.getBrand());
                     Picasso.get().load(res.getImage()).into(viewHoder.dialog_img);
                     viewHoder.mydialog.show();
-
+                    viewHoder.dialog_btn_add_shopping.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String product = res.getModel() + " " + res.getBrand();
+                            Boolean check = new Utilities().savePurchase(product, Integer.parseInt(res.getIdFirebase()), activity.getApplicationContext(), false, new GoogleUtilities().getCurrentUser().getUid());
+                            if (check) {
+                                viewHoder.mydialog.dismiss();
+                                Toast.makeText(activity.getApplicationContext(), product + " se ha añadido", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
                     viewHoder.dialog_btn_delete.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

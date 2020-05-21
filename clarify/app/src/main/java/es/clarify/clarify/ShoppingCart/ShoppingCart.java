@@ -646,8 +646,10 @@ public class ShoppingCart extends AppCompatActivity {
                 String query = getProduct(firstResult, Arrays.asList("quiero", "añád", "añad", "insert", "mete", "méte", "a la lista", "a la cesta", "a los productos", "en la lista", "en la cesta"));
                 if (query.length() > 0) {
                     String uid = new GoogleUtilities().getCurrentUser().getUid();
-                    new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
-                    Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
+                    Boolean checkAux = new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
+                    if (checkAux) {
+                        Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
                 }

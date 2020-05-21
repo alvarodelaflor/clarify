@@ -20,7 +20,6 @@ import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,9 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -52,9 +49,7 @@ import java.util.stream.Collectors;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Home.HomeFragment;
 import es.clarify.clarify.Login.Login;
-import es.clarify.clarify.Objects.PurchaseRemote;
 import es.clarify.clarify.Objects.ScannedTag;
-import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
@@ -447,9 +442,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Boolean checkFind(String firstResult) {
         Boolean res = false;
-        if (nfcIdentifyFragment != null && nfcIdentifyFragment.myDialog_info != null) {
+        if (nfcIdentifyFragment != null && nfcIdentifyFragment.myDialogInfo != null) {
             if (checkContains(firstResult, Arrays.asList("abrir", "escanea", "escaner", "identificar", "qué es", "indentifica")) && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
-                nfcIdentifyFragment.myDialog_info.show();
+                nfcIdentifyFragment.myDialogInfo.show();
                 res = true;
             }
         }
