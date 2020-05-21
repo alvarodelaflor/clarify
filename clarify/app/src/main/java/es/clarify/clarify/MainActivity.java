@@ -9,17 +9,23 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -86,6 +92,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ValueEventListener valueEventListenerShoppingCart;
     private ViewPageAdapter viewPageAdapter;
     private LinearLayout voiceControl;
+    public static Dialog dialogNfc;
+    public static Boolean alert;
+    public static Button showSettings;
+    public static Button cancel;
 
 
     @Override
@@ -93,6 +103,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
 
         new GoogleUtilities().updateFirebaseAccount(this);
+
+        dialogNfc = new Dialog(this);
+        dialogNfc.setContentView(R.layout.dialog_nfc);
+        dialogNfc.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = dialogNfc.getWindow();
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        window.setGravity(Gravity.BOTTOM);
+        showSettings = dialogNfc.findViewById(R.id.button_go_nfc);
+        cancel = dialogNfc.findViewById(R.id.button_cancel_nfc);
+        alert = true;
 
 //        populate();
 
@@ -294,9 +314,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
 
         if (nfcAdapter != null) {
-            if (!nfcAdapter.isEnabled())
+            if (alert && !nfcAdapter.isEnabled()) {
+                dialogNfc.show();
                 // Device has a NFC module but it is not enable. Sending the user to Android's configuration panel.
-                showWirelessSettings();
+                showSettings.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showWirelessSettings();
+                    }
+                });
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alert = false;
+                        dialogNfc.dismiss();
+                    }
+                });
+            }
 
             // Give the priority to our app
             nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);

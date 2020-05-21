@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import java.util.Arrays;
 
+import es.clarify.clarify.MainActivity;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
 import es.clarify.clarify.Utilities.GifImageView;
@@ -98,13 +100,37 @@ public class NfcIdentifyFragment extends Fragment {
                 if (nfcAdapter == null) {
                     Toast.makeText(getContext(), "Necesitas NFC para usarlo", Toast.LENGTH_LONG).show();
                 } else if (viewPager.getCurrentItem() == 2){
-                    myDialogInfo.show();
+                    if (!nfcAdapter.isEnabled()) {
+                        MainActivity.dialogNfc.show();
+                        // Device has a NFC module but it is not enable. Sending the user to Android's configuration panel.
+                        MainActivity.showSettings.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                showWirelessSettings();
+                            }
+                        });
+                        MainActivity.cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                MainActivity.alert = false;
+                                MainActivity.dialogNfc.dismiss();
+                            }
+                        });
+                    } else {
+                        myDialogInfo.show();
+                    }
                 }
             }
         });
 
 
         return v;
+    }
+
+    private void showWirelessSettings() {
+        Toast.makeText(getContext(), "¡Activa el NFC aquí!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+        startActivity(intent);
     }
 
     @Override
