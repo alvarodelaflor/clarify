@@ -48,6 +48,8 @@ public class NfcIdentifyFragment extends Fragment {
     private ViewPager2 viewPager;
     public static Button addShoppingCart;
     public static Button anotherTry;
+    public static TextView price;
+    public static TextView expirationDate;
 
     public NfcIdentifyFragment(ViewPager2 viewPager) {
         this.viewPager = viewPager;
@@ -74,6 +76,8 @@ public class NfcIdentifyFragment extends Fragment {
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         text_company = (TextView) myDialog.findViewById(R.id.text_company);
         text_model = (TextView) myDialog.findViewById(R.id.text_model);
+        price = (TextView) myDialog.findViewById(R.id.price_dialog_2);
+        expirationDate = (TextView) myDialog.findViewById(R.id.date_expiration);
         img = (ImageView) myDialog.findViewById(R.id.image_product);
         buttonAdd = (Button) myDialog.findViewById(R.id.buttonAdd);
         buttonCancel = (Button) myDialogInfo.findViewById(R.id.button_cancel_identify);

@@ -25,7 +25,7 @@
             android:gravity="center"
             android:padding="16dp">
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/image_view_store"
                 android:src="@drawable/box_opt"
                 android:layout_width="80dp"

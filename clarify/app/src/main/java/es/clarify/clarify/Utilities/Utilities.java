@@ -28,6 +28,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -131,6 +133,16 @@ public class Utilities {
                         ScannedTag scannedTag = scannedTagFirebase.getValue(ScannedTag.class);
                         NfcIdentifyFragment.text_company.setText(scannedTag.getBrand());
                         NfcIdentifyFragment.text_model.setText(scannedTag.getModel());
+                        NfcIdentifyFragment.price.setText(scannedTag.getPrice().toString() + " €");
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+                        String date = "";
+                        try {
+                            LocalDate dateAux = LocalDate.parse(scannedTag.getExpiration_date(), formatter);
+                            date = dateAux.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                        } catch (Exception e) {
+                            Log.e("Parsing date", "onBindViewHolder: ", e);
+                        }
+                        NfcIdentifyFragment.expirationDate.setText(date);
                         Picasso.get().load(scannedTag.getImage()).into(NfcIdentifyFragment.img);
                         new Database().addLastScannedTagLocalToChache(scannedTag);
                         NfcIdentifyFragment.addShoppingCart.setOnClickListener(new View.OnClickListener() {
@@ -717,5 +729,17 @@ public class Utilities {
 
                     }
                 });
+    }
+
+    public Integer getPhotoByStore(String store) {
+        int res = R.drawable.box_opt;
+        int frigorifico = R.drawable.fridge_opt;
+        int despensa = R.drawable.despensa_opt;
+        if (store.equals("Frigorífico")) {
+            res = frigorifico;
+        } else  if (store.equals("Despensa")) {
+            res = despensa;
+        }
+        return res;
     }
 }

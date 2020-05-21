@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +33,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Objects.ScannedTagLocal;
 import es.clarify.clarify.R;
 import es.clarify.clarify.Utilities.Database;
@@ -45,7 +48,7 @@ public class ShowStore extends AppCompatActivity {
     private Database database = new Database();
     private String store;
     private Toolbar toolbar;
-    private ImageView storeImg;
+    private CircleImageView storeImg;
     private ImageView img_to_rotate;
     private AppBarLayout appBarLayout;
     private Long numberProducts;
@@ -95,12 +98,8 @@ public class ShowStore extends AppCompatActivity {
             }
         });
 
-        storeImg = (ImageView) findViewById(R.id.store_img);
-        if (store.equals("Frigorífico")) {
-            storeImg.setImageResource(R.drawable.fridge_opt);
-        } else if (store.equals("Despensa")) {
-            storeImg.setImageResource(R.drawable.despensa_opt);
-        }
+        storeImg = (CircleImageView) findViewById(R.id.store_img);
+        Glide.with(this).load(new Utilities().getPhotoByStore(store)).into(storeImg);
 
         populate();
 

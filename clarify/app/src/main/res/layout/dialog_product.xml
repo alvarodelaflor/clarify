@@ -34,13 +34,97 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
-                android:alpha="0.9"
+                android:alpha="0.8"
                 android:text="Model"
-                android:fontFamily="@font/roboto_condensed_bold_italic"
+                android:fontFamily="@font/roboto_bold"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="5dp"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:text="Caducidad"
+                        android:fontFamily="@font/roboto_condensed_bold_italic"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:alpha="0.8"
+                        android:text="22/03/2012"
+                        android:fontFamily="@font/roboto_bold"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@color/white"/>
+
+                <LinearLayout
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:text="Precio compra"
+                        android:fontFamily="@font/roboto_condensed_bold_italic"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"/>
+
+                    <TextView
+                        android:id="@+id/price_dialog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="22sp"
+                        android:alpha="0.8"
+                        android:text="0.00€"
+                        android:fontFamily="@font/roboto_bold"
+                        android:textAlignment="center"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="10dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
 
         </LinearLayout>
 

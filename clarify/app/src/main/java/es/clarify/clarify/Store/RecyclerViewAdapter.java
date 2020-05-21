@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.R;
+import es.clarify.clarify.Utilities.Utilities;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
@@ -52,7 +53,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.box_name.setText(mData.get(position).getName());
+        String name = mData.get(position).getName();
+        holder.box_name.setText(name);
+        holder.box_img.setImageResource(new Utilities().getPhotoByStore(name));
     }
 
     @Override

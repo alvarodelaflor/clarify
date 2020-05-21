@@ -59,6 +59,8 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
     Button dialog_btn_delete;
     Button dialog_btn_add_shopping;
     ImageView dialog_img;
+    TextView dialogPrice;
+    TextView dialogDate;
 
     public ItemViewHoder(View itemView, Context context) {
         super(itemView);
@@ -76,6 +78,8 @@ class ItemViewHoder extends RecyclerView.ViewHolder {
         dialog_btn_delete = (Button) mydialog.findViewById(R.id.dialog_btn_delete);
         dialog_btn_add_shopping = (Button) mydialog.findViewById(R.id.dialog_add_shopping_cart);
         dialog_img = (ImageView) mydialog.findViewById(R.id.dialog_img);
+        dialogPrice = (TextView) mydialog.findViewById(R.id.price_dialog);
+        dialogDate = (TextView) mydialog.findViewById(R.id.date);
     }
 }
 
@@ -263,6 +267,18 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     viewHoder.dialog_name.setText(res.getModel());
                     viewHoder.dialog_brand.setText(res.getBrand());
                     Picasso.get().load(res.getImage()).into(viewHoder.dialog_img);
+                    viewHoder.dialogPrice.setText(res.getPrice().toString() + " €");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+                    String date = "";
+                    try {
+                        LocalDate dateAux = LocalDate.parse(res.getExpiration_date(), formatter);
+                        date = dateAux.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    } catch (Exception e) {
+                        Log.e("Parsing date", "onBindViewHolder: ", e);
+                    }
+                    viewHoder.dialogDate.setText(date);
+
+
                     viewHoder.mydialog.show();
                     viewHoder.dialog_btn_add_shopping.setOnClickListener(new View.OnClickListener() {
                         @Override
