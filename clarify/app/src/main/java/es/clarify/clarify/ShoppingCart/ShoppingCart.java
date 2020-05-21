@@ -193,7 +193,7 @@ public class ShoppingCart extends AppCompatActivity {
         myAccessListViewPager.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
 
         CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+//        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
         compositePageTransformer.addTransformer(new ViewPager2.PageTransformer() {
             @Override
             public void transformPage(@NonNull View page, float position) {
@@ -651,7 +651,7 @@ public class ShoppingCart extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
                 }
-            } else if (checkContains(firstResult, Arrays.asList("borr", "borrá", "elimin", "quit"))) {
+            } else if (checkContains(firstResult, Arrays.asList("quít", "bórr", "elimín", "borr", "borrá", "elimin", "quit"))) {
                 if (mData != null && mData.size() > 0) {
                     List<PurchaseLocal> toDeletePurchases = new ArrayList<>();
                     if (checkContains(firstResult, Arrays.asList("posición"))) {
@@ -662,8 +662,11 @@ public class ShoppingCart extends AppCompatActivity {
                             Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        String queryPurchase = getProduct(firstResult, Arrays.asList("quiero", "borr", "borrá", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
+                        String queryPurchase = getProduct(firstResult, Arrays.asList("quiero", "borr", "bórr", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
                         toDeletePurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
+                        if (toDeletePurchases.size() <= 0) {
+                            Toast.makeText(this, "No hay ningún producto con ese nombre", Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     Database realmDatabase = new Database();

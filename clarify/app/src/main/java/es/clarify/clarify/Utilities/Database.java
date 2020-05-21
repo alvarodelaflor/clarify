@@ -384,7 +384,22 @@ public class Database {
                     purchaseLocal.setIdShoppingCart(idShoppingCart);
                     purchaseLocal.setName(name);
                     purchaseLocal.setCheck(check);
-                    FriendLocal friendLocal = realm.createObject(FriendLocal.class, String.valueOf(ThreadLocalRandom.current().nextInt(1, 999999999)));
+                    Boolean alreadyExist = true;
+                    String key = "";
+                    Integer numberTry = 0;
+                    while (numberTry < 10 && alreadyExist) {
+                        Integer max = 999999999;
+                        Integer min = 0;
+                        key = String.valueOf((Math.random() * (max - min + 1) + min));
+                        FriendLocal auxFriend = realm.where(FriendLocal.class).equalTo("name", key).findFirst();
+                        if (auxFriend != null) {
+                            numberTry++;
+                        } else {
+                            alreadyExist = false;
+                            numberTry = 11;
+                        }
+                    }
+                    FriendLocal friendLocal = realm.createObject(FriendLocal.class, key);
                     friendLocal.setPhoto(elem.getLastUpdate().getPhoto());
                     friendLocal.setName(elem.getLastUpdate().getName());
                     purchaseLocal.setLastUpdate(friendLocal);
@@ -455,7 +470,22 @@ public class Database {
             String idShoppingCart = elem.getIdShoppingCart();
             String name = elem.getName();
             Boolean checkAtribute = elem.getCheck();
-            FriendLocal friendLocal = realm.createObject(FriendLocal.class, String.valueOf(ThreadLocalRandom.current().nextInt(1, 999999999)));
+            Boolean alreadyExist = true;
+            String key = "";
+            Integer numberTry = 0;
+            while (numberTry < 10 && alreadyExist) {
+                Integer max = 999999999;
+                Integer min = 0;
+                key = String.valueOf((Math.random() * (max - min + 1) + min));
+                FriendLocal aux = realm.where(FriendLocal.class).equalTo("name", key).findFirst();
+                if (aux != null) {
+                    numberTry++;
+                } else {
+                    alreadyExist = false;
+                    numberTry = 11;
+                }
+            }
+            FriendLocal friendLocal = realm.createObject(FriendLocal.class, key);
             friendLocal.setName(elem.getLastUpdate().getName());
             friendLocal.setPhoto(elem.getLastUpdate().getPhoto().toString());
 
