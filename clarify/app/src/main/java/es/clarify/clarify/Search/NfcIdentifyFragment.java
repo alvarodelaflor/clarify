@@ -106,6 +106,7 @@ public class NfcIdentifyFragment extends Fragment {
                         MainActivity.showSettings.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                MainActivity.dialogNfc.dismiss();
                                 showWirelessSettings();
                             }
                         });

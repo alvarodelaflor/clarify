@@ -320,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showSettings.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        dialogNfc.dismiss();
                         showWirelessSettings();
                     }
                 });
