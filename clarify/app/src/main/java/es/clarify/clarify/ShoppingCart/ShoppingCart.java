@@ -648,7 +648,7 @@ public class ShoppingCart extends AppCompatActivity {
                     String uid = new GoogleUtilities().getCurrentUser().getUid();
                     Boolean checkAux = new Utilities().savePurchase(query, -1, ShoppingCart.this, false, uid);
                     if (checkAux) {
-                        Toast.makeText(this, query + " se ha añadido", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ShoppingCart.this, query + " se ha añadido", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Toast.makeText(this, "No se ha reconocido el nombre del producto que ha dicho\nInténtelo de nuevo.", Toast.LENGTH_LONG).show();
@@ -661,13 +661,13 @@ public class ShoppingCart extends AppCompatActivity {
                         if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
                             toDeletePurchases.add(mData.get(number - 1));
                         } else {
-                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         String queryPurchase = getProduct(firstResult, Arrays.asList("quiero", "borr", "bórr", "elimin", "quit", "el producto", "elemento", "de la lista", "de la cesta", "de los productos"));
                         toDeletePurchases = mData.stream().filter(x -> x.getName().contains(queryPurchase)).collect(Collectors.toList());
                         if (toDeletePurchases.size() <= 0) {
-                            Toast.makeText(this, "No hay ningún producto con ese nombre", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "No hay ningún producto con ese nombre", Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -675,10 +675,10 @@ public class ShoppingCart extends AppCompatActivity {
                     for (PurchaseLocal elem : toDeletePurchases) {
                         String name = elem.getName();
                         realmDatabase.deletePurchaseFromLocal(elem);
-                        Toast.makeText(this, name + " se ha eliminado", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), name + " se ha eliminado", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(this, "Su lista está vacía, no puede borrar nada", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Su lista está vacía, no puede borrar nada", Toast.LENGTH_LONG).show();
                 }
             } else if (checkContains(firstResult, Arrays.asList("deselecciona", "desmarca"))) {
                 if (mData != null && mData.size() > 0) {
@@ -688,7 +688,7 @@ public class ShoppingCart extends AppCompatActivity {
                         if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
                             toCheckPurchases.add(mData.get(number - 1));
                         } else {
-                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         String queryPurchase = getProduct(firstResult, Arrays.asList("desselecciona", "desmarca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
@@ -699,14 +699,14 @@ public class ShoppingCart extends AppCompatActivity {
                     for (PurchaseLocal elem : toCheckPurchases) {
                         String name = elem.getName();
                         if (!elem.getCheck()) {
-                            Toast.makeText(this, "¡" + name + " ya estaba desmarcado!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "¡" + name + " ya estaba desmarcado!", Toast.LENGTH_LONG).show();
                         } else {
                             realmDatabase.changeCheckStatusFromLocal(elem, !elem.getCheck());
-                            Toast.makeText(this, name + " se ha desmarcado como seleccionado", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), name + " se ha desmarcado como seleccionado", Toast.LENGTH_LONG).show();
                         }
                     }
                 } else {
-                    Toast.makeText(this, "Su lista está vacía, no puede desmarcar nada", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Su lista está vacía, no puede desmarcar nada", Toast.LENGTH_LONG).show();
                 }
             } else if (checkContains(firstResult, Arrays.asList("selecciona", "marca"))) {
                 if (mData != null && mData.size() > 0) {
@@ -716,7 +716,7 @@ public class ShoppingCart extends AppCompatActivity {
                         if (number != null && number > 0 && mData.size() > (number - 1) && mData.get(number - 1) != null) {
                             toCheckPurchases.add(mData.get(number - 1));
                         } else {
-                            Toast.makeText(this, "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "No hay ningún producto en esa posición", Toast.LENGTH_LONG).show();
                         }
                     } else {
                         String queryPurchase = getProduct(firstResult, Arrays.asList("selecciona", "marca", "producto", "elemento", "el producto", "el elemento", "de la lista", "de la cesta", "de los productos"));
@@ -727,17 +727,17 @@ public class ShoppingCart extends AppCompatActivity {
                     for (PurchaseLocal elem : toCheckPurchases) {
                         String name = elem.getName();
                         if (elem.getCheck()) {
-                            Toast.makeText(this, "¡" + name + " ya estaba marcado!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "¡" + name + " ya estaba marcado!", Toast.LENGTH_LONG).show();
                         } else {
                             realmDatabase.changeCheckStatusFromLocal(elem, !elem.getCheck());
-                            Toast.makeText(this, name + " se ha marcado como seleccionado", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), name + " se ha marcado como seleccionado", Toast.LENGTH_LONG).show();
                         }
                     }
                 } else {
-                    Toast.makeText(this, "Su lista está vacía, no puede marcar nada", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Su lista está vacía, no puede marcar nada", Toast.LENGTH_LONG).show();
                 }
             } else {
-                Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
             }
         }
     }

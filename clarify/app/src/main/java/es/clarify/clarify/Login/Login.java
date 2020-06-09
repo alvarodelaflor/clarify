@@ -133,9 +133,11 @@ public class Login extends AppCompatActivity {
                             Log.d(TAG_AUTH, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             signIn();
-                            googleUtilities.updateFirebaseAccount(Login.this);
-                            realmDatabase.updateLastUserLogin();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+//                            googleUtilities.updateFirebaseAccount(Login.this);
+//                            realmDatabase.updateLastUserLogin();
+                            if (googleUtilities.getCurrentUser()!= null && googleUtilities.getCurrentUser().getUid() != null) {
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            }
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG_AUTH, "signInWithCredential:failure", task.getException());

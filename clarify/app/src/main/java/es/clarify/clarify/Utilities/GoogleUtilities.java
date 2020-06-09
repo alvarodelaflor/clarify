@@ -94,16 +94,14 @@ public class GoogleUtilities {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
-        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(), new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
+        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(new GoogleUtilities().getCurrentUser().getUid(), new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        createShoppingCart(shoppingCartLocal);
     }
 
     private void saveToken(String token, FirebaseUser currentUser) {
         UserData userData = new UserData(currentUser.getDisplayName(), currentUser.getEmail(), currentUser.getPhotoUrl().toString(), currentUser.getUid(), currentUser.getPhoneNumber(), token);
 //        deleteFromFirebase("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"));
         pushToFirebaseWithoutId("private", Arrays.asList(getCurrentUser().getUid(), "user_profile"), userData);
-        ShoppingCartRemote shoppingCartLocal = new ShoppingCartRemote(getCurrentUser().getUid(), new Date(), true, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        pushToFirebaseWithId("private", Arrays.asList(getCurrentUser().getUid(), "listaCompra"), shoppingCartLocal, getCurrentUser().getUid(), null);
     }
 
     public void pushToFirebaseWithoutId(String reference, List<String> childs, Object value) {
@@ -161,6 +159,33 @@ public class GoogleUtilities {
             databaseReference = databaseReference.child(child);
         }
         databaseReference.removeValue();
+    }
+
+    public Boolean createShoppingCart(ShoppingCartRemote value) {
+        try {
+            DatabaseReference databaseReference = database.getReference("private");
+            databaseReference
+                    .child(getCurrentUser().getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    DataSnapshot listaCompra = dataSnapshot.child("listaCompra");
+                    if (!listaCompra.exists()) {
+                        databaseReference.child(getCurrentUser().getUid()).child("listaCompra").push().setValue(value);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "addToStore: Coldn't add to store", e);
+            return false;
+
+        }
     }
 
     public Boolean addToStore(String store, ScannedTagRemote scannedTag, Activity activity) {
@@ -483,7 +508,7 @@ public class GoogleUtilities {
                                     saveNewAllowUser(friendRemote, activity);
                                     try {
                                         String title = "¡Nueva invitación!";
-                                        String message = getCurrentUser().getDisplayName() + " te ha invitado a su lita";
+                                        String message = getCurrentUser().getDisplayName() + " te ha invitado a su lista";
                                         new Utilities().sendNotificationAux(userProfile.child("token").getValue(String.class), friendRemote.getUid(), message, title, "ShoppingCart.class-true", getCurrentUser().getPhotoUrl().toString());
                                     } catch (Exception e) {
                                         Log.e(TAG, "onDataChange: ", e);

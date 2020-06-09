@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,7 @@ public class NfcIdentifyFragment extends Fragment {
     public static Button anotherTry;
     public static TextView price;
     public static TextView expirationDate;
+    public static LinearLayout moreInfo;
 
     public NfcIdentifyFragment(ViewPager2 viewPager) {
         this.viewPager = viewPager;
@@ -76,6 +78,7 @@ public class NfcIdentifyFragment extends Fragment {
         window.setGravity(Gravity.BOTTOM);
         myDialog.setContentView(R.layout.dialog_identify_product);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        moreInfo = (LinearLayout) myDialog.findViewById(R.id.more_info);
         text_company = (TextView) myDialog.findViewById(R.id.text_company);
         text_model = (TextView) myDialog.findViewById(R.id.text_model);
         price = (TextView) myDialog.findViewById(R.id.price_dialog_2);

@@ -47,7 +47,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -56,6 +58,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import es.clarify.clarify.Home.HomeFragment;
 import es.clarify.clarify.Login.Login;
 import es.clarify.clarify.Objects.ScannedTag;
+import es.clarify.clarify.Objects.ShoppingCartRemote;
 import es.clarify.clarify.Objects.StoreLocal;
 import es.clarify.clarify.Search.NfcIdentifyFragment;
 import es.clarify.clarify.NFC.NfcUtility;
@@ -103,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
 
         new GoogleUtilities().updateFirebaseAccount(this);
+        new Database().updateLastUserLogin();
 
         dialogNfc = new Dialog(this);
         dialogNfc.setContentView(R.layout.dialog_nfc);
@@ -289,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DatabaseReference databaseReference2 = databaseAux.getReference().child(("private")).child(new GoogleUtilities().getCurrentUser().getUid()).child("listaCompra");
         databaseReference2.removeEventListener(valueEventListenerShoppingCart);
 
+        new GoogleUtilities().getFirebaseAuth().signOut();
         FirebaseAuth.getInstance().signOut();
         // Google sign out
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -302,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onComplete(@NonNull Task<Void> task) {
                         threads.stream().forEach(x -> x.interrupt());
                         database.deleteAllDataFromDevice();
+                        finish();
                         Intent intent = new Intent(getApplicationContext(), Login.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -394,27 +400,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (!check) {
             if (checkContains(firstResult, Arrays.asList("almacén", "almacen"))) {
                 viewPager.setCurrentItem(1);
-                Toast.makeText(this, "Ahora se muestran todos tus almacenes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Ahora se muestran todos tus almacenes", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("producto", "compra", "carrito", "carro", "cesta", "marcado", "seleccionado", "check"))) {
                 Context context = MainActivity.this;
                 Intent intent = new Intent(context, ShoppingCart.class);
                 intent.putExtra("goToShare", false);
                 context.startActivity(intent);
-                Toast.makeText(this, "Se ha abierto la cesta de la compra", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Se ha abierto la cesta de la compra", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("invitado", "invitaciones", "invitación", "pendiente", "pendientes", "amigos"))) {
                 Context context = MainActivity.this;
                 Intent intent = new Intent(context, ShoppingCart.class);
                 intent.putExtra("goToShare", true);
                 context.startActivity(intent);
-                Toast.makeText(this, "Ahora se muestran las listas que han compartido contigo", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Ahora se muestran las listas que han compartido contigo", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("buscar", "identificar", "identificame", "qué es", "que es", "que estoy viendo", "que tengo", "nfc", "etiqueta"))) {
                 viewPager.setCurrentItem(2);
-                Toast.makeText(this, "Pulsa en el botón escanear para escanear", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Pulsa en el botón escanear para escanear", Toast.LENGTH_SHORT).show();
             } else if (checkContains(firstResult, Arrays.asList("home", "pantalla inicial", "inicio"))) {
                 viewPager.setCurrentItem(0);
-                Toast.makeText(this, "Ahora se encuentra en la pantalla de inicio", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Ahora se encuentra en la pantalla de inicio", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Comando no reconocido, inténtelo de nuevo.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -478,7 +484,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Boolean checkFind(String firstResult) {
         Boolean res = false;
         if (nfcIdentifyFragment != null && nfcIdentifyFragment.myDialogInfo != null) {
-            if (checkContains(firstResult, Arrays.asList("abrir", "escanea", "escaner", "identificar", "qué es", "indentifica")) && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
+            if (checkContains(firstResult, Arrays.asList("abr", "escanea", "escaner", "identif", "qué es", "indentifica")) && !firstResult.contains("carrito") && !firstResult.contains("cesta") && !firstResult.contains("compra")) {
                 nfcIdentifyFragment.myDialogInfo.show();
                 res = true;
             }

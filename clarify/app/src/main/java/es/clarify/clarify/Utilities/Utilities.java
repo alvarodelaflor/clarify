@@ -126,6 +126,7 @@ public class Utilities {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    NfcIdentifyFragment.moreInfo.setVisibility(View.VISIBLE);
                     NfcIdentifyFragment.addShoppingCart.setVisibility(View.VISIBLE);
                     NfcIdentifyFragment.buttonAdd.setVisibility(View.VISIBLE);
                     NfcIdentifyFragment.anotherTry.setVisibility(View.GONE);
@@ -158,6 +159,7 @@ public class Utilities {
                         });
                     }
                 } else {
+                    NfcIdentifyFragment.moreInfo.setVisibility(View.GONE);
                     Picasso.get().load(R.drawable.no_image).into(NfcIdentifyFragment.img);
                     NfcIdentifyFragment.addShoppingCart.setVisibility(View.GONE);
                     NfcIdentifyFragment.buttonAdd.setVisibility(View.GONE);
@@ -735,10 +737,13 @@ public class Utilities {
         int res = R.drawable.box_opt;
         int frigorifico = R.drawable.fridge_opt;
         int despensa = R.drawable.despensa_opt;
+        int medicamentos = R.drawable.medicamentos;
         if (store.equals("Frigorífico")) {
             res = frigorifico;
         } else  if (store.equals("Despensa")) {
             res = despensa;
+        } else  if (store.equals("Medicamentos")) {
+            res = medicamentos;
         }
         return res;
     }
